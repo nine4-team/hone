@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hone - Jiu-Jitsu Skill Acquisition App Brief</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1b1f23;
+        --muted: #59636e;
+        --quiet: #7a858f;
+        --paper: #fbfaf7;
+        --panel: #ffffff;
+        --line: #d9dedf;
+        --line-strong: #aeb9bc;
+        --sage: #5f766d;
+        --sage-dark: #374d46;
+        --clay: #a35d43;
+        --gold: #b78b2f;
+        --blue: #476b86;
+        --violet: #665f8f;
+        --green-soft: #e6eee8;
+        --clay-soft: #f2e4dc;
+        --gold-soft: #f3ead4;
+        --blue-soft: #dfeaf0;
+        --violet-soft: #e6e3ef;
+        --shadow: 0 18px 46px rgba(31, 42, 46, 0.12);
+        --radius: 8px;
+        --max: 1160px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          linear-gradient(180deg, rgba(232, 237, 235, 0.65), rgba(251, 250, 247, 0) 420px),
+          var(--paper);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        width: min(var(--max), calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(18px);
+        background: rgba(251, 250, 247, 0.82);
+        border-bottom: 1px solid rgba(174, 185, 188, 0.45);
+      }
+
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 64px;
+        gap: 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 750;
+        letter-spacing: 0;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--sage-dark);
+        color: #fff;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav a {
+        text-decoration: none;
+      }
+
+      .nav a:hover {
+        color: var(--ink);
+      }
+
+      .hero {
+        padding: 72px 0 44px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+        gap: 42px;
+        align-items: center;
+      }
+
+      .hero-grid > *,
+      .section-head > *,
+      .split > * {
+        min-width: 0;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--sage-dark);
+        font-size: 13px;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 28px;
+        height: 2px;
+        background: var(--clay);
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-weight: 800;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      p,
+      li {
+        font-weight: 300;
+      }
+
+      h1 {
+        max-width: 780px;
+        margin-bottom: 22px;
+        font-size: clamp(44px, 6vw, 80px);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .nowrap {
+        white-space: nowrap;
+      }
+
+      .hero-copy {
+        max-width: 720px;
+        margin-bottom: 26px;
+        color: var(--muted);
+        font-size: 20px;
+        font-weight: 300;
+        line-height: 1.55;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid var(--sage-dark);
+        border-radius: 8px;
+        background: var(--sage-dark);
+        color: #fff;
+        font-weight: 740;
+        text-decoration: none;
+      }
+
+      .button.secondary {
+        background: transparent;
+        color: var(--sage-dark);
+      }
+
+      .phone {
+        width: min(100%, 420px);
+        margin-left: auto;
+        border: 1px solid #20282b;
+        border-radius: 34px;
+        background: #111719;
+        padding: 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .phone-screen {
+        overflow: hidden;
+        border-radius: 24px;
+        background: #f7f6f2;
+        min-height: 640px;
+        border: 1px solid #30383b;
+      }
+
+      .phone-status {
+        height: 34px;
+        background: #f7f6f2;
+      }
+
+      .app-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 18px 16px;
+      }
+
+      .app-title {
+        font-size: 26px;
+        font-weight: 800;
+      }
+
+      .focus-pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--gold-soft);
+        color: #6b4a05;
+        font-size: 12px;
+        font-weight: 760;
+      }
+
+      .phone-section {
+        padding: 0 18px 18px;
+      }
+
+      .mini-label {
+        margin-bottom: 8px;
+        color: var(--quiet);
+        font-size: 12px;
+        font-weight: 780;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .skill-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+
+      .skill-card strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .skill-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .metric {
+        border-radius: 8px;
+        background: #f0f2ef;
+        padding: 8px;
+      }
+
+      .metric span {
+        display: block;
+        color: var(--quiet);
+        font-size: 11px;
+      }
+
+      .metric b {
+        font-size: 17px;
+      }
+
+      .quick-log {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .quick-log div {
+        min-height: 54px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      section {
+        padding: 64px 0;
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 0.78fr) minmax(280px, 0.48fr);
+        gap: 36px;
+        align-items: end;
+        margin-bottom: 30px;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .section-head p,
+      .lead {
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 300;
+      }
+
+      .band {
+        background: #eef2ef;
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .principle-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .principle {
+        min-height: 188px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 22px;
+      }
+
+      .principle .number {
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        background: var(--sage-dark);
+        color: #fff;
+        font-weight: 800;
+      }
+
+      .principle h3 {
+        margin-bottom: 8px;
+        font-size: 19px;
+      }
+
+      .principle p,
+      .object p,
+      .stage p,
+      .question p {
+        color: var(--muted);
+        font-weight: 300;
+        margin-bottom: 0;
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(190px, 1fr));
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+      }
+
+      .stage {
+        min-height: 230px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 14px;
+      }
+
+      .stage h3 {
+        margin-bottom: 9px;
+        font-size: 16px;
+      }
+
+      .stage p {
+        font-size: 13px;
+      }
+
+      .stage .evidence {
+        margin-top: 16px;
+        padding-top: 13px;
+        border-top: 1px solid var(--line);
+        color: var(--quiet);
+        font-size: 12px;
+        font-weight: 720;
+      }
+
+      .stage:nth-child(1) {
+        background: var(--blue-soft);
+      }
+
+      .stage:nth-child(2) {
+        background: var(--gold-soft);
+      }
+
+      .stage:nth-child(3) {
+        background: var(--green-soft);
+      }
+
+      .stage:nth-child(4) {
+        background: var(--clay-soft);
+      }
+
+      .objects-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+
+      .object {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 20px;
+      }
+
+      .object h3 {
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .chip {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #f6f7f4;
+        color: var(--muted);
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .loop {
+        display: grid;
+        gap: 12px;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .loop-step {
+        display: grid;
+        grid-template-columns: 160px minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .loop-step h3 {
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+
+      .loop-step p {
+        color: var(--muted);
+        font-weight: 300;
+        margin-bottom: 0;
+      }
+
+      .capture-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+      }
+
+      .practice-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+
+      .strategy-pair {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .strategy-block {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 22px;
+      }
+
+      .strategy-block h3 {
+        margin-bottom: 10px;
+      }
+
+      .strategy-block p {
+        color: var(--muted);
+        font-weight: 300;
+        margin-bottom: 0;
+      }
+
+      .revenue-flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+
+      .revenue-step {
+        min-height: 190px;
+        padding: 22px;
+        border-right: 1px solid var(--line);
+      }
+
+      .revenue-step:last-child {
+        border-right: 0;
+      }
+
+      .revenue-step .number {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        margin-bottom: 14px;
+        border-radius: 8px;
+        background: var(--sage-dark);
+        color: #fff;
+        font-weight: 800;
+      }
+
+      .revenue-step h3 {
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+
+      .revenue-step p {
+        color: var(--muted);
+        font-weight: 300;
+        margin-bottom: 0;
+      }
+
+      .capture,
+      .practice,
+      .strategy {
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        padding: 22px;
+      }
+
+      .capture h3,
+      .practice h3,
+      .strategy h3 {
+        margin-bottom: 10px;
+      }
+
+      .capture p,
+      .strategy p {
+        color: var(--muted);
+        font-weight: 300;
+        margin-bottom: 0;
+      }
+
+      .practice ul,
+      .question ul {
+        margin: 16px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-weight: 300;
+      }
+
+      .practice li,
+      .question li {
+        margin: 8px 0;
+      }
+
+      .callout {
+        border-left: 5px solid var(--clay);
+        background: #fff;
+        padding: 22px 24px;
+        box-shadow: 0 12px 32px rgba(31, 42, 46, 0.08);
+      }
+
+      .callout p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 19px;
+        font-weight: 300;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.88fr) minmax(300px, 0.64fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .questions-panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 24px;
+      }
+
+      .question {
+        padding: 18px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .question:first-child {
+        padding-top: 0;
+      }
+
+      .question:last-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .question h3 {
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 12px;
+      }
+
+      summary {
+        cursor: pointer;
+        padding: 18px 20px;
+        color: var(--sage-dark);
+        font-weight: 800;
+      }
+
+      details p {
+        margin: 0;
+        padding: 0 20px 20px;
+        color: var(--muted);
+        font-weight: 300;
+      }
+
+      footer {
+        padding: 38px 0 54px;
+        color: var(--quiet);
+        border-top: 1px solid var(--line);
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .section-head,
+        .split {
+          grid-template-columns: 1fr;
+        }
+
+        .phone {
+          margin: 18px auto 0;
+          max-width: 100%;
+        }
+
+        .principle-grid,
+        .objects-grid,
+        .capture-grid,
+        .practice-grid,
+        .strategy-pair,
+        .revenue-flow {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .revenue-step:nth-child(2) {
+          border-right: 0;
+        }
+
+        .revenue-step:nth-child(1),
+        .revenue-step:nth-child(2) {
+          border-bottom: 1px solid var(--line);
+        }
+      }
+
+      @media (max-width: 850px) {
+        body {
+          overflow-x: hidden;
+        }
+
+        .shell {
+          width: 100%;
+          padding-right: 14px;
+          padding-left: 14px;
+        }
+
+        .nav {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 42px;
+        }
+
+        h1 {
+          max-width: 100%;
+          font-size: clamp(30px, 8vw, 36px);
+          line-height: 1.04;
+          overflow-wrap: break-word;
+        }
+
+        .hero-copy {
+          max-width: 100%;
+          font-size: 17px;
+          overflow-wrap: break-word;
+        }
+
+        .nowrap {
+          white-space: normal;
+        }
+
+        .hero-actions {
+          align-items: stretch;
+        }
+
+        .button {
+          width: 100%;
+        }
+
+        section {
+          padding: 46px 0;
+        }
+
+        .principle-grid,
+        .objects-grid,
+        .capture-grid,
+        .practice-grid,
+        .strategy-pair,
+        .revenue-flow,
+        .loop {
+          grid-template-columns: 1fr;
+        }
+
+        .revenue-step,
+        .revenue-step:nth-child(2) {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .revenue-step:last-child {
+          border-bottom: 0;
+        }
+
+        .loop-step {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .phone-screen {
+          min-height: 584px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <div class="brand">
+          <div class="mark">H</div>
+          <span>Hone</span>
+        </div>
+        <nav class="nav" aria-label="Page sections">
+          <a href="#model">Learning Model</a>
+          <a href="#objects">Objects</a>
+          <a href="#logging">Logging</a>
+          <a href="#questions">Questions</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <div class="eyebrow">Concept brief</div>
+            <h1>A deliberate practice app for honing grappling skills.</h1>
+            <p class="hero-copy">
+              Hone helps serious grapplers and ambitious hobbyists choose specific skills, train them with intention, and track the evidence that a technique is moving from interesting idea to live, reliable execution.
+            </p>
+          </div>
+
+          <aside class="phone" aria-label="Conceptual app mockup">
+            <div class="phone-screen">
+              <div class="phone-status"></div>
+              <div class="app-head">
+                <div class="app-title">Hone</div>
+                <div class="focus-pill">This week</div>
+              </div>
+              <div class="phone-section">
+                <div class="mini-label">Focus skills</div>
+                <div class="skill-card">
+                  <strong>K guard entry</strong>
+                  <div>Stage: Live</div>
+                  <div class="skill-meta">
+                    <div class="metric"><span>Drill</span><b>90m</b></div>
+                    <div class="metric"><span>Games</span><b>8</b></div>
+                    <div class="metric"><span>Hits</span><b>3</b></div>
+                  </div>
+                </div>
+                <div class="skill-card">
+                  <strong>RNC finish</strong>
+                  <div>Stage: Proven</div>
+                  <div class="skill-meta">
+                    <div class="metric"><span>Drill</span><b>45m</b></div>
+                    <div class="metric"><span>Games</span><b>5</b></div>
+                    <div class="metric"><span>Hits</span><b>11</b></div>
+                  </div>
+                </div>
+              </div>
+              <div class="phone-section">
+                <div class="mini-label">Fast log</div>
+                <div class="quick-log">
+                  <div>Study</div>
+                  <div>Dialogue drill</div>
+                  <div>Constraint game</div>
+                  <div>Rolling</div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="band" id="model">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Top-level idea</div>
+              <h2>The product is built around a skill pipeline.</h2>
+            </div>
+            <p>
+              The app should not try to track all training. It should help grapplers choose specific skills, practice them deliberately, and see which ones are progressing from saved ideas to live execution.
+            </p>
+          </div>
+
+          <div class="principle-grid">
+            <article class="principle">
+              <div class="number">1</div>
+              <h3>Capture the skill</h3>
+              <p>Save the technique, position, transition, finish, escape, or tactical pattern the grappler may want to work on.</p>
+            </article>
+            <article class="principle">
+              <div class="number">2</div>
+              <h3>Train it intentionally</h3>
+              <p>Record the training format: study, dialogue drilling, constraint games, or rolling.</p>
+            </article>
+            <article class="principle">
+              <div class="number">3</div>
+              <h3>Log evidence</h3>
+              <p>Track time, successful executions, partner hit counts, footage, and insights so progress is visible.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Proposed stages</div>
+              <h2>Skills move from saved idea to proof under pressure.</h2>
+            </div>
+            <p>
+              Each stage describes where the skill is in the user's acquisition process, from a captured idea to a technique that works repeatedly against meaningful resistance.
+            </p>
+          </div>
+
+          <div class="pipeline" aria-label="Skill pipeline stages">
+            <article class="stage">
+              <h3>Saved</h3>
+              <p>I captured this skill because I may want to work on it later.</p>
+              <div class="evidence">Video, note, source, reason</div>
+            </article>
+            <article class="stage">
+              <h3>Learning</h3>
+              <p>I am actively developing the basic mechanics and procedural understanding needed to perform it.</p>
+              <div class="evidence">Study time, drilling time, cues</div>
+            </article>
+            <article class="stage">
+              <h3>Live</h3>
+              <p>I can create or recognize the conditions for the skill and execute it against resistance.</p>
+              <div class="evidence">Game time, rolling hits, partner hit counts</div>
+            </article>
+            <article class="stage">
+              <h3>Proven</h3>
+              <p>I can hit it repeatedly on strong partners, including people who know my game or are hard to catch.</p>
+              <div class="evidence">Best-partner proof, confidence</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="objects">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Information architecture</div>
+              <h2>The app has four core objects.</h2>
+            </div>
+          </div>
+
+          <div class="objects-grid">
+            <article class="object">
+              <h3>Skill</h3>
+              <p>A specific thing the user wants to acquire.</p>
+              <div class="chips">
+                <span class="chip">Stage</span>
+                <span class="chip">Resources</span>
+                <span class="chip">Notes</span>
+                <span class="chip">Targets</span>
+              </div>
+            </article>
+            <article class="object">
+              <h3>Session</h3>
+              <p>A class, open mat, private, or competition training day.</p>
+              <div class="chips">
+                <span class="chip">Date</span>
+                <span class="chip">Journal</span>
+                <span class="chip">Focus review</span>
+              </div>
+            </article>
+            <article class="object">
+              <h3>Training Block</h3>
+              <p>A chunk of work inside a session tied to one skill.</p>
+              <div class="chips">
+                <span class="chip">Type</span>
+                <span class="chip">Duration</span>
+                <span class="chip">Executions</span>
+                <span class="chip">Insights</span>
+              </div>
+            </article>
+            <article class="object">
+              <h3>Partner</h3>
+              <p>A person the user has successfully executed a skill against.</p>
+              <div class="chips">
+                <span class="chip">Hit list</span>
+                <span class="chip">Skill counts</span>
+                <span class="chip">Last hit</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="band">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Skill capture</div>
+              <h2>Skills can start from a reference, an idea, or a training goal.</h2>
+            </div>
+            <p>
+              Creating a skill should be fast: name the thing the user wants to work on, attach anything useful, and drop it into the pipeline.
+            </p>
+          </div>
+
+          <div class="capture-grid">
+            <article class="capture">
+              <h3>Blank Skill</h3>
+              <p>Create a skill manually from an idea, coach suggestion, or training goal.</p>
+            </article>
+            <article class="capture">
+              <h3>YouTube</h3>
+              <p>Save a video as a reference and attach notes, cues, or timestamps.</p>
+            </article>
+            <article class="capture">
+              <h3>Instagram</h3>
+              <p>Capture a reel or post before it disappears into saved-content clutter.</p>
+            </article>
+            <article class="capture">
+              <h3>Reference Video</h3>
+              <p>Attach any video that helps the user understand what good execution looks like.</p>
+            </article>
+            <article class="capture">
+              <h3>Quick Note</h3>
+              <p>Save a thought after training and turn it into a skill later.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="logging">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Logging model</div>
+              <h2>The app tracks four types of training.</h2>
+            </div>
+            <p>
+              For each skill, users can log study, dialogue drilling, constraint games, and rolling. Each training type uses its own metrics: time, successful executions, partner hits, footage, and insights where they apply.
+            </p>
+          </div>
+
+          <div class="practice-grid">
+            <article class="practice">
+              <h3>Study</h3>
+              <p>Watching, reading, reviewing footage, or thinking through the skill away from live practice.</p>
+              <ul>
+                <li>Track time</li>
+                <li>Save resources</li>
+                <li>Capture insights</li>
+              </ul>
+            </article>
+            <article class="practice">
+              <h3>Dialogue Drilling</h3>
+              <p>Cooperative exploration and mechanical refinement.</p>
+              <ul>
+                <li>Track time</li>
+                <li>Capture cues</li>
+                <li>Capture insights</li>
+              </ul>
+            </article>
+            <article class="practice">
+              <h3>Constraint Games</h3>
+              <p>Live situational work / task-based rounds / CLA games.</p>
+              <ul>
+                <li>Track time</li>
+                <li>Track successful executions</li>
+                <li>Capture hits on partners and insights</li>
+              </ul>
+            </article>
+            <article class="practice">
+              <h3>Rolling</h3>
+              <p>Open live training where the exchange can go anywhere.</p>
+              <ul>
+                <li>Track successful executions</li>
+                <li>Add partners to the hit list</li>
+                <li>Capture time and insights where useful</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="band">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">User loop</div>
+              <h2>The app should guide pre-training intention and post-training reflection.</h2>
+            </div>
+            <p>
+              This turns Hone from a passive tracker into a deliberate practice companion.
+            </p>
+          </div>
+
+          <div class="loop">
+            <article class="loop-step">
+              <h3>Set Intention</h3>
+              <p>Before training, pick one to three focus skills for the day or week.</p>
+            </article>
+            <article class="loop-step">
+              <h3>Train</h3>
+              <p>Use those skills in study, drilling, games, and rolling.</p>
+            </article>
+            <article class="loop-step">
+              <h3>Log Evidence</h3>
+              <p>After training, record time, successful executions, footage, hit counts, and insights.</p>
+            </article>
+            <article class="loop-step">
+              <h3>Refine Focus</h3>
+              <p>Update the stage, next cue, or next training intention based on evidence.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Product strategy</div>
+              <h2>Distribution starts with a tool pros actually use.</h2>
+            </div>
+            <p>
+              The app has to be useful enough that pros would use it in their own training. If that is true, their normal training process can become content, and that content can become a recurring income stream.
+            </p>
+          </div>
+
+          <div class="strategy-pair">
+            <article class="strategy-block">
+              <h3>Why pros would use it</h3>
+              <p>Hone should make deliberate practice easier for people who already care deeply about improving: choose the skill, log the work, preserve insights, review footage, and track whether the skill is becoming reliable.</p>
+            </article>
+            <article class="strategy-block">
+              <h3>What makes hobbyists use it</h3>
+              <p>For hobbyists, the usage risk is habit inertia: most people are used to showing up, taking class, and doing whatever training gives them that day. Borrowed status helps overcome that inertia because using the same tool as a pro makes deliberate practice feel like part of the pro identity they want to emulate.</p>
+            </article>
+          </div>
+
+          <div class="revenue-flow" aria-label="Pro revenue pipeline">
+            <article class="revenue-step">
+              <div class="number">1</div>
+              <h3>Use the app</h3>
+              <p>The pro uses Hone for an activity they already do: deciding what to work on, training it, logging evidence, and reflecting afterward.</p>
+            </article>
+            <article class="revenue-step">
+              <div class="number">2</div>
+              <h3>Make content</h3>
+              <p>That use becomes easy content: what skill they are honing, how they are practicing it, what changed, and what they learned.</p>
+            </article>
+            <article class="revenue-step">
+              <div class="number">3</div>
+              <h3>Audience signs up</h3>
+              <p>The pro already has an audience. Viewers see Hone in use, want to train more deliberately, and subscribe through the pro's affiliate link.</p>
+            </article>
+            <article class="revenue-step">
+              <div class="number">4</div>
+              <h3>Earn recurring revenue</h3>
+              <p>The pro gets a healthy percentage of monthly revenue from their users. A second level could pay them when athletes they recruit generate subscribers too.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="questions">
+        <div class="shell split">
+          <div>
+            <div class="eyebrow">For expert review</div>
+            <h2>Questions to pressure-test with a high-level learner.</h2>
+            <p class="lead">
+              These questions should test the learning model, the logging burden, and whether the app solves real problems for serious practitioners.
+            </p>
+          </div>
+
+          <aside class="questions-panel">
+            <div class="question">
+              <h3>What problems do pros already have?</h3>
+              <ul>
+                <li>What do serious competitors and coaches need to track in training?</li>
+                <li>Where are their current tools weak?</li>
+                <li>What would make deliberate practice easier for people who already train deliberately?</li>
+                <li>What would make the app worth opening before and after training?</li>
+                <li>What would they consider noise?</li>
+              </ul>
+            </div>
+            <div class="question">
+              <h3>Should the pipeline stages be refined?</h3>
+              <ul>
+                <li>Are Saved, Learning, Live, and Proven good enough stages to start with?</li>
+                <li>Is Live too broad?</li>
+                <li>Should the Live phase be broken into quantified resistance levels, such as 1-10?</li>
+                <li>Can users rate resistance consistently enough for that to be useful?</li>
+                <li>Should skills move automatically based on evidence, or should users move them based on their own assessment?</li>
+              </ul>
+            </div>
+            <div class="question">
+              <h3>How should progress be quantified?</h3>
+              <ul>
+                <li>Which metrics actually indicate skill acquisition?</li>
+                <li>When is time trained meaningful?</li>
+                <li>When are successful executions meaningful?</li>
+                <li>Should partner quality matter?</li>
+                <li>Is confidence or self-assessment reliable enough to use?</li>
+              </ul>
+            </div>
+            <div class="question">
+              <h3>What is the minimum useful logging flow?</h3>
+              <ul>
+                <li>What can be logged in under 30 seconds after training?</li>
+                <li>Which fields are essential versus non-essential?</li>
+                <li>Which fields would become annoying?</li>
+                <li>Should voice notes be the default for insights?</li>
+                <li>How much structure helps before it starts feeling like homework?</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section>
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Later possibilities</div>
+              <h2>Expandable, but not required for the first version.</h2>
+            </div>
+            <p>
+              These are powerful directions, but each should wait until the core learning loop is working.
+            </p>
+          </div>
+
+          <details>
+            <summary>AI-assisted reflection</summary>
+            <p>Convert voice notes into concise summaries: what worked, what failed, next cue, and next training intention.</p>
+          </details>
+          <details>
+            <summary>Eco games library</summary>
+            <p>A searchable library of constraint games connected to specific skills, positions, and learning goals.</p>
+          </details>
+          <details>
+            <summary>Starter templates for skills</summary>
+            <p>Offer lightweight starting points for common skill goals so users can begin with useful cues, drills, logging fields, and progress markers instead of a blank skill card.</p>
+          </details>
+          <details>
+            <summary>Collaboration</summary>
+            <p>Let coaches or training partners suggest skills, add notes, share games, or review progress.</p>
+          </details>
+          <details>
+            <summary>Coaching add-on</summary>
+            <p>Give athletes and coaches a way to assign skills, review student training footage, comment on executions, and monetize coaching relationships inside the same skill pipeline.</p>
+          </details>
+          <details>
+            <summary>External databases</summary>
+            <p>Potential integrations with resources like BJJ Mental Models DB or OutlierDB if they support the learning loop.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        Hone concept brief. Built to clarify the learning model before building the product.
+      </div>
+    </footer>
+  </body>
+</html>

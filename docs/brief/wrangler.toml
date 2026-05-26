@@ -1,0 +1,9 @@
+name = "hone-brief"
+main = "worker.js"
+compatibility_date = "2026-05-06"
+account_id = "7eb7c71ac9cdb0f54bd70966f07a9878"
+workers_dev = true
+
+routes = [
+  { pattern = "hone.nine4.co/*", zone_name = "nine4.co" }
+]
