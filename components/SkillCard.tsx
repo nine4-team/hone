@@ -1,27 +1,31 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ActivationSwitch } from './ActivationSwitch';
-import { StageMeta } from './StageDisplay';
 import { formatRelative } from '../lib/format';
+import { getSkillLevelProgress } from '../lib/hits';
 import { spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import type { Skill } from '../lib/types';
 import { Card, HeaderActionSlot } from './ui';
 
 type SkillCardProps = {
+  hitCount?: number;
   skill: Skill;
-  showStage?: boolean;
   onToggleActive?: (nextActive: boolean) => void;
   onLongPress?: () => void;
 };
 
 export function SkillCard({
+  hitCount = 0,
   skill,
-  showStage = false,
   onLongPress,
   onToggleActive,
 }: SkillCardProps) {
   const router = useRouter();
+  const levelProgress = getSkillLevelProgress(hitCount);
+  const progressLabel = levelProgress.nextLevel
+    ? `${levelProgress.hitsIntoLevel}/10 to Level ${levelProgress.nextLevel}`
+    : `${hitCount} lifetime hits`;
 
   return (
     <Card style={styles.cardContent}>
@@ -57,12 +61,13 @@ export function SkillCard({
       >
         <View style={styles.footer}>
           <Text style={styles.meta}>
-            {showStage ? (
-              <>
-                <StageMeta stage={skill.stage} />
-                <Text> · </Text>
-              </>
-            ) : null}
+            <Text style={styles.metaStrong}>Level {levelProgress.level}</Text>
+            <Text> · </Text>
+            {hitCount} {hitCount === 1 ? 'hit' : 'hits'}
+            <Text> · </Text>
+            {progressLabel}
+          </Text>
+          <Text style={styles.meta}>
             <Text style={styles.metaStrong}>Last touched: </Text>
             {formatRelative(skill.lastTouchedAt)}
           </Text>
@@ -78,9 +83,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
   },
   footer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: spacing.xs,
     marginTop: spacing.md,
   },
   header: {

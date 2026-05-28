@@ -7,7 +7,7 @@ export default function SettingsScreen() {
   return (
     <Screen title="Settings" titleIcon="settings">
       <View style={styles.list}>
-        <ListRow href="/library" icon="search" title="Library" />
+        <ListRow href="/library" icon="inventory-2" title="Arsenal" />
         <ListRow href="/partners" icon="group" title="Partners" />
       </View>
     </Screen>

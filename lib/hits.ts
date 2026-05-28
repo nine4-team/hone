@@ -1,6 +1,34 @@
 import type { Hit, Partner, Skill } from './types';
 import type { HitSummaryRow } from '../components/HitSummaryList';
 
+export const HITS_PER_LEVEL = 10;
+export const MAX_VISIBLE_LEVEL = 10;
+
+export type SkillLevelProgress = {
+  level: number;
+  totalHits: number;
+  hitsIntoLevel: number;
+  hitsToNextLevel: number;
+  nextLevel: number | null;
+  progressToNextLevel: number;
+};
+
+export function getSkillLevelProgress(totalHits: number): SkillLevelProgress {
+  const normalizedHits = Math.max(0, totalHits);
+  const level = Math.min(MAX_VISIBLE_LEVEL, Math.floor(normalizedHits / HITS_PER_LEVEL));
+  const isMaxLevel = level >= MAX_VISIBLE_LEVEL;
+  const hitsIntoLevel = isMaxLevel ? HITS_PER_LEVEL : normalizedHits % HITS_PER_LEVEL;
+
+  return {
+    level,
+    totalHits: normalizedHits,
+    hitsIntoLevel,
+    hitsToNextLevel: isMaxLevel ? 0 : HITS_PER_LEVEL - hitsIntoLevel,
+    nextLevel: isMaxLevel ? null : level + 1,
+    progressToNextLevel: isMaxLevel ? 1 : hitsIntoLevel / HITS_PER_LEVEL,
+  };
+}
+
 export function hitRowsByPartner(hits: Hit[], partners: Partner[]): HitSummaryRow[] {
   const rows = new Map<string, HitSummaryRow>();
 

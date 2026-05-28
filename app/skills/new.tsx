@@ -5,17 +5,14 @@ import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { Button } from '../../components/Button';
 import { FormHelp, FormInput, FormLabel, FormStack } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
-import { StageSelector } from '../../components/StageDisplay';
 import { Card } from '../../components/ui';
 import { useHone } from '../../lib/store';
 import { spacing } from '../../lib/theme';
-import type { SkillStage } from '../../lib/types';
 
 export default function NewSkillScreen() {
   const router = useRouter();
   const { addSkill } = useHone();
   const [name, setName] = useState('');
-  const [stage, setStage] = useState<SkillStage>('saved');
   const [active, setActive] = useState(true);
 
   return (
@@ -29,15 +26,10 @@ export default function NewSkillScreen() {
           value={name}
         />
 
-        <FormLabel>Stage</FormLabel>
-        <Card style={styles.stageSelector}>
-          <StageSelector value={stage} onChange={setStage} />
-        </Card>
-
         <Card style={styles.switchRow}>
           <View>
-            <FormLabel>Active</FormLabel>
-            <FormHelp>Show this skill on the Active Skills screen.</FormHelp>
+            <FormLabel>Equipped</FormLabel>
+            <FormHelp>Show this skill on the Equipped Skills screen.</FormHelp>
           </View>
           <ActivationSwitch onValueChange={setActive} value={active} />
         </Card>
@@ -46,7 +38,7 @@ export default function NewSkillScreen() {
           label="Create Skill"
           onPress={() => {
             if (!name.trim()) return;
-            const skill = addSkill({ name, stage, active });
+            const skill = addSkill({ name, stage: 'saved', active });
             router.replace(`/skills/${skill.id}`);
           }}
         />
@@ -61,9 +53,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: spacing.lg,
-  },
-  stageSelector: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
   },
 });

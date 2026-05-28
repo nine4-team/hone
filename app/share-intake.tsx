@@ -49,7 +49,7 @@ export default function ShareIntakeScreen() {
         setManualUrl(incomingChoices[0].url);
         setError(null);
       } catch {
-        setError('Hone could not read the shared item. Paste the link below.');
+        setError('HitList could not read the shared item. Paste the link below.');
       }
     }, []),
   );
@@ -118,7 +118,7 @@ export default function ShareIntakeScreen() {
       clearIncomingShare();
       router.replace(`/skills/${skill.id}`);
     } catch {
-      setError('Hone could not save this skill. Try again.');
+      setError('HitList could not save this skill. Try again.');
     } finally {
       setSaving(false);
     }
@@ -134,7 +134,7 @@ export default function ShareIntakeScreen() {
       clearIncomingShare();
       router.replace(`/skills/${skillId}`);
     } catch {
-      setError('Hone could not add this media. Try again.');
+      setError('HitList could not add this media. Try again.');
     } finally {
       setSaving(false);
     }
@@ -209,7 +209,7 @@ export default function ShareIntakeScreen() {
 
             <Card style={styles.panel}>
               <FormLabel>Create new skill</FormLabel>
-              <FormHelp>Saved by default. You can activate or move it later.</FormHelp>
+              <FormHelp>Saved to the Arsenal by default. You can equip it later.</FormHelp>
               <FormInput
                 onChangeText={setSkillName}
                 placeholder="Skill name"
@@ -238,7 +238,9 @@ export default function ShareIntakeScreen() {
                       <Text style={styles.skillName} numberOfLines={1}>
                         {skill.name}
                       </Text>
-                      <Text style={styles.skillMeta}>{stageLabel(skill.stage)}</Text>
+                      <Text style={styles.skillMeta}>
+                        {skill.active ? 'Equipped' : 'In Arsenal'}
+                      </Text>
                     </View>
                     <MaterialIcons name="add-link" size={21} color={colors.sage} />
                   </Pressable>
@@ -300,10 +302,6 @@ function providerLabel(url: string) {
   } catch {
     return 'Shared link';
   }
-}
-
-function stageLabel(stage: string) {
-  return stage.charAt(0).toUpperCase() + stage.slice(1);
 }
 
 const styles = StyleSheet.create({

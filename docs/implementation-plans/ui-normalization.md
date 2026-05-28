@@ -1,5 +1,7 @@
 # UI Normalization Plan
 
+Product note: this plan predates the HitList rename and the Arsenal/Equipped Skills redesign. Use [HONE_APP_SPEC.md](../../HONE_APP_SPEC.md) as the source of truth for current navigation and product naming.
+
 ## Current Status
 
 Completed normalization passes:

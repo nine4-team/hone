@@ -11,20 +11,19 @@ import type { Skill } from '../../lib/types';
 import { useToast } from '../../lib/useToast';
 
 const activeSkillsHelp = [
-  'Active Skills is your current working set.',
+  'Equipped Skills are the small set of skills you are currently trying to hit live.',
   '',
   'Example circle:',
   '  +        ...',
-  '     7',
+  '     36',
   '    HITS',
   'Kimura trap',
-  'Stage: Resistance',
-  'Last touched: today',
+  'Level 3',
   '',
-  '+ logs training. ... opens actions. The number is total hits. The ring fills as the skill moves through Saved, Mechanics, Resistance, and Proven.',
+  '+ logs training. ... opens actions. The ring fills as you progress toward the next level.',
 ].join('\n');
 
-export default function ActiveScreen() {
+export default function EquippedSkillsScreen() {
   const router = useRouter();
   const { hits, skills, toggleActive } = useHone();
   const { toastMessage, showToast } = useToast();
@@ -39,7 +38,7 @@ export default function ActiveScreen() {
 
   return (
     <Screen
-      title="Active Skills"
+      title="Equipped Skills"
       titleIcon="sports-kabaddi"
       subtitle={activeSkillsHelp}
       toastMessage={toastMessage}
@@ -48,8 +47,8 @@ export default function ActiveScreen() {
         <View style={styles.list}>
           {activeSkills.length === 0 ? (
             <EmptyState
-              title="No active skills yet"
-              body="Activate skills from the Pipeline or Library to make them show up here."
+              title="No equipped skills yet"
+              body="Equip skills from the Arsenal to make them show up here."
             />
           ) : (
             activeSkills.map((skill) => (
@@ -82,11 +81,11 @@ export default function ActiveScreen() {
                   },
                   {
                     key: 'deactivate',
-                    label: 'Deactivate',
+                    label: 'Unequip',
                     destructive: true,
                     onPress: () => {
                       toggleActive(menuSkill.id);
-                      showToast('Skill deactivated');
+                      showToast('Skill unequipped');
                     },
                   },
                 ]

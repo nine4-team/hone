@@ -9,10 +9,9 @@ import { EmptyState } from '../../components/EmptyState';
 import { FloatingNavigation } from '../../components/FloatingNavigation';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
-import { StageSelector } from '../../components/StageDisplay';
 import { Card, IconButton } from '../../components/ui';
 import { formatDate, trainingLogTypeLabels } from '../../lib/format';
-import { hitRowsByPartner } from '../../lib/hits';
+import { getSkillLevelProgress, hitRowsByPartner } from '../../lib/hits';
 import { inferMediaType } from '../../lib/mediaMetadata';
 import { useHone } from '../../lib/store';
 import { colors, radius, spacing } from '../../lib/theme';
@@ -37,7 +36,6 @@ export default function SkillDetailScreen() {
     removeMedia,
     updateMedia,
     updateNote,
-    updateStage,
   } = useHone();
   const skill = skills.find((item) => item.id === id);
   const [noteBody, setNoteBody] = useState('');
@@ -66,6 +64,7 @@ export default function SkillDetailScreen() {
   const skillMedia = media.filter((item) => item.skillId === id);
   const skillHits = hits.filter((hit) => hit.skillId === id);
   const totalHits = skillHits.reduce((sum, hit) => sum + hit.count, 0);
+  const levelProgress = getSkillLevelProgress(totalHits);
   const totalMinutes = skillLogs.reduce((sum, log) => sum + (log.durationMinutes ?? 0), 0);
   const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
 
@@ -98,6 +97,8 @@ export default function SkillDetailScreen() {
       title={skill.name}
       status={
         <Text style={styles.headerStatus}>
+          Level <Text style={styles.headerStatusValue}>{levelProgress.level}</Text>
+          <Text style={styles.headerStatusDivider}> · </Text>
           <Text style={styles.headerStatusValue}>{totalHits}</Text> Hits
           <Text style={styles.headerStatusDivider}> · </Text>
           <Text style={styles.headerStatusValue}>{totalHours}</Text> Hours
@@ -108,15 +109,12 @@ export default function SkillDetailScreen() {
         <ActivationSwitch
           value={skill.active}
           onValueChange={(nextActive) => {
-            showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
+            showToast(nextActive ? 'Skill equipped' : 'Skill unequipped');
             toggleActive(skill.id);
           }}
         />
       }
       toastMessage={toastMessage}
-      stickyHeader={
-        <StageSelector value={skill.stage} onChange={(stage) => updateStage(skill.id, stage)} />
-      }
       bottomOverlay={
         <>
           <FloatingNavigation
@@ -126,14 +124,14 @@ export default function SkillDetailScreen() {
               {
                 key: 'active',
                 icon: 'sports-kabaddi',
-                label: 'Active skills tab',
+                label: 'Equipped skills tab',
                 onPress: () => router.push('/'),
               },
               {
-                key: 'pipeline',
-                icon: 'view-column',
-                label: 'Pipeline tab',
-                onPress: () => router.push('/pipeline'),
+                key: 'arsenal',
+                icon: 'inventory-2',
+                label: 'Arsenal tab',
+                onPress: () => router.push('/library'),
               },
               {
                 key: 'settings',
@@ -168,6 +166,51 @@ export default function SkillDetailScreen() {
         </>
       }
     >
+      <View style={styles.section}>
+        <Card style={styles.levelCard}>
+          <View style={styles.levelSummary}>
+            <View>
+              <Text style={styles.levelEyebrow}>CURRENT LEVEL</Text>
+              <Text style={styles.levelNumber}>{levelProgress.level}</Text>
+            </View>
+            <View style={styles.levelCopy}>
+              <Text style={styles.levelTitle}>
+                {levelProgress.nextLevel
+                  ? `Level ${levelProgress.level}`
+                  : `${totalHits} lifetime hits`}
+              </Text>
+              <Text style={styles.levelBody}>
+                {levelProgress.nextLevel
+                  ? `${levelProgress.hitsToNextLevel} ${
+                      levelProgress.hitsToNextLevel === 1 ? 'hit' : 'hits'
+                    } until this skill levels up.`
+                  : 'Level 10 is the visible cap. Keep logging hits to build the lifetime record.'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.progressBarRow}>
+            <View style={styles.progressBarLabelRow}>
+              <MaterialIcons name="bar-chart" size={10} color={colors.sage} />
+              <Text style={styles.progressBarLabel}>level</Text>
+            </View>
+            <View style={[styles.progressBar, styles.progressBarRowBar]}>
+              <View
+                accessibilityRole="progressbar"
+                accessibilityValue={{
+                  min: 0,
+                  max: 100,
+                  now: Math.round(levelProgress.progressToNextLevel * 100),
+                }}
+                style={[
+                  styles.progressFill,
+                  { width: `${levelProgress.progressToNextLevel * 100}%` },
+                ]}
+              />
+            </View>
+          </View>
+        </Card>
+      </View>
+
       <View style={styles.section}>
         <CollapsibleSectionHeader
           title="Hit List"
@@ -724,6 +767,41 @@ const styles = StyleSheet.create({
   hitListRows: {
     gap: 2,
   },
+  levelBody: {
+    ...textStyles.detailRecordBody,
+    color: colors.muted,
+    marginTop: 2,
+  },
+  levelCard: {
+    gap: spacing.md,
+    padding: spacing.lg,
+  },
+  levelCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
+  levelEyebrow: {
+    color: colors.muted,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0,
+  },
+  levelNumber: {
+    color: colors.ink,
+    fontSize: 42,
+    fontWeight: '700',
+    includeFontPadding: false,
+    lineHeight: 46,
+    minWidth: 48,
+  },
+  levelSummary: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.lg,
+  },
+  levelTitle: {
+    ...textStyles.detailRecordTitle,
+  },
   logCard: {
     paddingHorizontal: spacing.md,
     paddingVertical: 10,
@@ -869,6 +947,39 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.72,
+  },
+  progressBar: {
+    backgroundColor: colors.line,
+    borderRadius: 2,
+    height: 4,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  progressBarLabel: {
+    color: colors.sage,
+    fontSize: 10,
+    fontWeight: '600',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  progressBarLabelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 2,
+    width: 50,
+  },
+  progressBarRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  progressBarRowBar: {
+    flex: 1,
+  },
+  progressFill: {
+    backgroundColor: colors.sage,
+    borderRadius: 2,
+    height: '100%',
   },
   section: {
     marginBottom: spacing.lg,

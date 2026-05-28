@@ -1,55 +1,82 @@
-# Hone App Spec
+# HitList App Spec
 
-This captures the current MVP product model for the Hone app itself. The older HTML brief is useful concept context; this document is the working product/spec snapshot.
+This captures the current MVP product model for HitList. The older HTML brief is useful concept context; this document is the working product/spec snapshot.
+
+For product philosophy and positioning, see [docs/product/hitlist-reframe.md](docs/product/hitlist-reframe.md).
 
 ## Core Product Shape
 
-Hone is a deliberate grappling skill acquisition app.
+HitList helps grapplers get better at jiu jitsu faster so they can hit more moves on their friends and rivals.
 
 The product should be built as a mobile app.
 
-The core loop:
+The app is organized around specific skills the user wants to improve. It helps the user:
 
-1. Capture a skill.
-2. Mark important skills as active.
-3. Track each skill through the acquisition pipeline.
-4. Log practice against a specific skill.
-5. Preserve notes, media, hits, and partner history.
+1. Pick a small number of skills to focus on.
+2. Train those skills deliberately.
+3. Hit those skills live against resistance.
+4. Log successful live hits.
+5. Watch each skill level up over time.
 
-## Pipeline
+Notes, media, training logs, and partner history support that experience. They help the user remember what matters, train with more intent, and see where their hits are coming from.
 
-Each skill has one pipeline stage:
+## Product Model
+
+### Arsenal
+
+The Arsenal is where all skills live.
+
+It includes every saved skill, whether or not the user is currently focusing on it.
+
+The Arsenal should answer:
 
 ```text
-Saved -> Mechanics -> Resistance -> Proven
+What skills do I have, and how developed are they?
 ```
 
-Stage definitions:
+Default sort should show the user's strongest skills first:
 
-- Saved: A skill the user wants to remember or may want to work on later.
-- Mechanics: The user is figuring out how the skill works: grips, frames, angles, timing, entries, finishes, common failure points, and cues.
-- Resistance: The user is trying to make the skill work against opposition.
-- Proven: The user can rely on the skill repeatedly under meaningful resistance.
+1. Highest level
+2. Highest total hits
+3. Most recently touched
 
-Stage movement is manual. The primary interaction should be dragging a skill card between pipeline columns.
+The Arsenal should support:
 
-## Active Skills
+- Search by skill name
+- Filter equipped/unequipped
+- Sort by level, hits, recent activity, created date, and name
+- Future grouping by position or category
 
-Active skills are the user's current working set.
-
-Active is separate from pipeline stage. A skill can be active in any stage.
-
-The main screen should be an Active Skills screen.
-
-Active skills need an easy activate/deactivate affordance. Activating makes a skill appear on the Active Skills screen. Deactivating removes it from the Active Skills screen, but does not delete, archive, or otherwise change the skill.
-
-Active skill cards should show:
+Arsenal rows/cards should show:
 
 - Skill name
-- Stage
-- Last touched
-- Long press to log training
-- Activate/deactivate switch
+- Current level
+- Total hits
+- Progress toward next level
+- Equipped/unequipped state
+- Last touched, if it fits cleanly
+
+Future Arsenal grouping may show skills by position or category with level markers.
+
+### Equipped Skills
+
+Equipped Skills are the small set of skills the user is currently trying to hit live.
+
+Equipping a skill makes it appear on the Equipped Skills screen. Unequipping a skill removes it from that screen, but does not delete it or reset progress. Unequipped skills remain in the Arsenal.
+
+The Equipped Skills screen is the main screen.
+
+Equipped skill cards should show:
+
+- Skill name
+- Current level
+- Hit progress toward next level
+- Total hits
+- A circular progress indicator or dial
+- Fast log action
+- Unequip affordance, if it fits cleanly
+
+Tooltips can explain that Equipped Skills are the user's focused working set and that skills can be equipped or unequipped from the Arsenal.
 
 The create-skill action belongs in the persistent bottom menu as a plus button, not as a per-screen header/content button.
 
@@ -58,31 +85,86 @@ On Skill Detail, the persistent plus button should open quick actions:
 - Log Training
 - New Skill
 
+### Levels
+
+Each skill has visible levels from Level 0 through Level 10.
+
+```text
+0-9 hits = Level 0
+10 hits = +1 level
+100 hits = Level 10
+```
+
+The number is not presented as scientific. It is clean, memorable, difficult, and achievable.
+
+Level progress is based on total successful live hits for that skill.
+
+The circular progress dial on Equipped Skill cards shows progress toward the next level, not progress toward Level 10.
+
+Example:
+
+```text
+36 hits = Level 3
+Dial = 6/10 toward Level 4
+```
+
+After Level 10:
+
+- Keep official levels capped at 10.
+- Continue counting lifetime hits.
+- Add playful post-Level-10 titles, glows, badge treatments, or achievement names later.
+
+Post-Level-10 naming can wait until the core level experience feels good in the app. Do not use "mastered" language for Level 10.
+
+### Hits
+
+A hit is a successful live execution against resistance.
+
+Do not use separate concepts for "successful execution" and "partner hit." They are the same product concept.
+
+Use this model:
+
+```text
+Hit
+- id
+- skill_id
+- training_log_id
+- partner_id nullable
+- count
+- created_at
+- updated_at
+```
+
+A training log can have multiple hits because the user might hit the same move on several people in one training session.
+
+Example:
+
+```text
+Training Log: Rolling
+Skill: K Guard Entry
+
+Hits:
+- Alex x2
+- Jordan x1
+- Sam x1
+- Unattributed x3
+```
+
+For fast logging, the user should be able to enter an unattributed hit count.
+
+For detailed logging, the user should be able to add partner-attributed hit rows.
+
 ## Navigation
 
 Primary bottom navigation should stay focused on:
 
-- Active Skills
-- Pipeline
+- Equipped Skills
+- Arsenal
 - Settings
 
-Library and Partners are accessed through Settings. They remain first-class product surfaces, but they should not occupy primary bottom-nav slots during the MVP.
+Partners are accessed through Settings. They remain a first-class product surface, but they should not occupy a primary bottom-nav slot during the MVP.
 
-## Pipeline View
-
-Pipeline View shows four columns:
-
-```text
-Saved | Mechanics | Resistance | Proven
-```
-
-Pipeline cards do not need to display stage, because the column provides that context.
-
-Pipeline cards should show:
-
-- Skill name
-- Last touched
-- Activate/deactivate switch, if it fits cleanly
+There should not be a standalone Pipeline tab in the HitList MVP. Levels provide the main progress system, and the Arsenal provides the whole-skill-set view.
 
 ## Skill Detail
 
@@ -91,6 +173,7 @@ Skill Detail is the full record for a skill.
 Sections:
 
 - Header
+- Level Progress
 - Hit List
 - Media
 - Notes
@@ -99,11 +182,30 @@ Sections:
 Header should include:
 
 - Skill name
-- Stage
-- Activate/deactivate switch using the same toggle language as skill cards
-- Stage movement affordance
+- Current level
+- Total hits
+- Equipped/unequipped control
 
 Skill Detail should keep the persistent bottom navigation visible.
+
+## Hit List
+
+Skill Detail should include a Hit List section that aggregates hits by partner.
+
+This is the skill-specific hit list: the people the user has hit this skill on.
+
+Example:
+
+```text
+K Guard Entry Hit List
+
+Alex          8
+Jordan        4
+Sam           2
+Unattributed 11
+```
+
+Partner Detail should show the inverse view: all skills hit on that partner.
 
 ## Notes
 
@@ -163,49 +265,13 @@ Constraint Game
 Rolling
 ```
 
+Training log types describe what happened during a session. They are not skill stages and should not be treated as a pipeline.
+
 Notes created during training logging should be real Note objects linked to the TrainingLog.
 
 A TrainingLog can have zero, one, or many linked Notes.
 
 Training logs should be editable after creation. Editing should allow correcting at least type, duration, linked notes, and linked hits. The edit affordance should be visible on each Training Log object card in Skill Detail.
-
-## Hits
-
-A hit is a successful execution.
-
-Do not use separate concepts for "successful execution" and "partner hit." They are the same product concept.
-
-Use this model:
-
-```text
-Hit
-- id
-- skill_id
-- training_log_id
-- partner_id nullable
-- count
-- created_at
-- updated_at
-```
-
-A training log can have multiple hits because the user might hit the same move on several people in one training session.
-
-Example:
-
-```text
-Training Log: Rolling
-Skill: K Guard Entry
-
-Hits:
-- Alex x2
-- Jordan x1
-- Sam x1
-- Unattributed x3
-```
-
-For fast logging, the user should be able to enter an unattributed hit count.
-
-For detailed logging, the user should be able to add partner-attributed hit rows.
 
 ## Partners
 
@@ -240,23 +306,6 @@ Recent:
 ```
 
 Partner creation should be lightweight. During logging, the user should be able to type a partner name, select an existing partner, or create a new partner inline.
-
-## Hit List
-
-Skill Detail should include a Hit List section that aggregates hits by partner.
-
-Example:
-
-```text
-K Guard Entry Hit List
-
-Alex          8
-Jordan        4
-Sam           2
-Unattributed 11
-```
-
-Partner Detail should show the inverse view: all skills hit on that partner.
 
 ## Media
 
@@ -293,7 +342,7 @@ Media is not the same as notes, logs, or hits.
 
 ## Share Intake
 
-Users should be able to create or enrich skills by sharing links from other apps into Hone.
+Users should be able to create or enrich skills by sharing links from other apps into HitList.
 
 Primary sources:
 
@@ -305,7 +354,7 @@ Primary sources:
 
 Share intake is part of media capture. It should preserve the same MVP constraint as manual media capture: link-only, no direct device upload.
 
-When Hone receives shared content, it should:
+When HitList receives shared content, it should:
 
 1. Extract a usable URL from the shared payload.
 2. Normalize and classify the URL as YouTube, Instagram, or generic link.
@@ -317,7 +366,7 @@ For new skills created from shared media:
 
 - The user must confirm or enter a skill name before saving.
 - Fetched metadata may suggest a skill name, but must not silently create a skill name without user confirmation.
-- The new skill should default to `Saved` stage and inactive unless the user changes those fields in the create flow.
+- The new skill should default to unequipped unless the user changes that in the create flow.
 
 For existing skills:
 
@@ -325,22 +374,9 @@ For existing skills:
 - Adding shared media should use the same Media model as manual link capture.
 - If metadata cannot be fetched, the app should still allow saving the link.
 
-Normalization should be conservative. Hone should preserve the original shared text or URL internally where cheap, but the user-facing Media URL should be the normalized URL. If multiple URLs are present, the user should be asked to choose rather than the app silently selecting one.
+Normalization should be conservative. HitList should preserve the original shared text or URL internally where cheap, but the user-facing Media URL should be the normalized URL. If multiple URLs are present, the user should be asked to choose rather than the app silently selecting one.
 
 Share intake should handle unsupported or malformed payloads gracefully by showing a recoverable state where the user can paste or edit the URL manually.
-
-## Library
-
-The app should have a Library from the start.
-
-Library is the place to find skills outside the Active Skills screen and beyond the Pipeline View.
-
-It should support:
-
-- Search by skill name
-- Filter by stage
-- Filter active/inactive
-- Sort by last touched, created date, or name
 
 ## History
 
@@ -349,11 +385,12 @@ History is separate from notes.
 History records system events such as:
 
 - Skill created
-- Stage changed
-- Skill activated
-- Skill deactivated
+- Skill equipped
+- Skill unequipped
 - Media added
 - Training log created
+- Hit logged
+- Skill leveled up
 
 History does not need to be prominent in the first UI, but the model should preserve important events where cheap.
 
@@ -364,10 +401,10 @@ Do not include these in the initial app build:
 - Affiliate system
 - Coaching layer
 - Advanced analytics
-- Automatic stage movement
 - Partner quality scoring
-- Current focus / focus lifecycle system
 - Direct video upload from device
+- Position/category skill map
+- Post-Level-10 achievement system
 
 ## Technical Direction
 
