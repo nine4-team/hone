@@ -56,20 +56,27 @@ As of the current pass, the shared primitives and Skill Detail have been moved o
   - Stage in the metadata row
   - Last touched
   - Long press logs training
-  - Plain active-state icon with accent color when active
-- Activate/deactivate is core state, so it should be directly visible as an icon, not hidden in a menu.
-- Skill Detail uses the same pin icon language as cards for activate/deactivate; avoid a separate word-labeled `Activate`/`Deactivate` button for the same state.
+  - Active/inactive switch using the Minimum Standards toggle pattern
+- Activate/deactivate is core state, so it should be directly visible as a switch, not hidden in a menu.
+- Skill Detail should use the same switch language as cards for activate/deactivate; avoid a separate word-labeled `Activate`/`Deactivate` button for the same state.
+- Toggle pattern to lift from Minimum Standards:
+  - Source: `/Users/benjaminmackenzie/Dev/minimum_standards/apps/mobile/src/screens/SnapshotsScreen.tsx`
+  - Track: `50 x 30`, radius `15`, padding `2`
+  - Thumb: `26 x 26`, radius `13`, white surface, subtle shadow/elevation
+  - On track color: brand accent `#987e55`
+  - Off track color: border/input neutral
 - The persistent bottom menu follows the Minimum Standards pattern: a floating icon pill for primary sections plus a separate circular create button.
 - Primary bottom nav is Active Skills, Pipeline, and Settings. Library and Partners are reachable from Settings rather than first-level tabs.
 - Destructive or less frequent actions should use a menu/sheet later.
 
 ## Deferred Alignment Work
 
-These items were identified during the first alignment pass but are intentionally deferred until Active Skills is stable.
+These items are the remaining normalization/design-system work after the first alignment passes.
 
-- Header treatment: current screen headers are still louder and more left-heavy than Minimum Standards. Refactor to a calmer app-header pattern after the card/list language is settled.
-- Skill Detail: still has mixed panel/card language, large title treatment, and chunky segmented controls. Rebuild after Active Skills using the shared primitives.
+- Activation affordance: implemented with a shared stock React Native switch colored with the brand accent. Revisit only if simulator review shows the stock control feels materially off.
+- Header treatment: continue checking pushed/modal/detail headers against Minimum Standards after the switch work lands.
+- Skill Detail: continue reducing local layout special cases where shared components can carry the same semantics cleanly.
 - Training Log: current form is functional but panel-heavy. Rework into a more restrained row/form pattern after the core card system is stable.
 - Pipeline: board layout is rough and drag movement is deferred. Keep the current board as a working product surface, then revisit once Active and Detail are aligned.
-- Partner screens: lower priority, but should later inherit the same card/list/header primitives.
+- Partner screens: now use shared rows/hit summaries, but still need final UX review once backend-backed data exists.
 - Naming cleanup: color token names such as `sage` still map to Minimum Standards accent values and should be renamed to neutral/product terms to prevent future drift.

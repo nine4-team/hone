@@ -1,11 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/Button';
+import { FormInput, FormLabel, FormPanel, FormStack, SegmentedControl } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
 import { trainingLogTypeLabels, trainingLogTypes } from '../../lib/format';
 import { useHone } from '../../lib/store';
-import { colors, radius, spacing } from '../../lib/theme';
+import { spacing } from '../../lib/theme';
+import { textStyles } from '../../lib/typography';
 import type { TrainingLogType } from '../../lib/types';
 
 type HitDraft = {
@@ -25,15 +27,15 @@ export default function TrainingLogScreen() {
   const totalHits = hits.reduce((sum, hit) => sum + Number(hit.count || 0), 0);
 
   if (!skill) {
-    return <Screen title="Skill not found" subtitle="This skill is not in the local data set." />;
+    return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={router.back} />;
   }
 
   return (
-    <Screen title="Log Training" subtitle={skill.name}>
-      <View style={styles.form}>
-        <View style={styles.panel}>
-          <Text style={styles.label}>Type</Text>
-          <View style={styles.segment}>
+    <Screen title="Log Training" subtitle={skill.name} onBack={router.back}>
+      <FormStack>
+        <FormPanel>
+          <FormLabel>Type</FormLabel>
+          <SegmentedControl>
             {trainingLogTypes.map((item) => (
               <Button
                 key={item}
@@ -42,30 +44,28 @@ export default function TrainingLogScreen() {
                 variant={type === item ? 'primary' : 'secondary'}
               />
             ))}
-          </View>
-        </View>
+          </SegmentedControl>
+        </FormPanel>
 
-        <View style={styles.panel}>
-          <Text style={styles.label}>Duration</Text>
-          <TextInput
+        <FormPanel>
+          <FormLabel>Duration</FormLabel>
+          <FormInput
             keyboardType="number-pad"
             onChangeText={setDurationMinutes}
             placeholder="Minutes, optional"
-            placeholderTextColor={colors.quiet}
-            style={styles.input}
             value={durationMinutes}
           />
-        </View>
+        </FormPanel>
 
-        <View style={styles.panel}>
+        <FormPanel>
           <View style={styles.panelHeader}>
-            <Text style={styles.label}>Hits</Text>
+            <FormLabel>Hits</FormLabel>
             <Text style={styles.total}>{totalHits} total</Text>
           </View>
           <View style={styles.stack}>
             {hits.map((hit, index) => (
               <View key={index} style={styles.hitRow}>
-                <TextInput
+                <FormInput
                   autoCapitalize="words"
                   onChangeText={(value) =>
                     setHits((current) =>
@@ -75,11 +75,10 @@ export default function TrainingLogScreen() {
                     )
                   }
                   placeholder="Partner or leave blank"
-                  placeholderTextColor={colors.quiet}
-                  style={[styles.input, styles.partnerInput]}
+                  style={styles.partnerInput}
                   value={hit.partnerName}
                 />
-                <TextInput
+                <FormInput
                   keyboardType="number-pad"
                   onChangeText={(value) =>
                     setHits((current) =>
@@ -89,8 +88,7 @@ export default function TrainingLogScreen() {
                     )
                   }
                   placeholder="0"
-                  placeholderTextColor={colors.quiet}
-                  style={[styles.input, styles.countInput]}
+                  style={styles.countInput}
                   value={hit.count}
                 />
               </View>
@@ -125,19 +123,18 @@ export default function TrainingLogScreen() {
             onPress={() => setHits((current) => [...current, { partnerName: '', count: '' }])}
             variant="secondary"
           />
-        </View>
+        </FormPanel>
 
-        <View style={styles.panel}>
-          <Text style={styles.label}>Note</Text>
-          <TextInput
+        <FormPanel>
+          <FormLabel>Note</FormLabel>
+          <FormInput
             multiline
             onChangeText={setNoteBody}
             placeholder="What did you notice?"
-            placeholderTextColor={colors.quiet}
-            style={[styles.input, styles.textarea]}
+            style={styles.textarea}
             value={noteBody}
           />
-        </View>
+        </FormPanel>
 
         <Button
           label="Save Log"
@@ -155,7 +152,7 @@ export default function TrainingLogScreen() {
             router.back();
           }}
         />
-      </View>
+      </FormStack>
     </Screen>
   );
 }
@@ -164,36 +161,9 @@ const styles = StyleSheet.create({
   countInput: {
     flex: 0.34,
   },
-  form: {
-    gap: spacing.md,
-  },
   hitRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    color: colors.ink,
-    fontSize: 16,
-    minHeight: 46,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  label: {
-    color: colors.ink,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  panel: {
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    gap: spacing.md,
-    padding: spacing.lg,
   },
   panelHeader: {
     alignItems: 'center',
@@ -208,11 +178,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
-  segment: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
   stack: {
     gap: spacing.sm,
   },
@@ -221,8 +186,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   total: {
-    color: colors.sage,
-    fontSize: 14,
-    fontWeight: '800',
+    ...textStyles.rowSummaryValue,
   },
 });

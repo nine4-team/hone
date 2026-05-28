@@ -66,6 +66,11 @@ export type NewSkillInput = {
   active: boolean;
 };
 
+export type NewSkillWithMediaInput = NewSkillInput & {
+  mediaUrl: string;
+  mediaNotes?: string;
+};
+
 export type NewTrainingLogInput = {
   skillId: string;
   type: TrainingLogType;

@@ -36,24 +36,7 @@ export function FloatingNavigation({
       <View style={[styles.tabBarRow, { paddingBottom: Math.max(insets.bottom, 8) }]}>
         <View style={styles.navPill}>
           {items.map((item) => (
-            <Pressable
-              key={item.key}
-              accessibilityLabel={item.label}
-              accessibilityRole="button"
-              accessibilityState={item.selected ? { selected: true } : {}}
-              onPress={item.onPress}
-              style={({ pressed }) => [
-                styles.navButton,
-                item.selected && styles.navButtonActive,
-                pressed && styles.pressed,
-              ]}
-            >
-              <MaterialIcons
-                name={item.icon}
-                size={22}
-                color={item.selected ? colors.surface : colors.muted}
-              />
-            </Pressable>
+            <NavigationButton key={item.key} item={item} />
           ))}
         </View>
         <Pressable
@@ -68,6 +51,28 @@ export function FloatingNavigation({
         </Pressable>
       </View>
     </View>
+  );
+}
+
+function NavigationButton({ item }: { item: FloatingNavigationItem }) {
+  return (
+    <Pressable
+      accessibilityLabel={item.label}
+      accessibilityRole="button"
+      accessibilityState={item.selected ? { selected: true } : {}}
+      onPress={item.onPress}
+      style={({ pressed }) => [
+        styles.navButton,
+        item.selected && styles.navButtonActive,
+        pressed && styles.pressed,
+      ]}
+    >
+      <MaterialIcons
+        name={item.icon}
+        size={22}
+        color={item.selected ? colors.surface : colors.muted}
+      />
+    </Pressable>
   );
 }
 

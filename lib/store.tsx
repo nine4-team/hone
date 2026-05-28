@@ -14,6 +14,7 @@ import type {
   NewMediaInput,
   NewStandaloneHitInput,
   NewSkillInput,
+  NewSkillWithMediaInput,
   NewTrainingLogInput,
   Note,
   Partner,
@@ -32,6 +33,7 @@ type HoneState = {
   partners: Partner[];
   media: Media[];
   addSkill: (input: NewSkillInput) => Skill;
+  addSkillWithMedia: (input: NewSkillWithMediaInput) => Promise<Skill>;
   toggleActive: (skillId: string) => void;
   updateStage: (skillId: string, stage: SkillStage) => void;
   addQuickNote: (skillId: string, body: string) => void;
@@ -41,6 +43,7 @@ type HoneState = {
   addMedia: (input: NewMediaInput) => Promise<void>;
   updateMedia: (input: UpdateMediaInput) => Promise<void>;
   removeMedia: (mediaId: string) => void;
+  deleteSkill: (skillId: string) => void;
 };
 
 const HoneContext = createContext<HoneState | null>(null);
@@ -89,6 +92,35 @@ export function HoneProvider({ children }: PropsWithChildren) {
           updatedAt: now,
         };
         setSkills((current) => [skill, ...current]);
+        return skill;
+      },
+      async addSkillWithMedia(input) {
+        const now = stamp();
+        const skill: Skill = {
+          id: id('skill'),
+          name: input.name.trim(),
+          stage: input.stage,
+          active: input.active,
+          lastTouchedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        };
+        const url = input.mediaUrl.trim();
+        const metadata = await resolveMediaMetadata(url);
+        const mediaItem: Media = {
+          id: id('media'),
+          skillId: skill.id,
+          type: inferMediaType(url),
+          url,
+          title: metadata.title,
+          thumbnailUrl: metadata.thumbnailUrl,
+          notes: input.mediaNotes?.trim() || undefined,
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        setSkills((current) => [skill, ...current]);
+        setMedia((current) => [mediaItem, ...current]);
         return skill;
       },
       toggleActive(skillId) {
@@ -225,6 +257,13 @@ export function HoneProvider({ children }: PropsWithChildren) {
         setMedia((current) => current.filter((item) => item.id !== mediaId));
 
         if (existing) touchSkill(existing.skillId, now);
+      },
+      deleteSkill(skillId) {
+        setSkills((current) => current.filter((skill) => skill.id !== skillId));
+        setNotes((current) => current.filter((note) => note.skillId !== skillId));
+        setTrainingLogs((current) => current.filter((log) => log.skillId !== skillId));
+        setHits((current) => current.filter((hit) => hit.skillId !== skillId));
+        setMedia((current) => current.filter((item) => item.skillId !== skillId));
       },
       addTrainingLog(input) {
         const now = stamp();

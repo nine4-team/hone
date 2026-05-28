@@ -1,11 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { Button } from '../../components/Button';
+import { FormHelp, FormInput, FormLabel, FormStack } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
-import { stageLabels, stages } from '../../lib/format';
+import { StageSelector } from '../../components/StageDisplay';
+import { Card } from '../../components/ui';
 import { useHone } from '../../lib/store';
-import { colors, radius, spacing } from '../../lib/theme';
+import { spacing } from '../../lib/theme';
 import type { SkillStage } from '../../lib/types';
 
 export default function NewSkillScreen() {
@@ -16,37 +19,28 @@ export default function NewSkillScreen() {
   const [active, setActive] = useState(true);
 
   return (
-    <Screen title="New Skill" subtitle="Name is the only required field.">
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
+    <Screen title="New Skill" subtitle="Name is the only required field." onBack={router.back}>
+      <FormStack>
+        <FormLabel>Name</FormLabel>
+        <FormInput
           autoFocus
           onChangeText={setName}
           placeholder="K guard entry"
-          placeholderTextColor={colors.quiet}
-          style={styles.input}
           value={name}
         />
 
-        <Text style={styles.label}>Stage</Text>
-        <View style={styles.segment}>
-          {stages.map((item) => (
-            <Button
-              key={item}
-              label={stageLabels[item]}
-              onPress={() => setStage(item)}
-              variant={stage === item ? 'primary' : 'secondary'}
-            />
-          ))}
-        </View>
+        <FormLabel>Stage</FormLabel>
+        <Card style={styles.stageSelector}>
+          <StageSelector value={stage} onChange={setStage} />
+        </Card>
 
-        <View style={styles.switchRow}>
+        <Card style={styles.switchRow}>
           <View>
-            <Text style={styles.label}>Active</Text>
-            <Text style={styles.help}>Show this skill on the Active Skills screen.</Text>
+            <FormLabel>Active</FormLabel>
+            <FormHelp>Show this skill on the Active Skills screen.</FormHelp>
           </View>
-          <Switch onValueChange={setActive} value={active} />
-        </View>
+          <ActivationSwitch onValueChange={setActive} value={active} />
+        </Card>
 
         <Button
           label="Create Skill"
@@ -56,49 +50,20 @@ export default function NewSkillScreen() {
             router.replace(`/skills/${skill.id}`);
           }}
         />
-      </View>
+      </FormStack>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  form: {
-    gap: spacing.md,
-  },
-  label: {
-    color: colors.ink,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  help: {
-    color: colors.muted,
-    fontSize: 13,
-    marginTop: spacing.xs,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    color: colors.ink,
-    fontSize: 16,
-    minHeight: 46,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  segment: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
   switchRow: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: spacing.lg,
+  },
+  stageSelector: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
 });

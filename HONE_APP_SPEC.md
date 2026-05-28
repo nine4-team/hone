@@ -49,7 +49,7 @@ Active skill cards should show:
 - Stage
 - Last touched
 - Long press to log training
-- Activate/deactivate affordance
+- Activate/deactivate switch
 
 The create-skill action belongs in the persistent bottom menu as a plus button, not as a per-screen header/content button.
 
@@ -82,7 +82,7 @@ Pipeline cards should show:
 
 - Skill name
 - Last touched
-- Activate/deactivate affordance, if it fits cleanly
+- Activate/deactivate switch, if it fits cleanly
 
 ## Skill Detail
 
@@ -100,7 +100,7 @@ Header should include:
 
 - Skill name
 - Stage
-- Activate/deactivate affordance using the same pin icon language as skill cards
+- Activate/deactivate switch using the same toggle language as skill cards
 - Stage movement affordance
 
 Skill Detail should keep the persistent bottom navigation visible.
@@ -290,6 +290,44 @@ Media
 ```
 
 Media is not the same as notes, logs, or hits.
+
+## Share Intake
+
+Users should be able to create or enrich skills by sharing links from other apps into Hone.
+
+Primary sources:
+
+- YouTube
+- Instagram
+- Patreon
+- Web browsers
+- Any app that can share a URL or text containing a URL
+
+Share intake is part of media capture. It should preserve the same MVP constraint as manual media capture: link-only, no direct device upload.
+
+When Hone receives shared content, it should:
+
+1. Extract a usable URL from the shared payload.
+2. Normalize and classify the URL as YouTube, Instagram, or generic link.
+3. Show a confirmation screen before mutating user data.
+4. Let the user either create a new skill with the link attached or add the link to an existing skill.
+5. Let the user add an optional note during intake.
+
+For new skills created from shared media:
+
+- The user must confirm or enter a skill name before saving.
+- Fetched metadata may suggest a skill name, but must not silently create a skill name without user confirmation.
+- The new skill should default to `Saved` stage and inactive unless the user changes those fields in the create flow.
+
+For existing skills:
+
+- The user should be able to search/select an existing skill.
+- Adding shared media should use the same Media model as manual link capture.
+- If metadata cannot be fetched, the app should still allow saving the link.
+
+Normalization should be conservative. Hone should preserve the original shared text or URL internally where cheap, but the user-facing Media URL should be the normalized URL. If multiple URLs are present, the user should be asked to choose rather than the app silently selecting one.
+
+Share intake should handle unsupported or malformed payloads gracefully by showing a recoverable state where the user can paste or edit the URL manually.
 
 ## Library
 

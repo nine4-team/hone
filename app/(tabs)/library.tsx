@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { EmptyState } from '../../components/EmptyState';
+import { FormInput } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
 import { SkillCard } from '../../components/SkillCard';
 import { useHone } from '../../lib/store';
-import { colors, radius, spacing } from '../../lib/theme';
+import { spacing } from '../../lib/theme';
+import { useToast } from '../../lib/useToast';
 
 export default function LibraryScreen() {
   const { skills, toggleActive } = useHone();
   const [query, setQuery] = useState('');
+  const { toastMessage, showToast } = useToast();
 
   const filteredSkills = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -21,14 +24,15 @@ export default function LibraryScreen() {
   return (
     <Screen
       title="Library"
+      titleIcon="search"
       subtitle="Find every skill, active or not."
+      toastMessage={toastMessage}
     >
-      <TextInput
+      <FormInput
         autoCapitalize="none"
         clearButtonMode="while-editing"
         onChangeText={setQuery}
         placeholder="Search skills"
-        placeholderTextColor={colors.quiet}
         style={styles.search}
         value={query}
       />
@@ -41,7 +45,10 @@ export default function LibraryScreen() {
               key={skill.id}
               skill={skill}
               showStage
-              onToggleActive={() => toggleActive(skill.id)}
+              onToggleActive={(nextActive) => {
+                showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
+                toggleActive(skill.id);
+              }}
             />
           ))
         )}
@@ -52,15 +59,7 @@ export default function LibraryScreen() {
 
 const styles = StyleSheet.create({
   search: {
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    color: colors.ink,
-    fontSize: 16,
     marginBottom: spacing.lg,
-    minHeight: 46,
-    paddingHorizontal: spacing.lg,
   },
   list: {
     gap: spacing.md,

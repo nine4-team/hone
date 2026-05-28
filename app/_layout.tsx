@@ -1,3 +1,4 @@
+import 'expo-dev-client';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { HoneProvider } from '../lib/store';
@@ -17,9 +18,10 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="skills/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="skills/new" options={{ title: 'New Skill', presentation: 'modal' }} />
-        <Stack.Screen name="log/[skillId]" options={{ title: 'Training Log', presentation: 'modal' }} />
-        <Stack.Screen name="partners/[id]" options={{ title: 'Partner' }} />
+        <Stack.Screen name="skills/new" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="log/[skillId]" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="partners/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="share-intake" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
     </HoneProvider>
   );

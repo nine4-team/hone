@@ -1,14 +1,14 @@
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { FloatingNavigation } from '../../components/FloatingNavigation';
+import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
 import { colors } from '../../lib/theme';
 
 const visibleRoutes = ['index', 'pipeline', 'settings'];
 
-const routeIcons: Record<string, keyof typeof MaterialIcons.glyphMap> = {
-  index: 'task-alt',
-  pipeline: 'view-column',
-  settings: 'settings',
+const routeIcons: Record<string, Pick<FloatingNavigationItem, 'icon'>> = {
+  index: { icon: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap },
+  pipeline: { icon: 'view-column' },
+  settings: { icon: 'settings' },
 };
 
 const routeLabels: Record<string, string> = {
@@ -18,6 +18,10 @@ const routeLabels: Record<string, string> = {
 };
 
 function FloatingTabBar({ state, navigation }: any) {
+  const pathname = usePathname();
+  const visiblePathnames = new Set(['/', '/pipeline', '/settings', '/library', '/partners']);
+  if (!visiblePathnames.has(pathname)) return null;
+
   const routes = state.routes.filter((route: any) => visibleRoutes.includes(route.name));
   const activeRouteKey = state.routes[state.index]?.key;
 
@@ -28,7 +32,7 @@ function FloatingTabBar({ state, navigation }: any) {
 
         return {
           key: route.key,
-          icon: routeIcons[route.name] ?? 'circle',
+          ...(routeIcons[route.name] ?? { icon: 'circle' }),
           label: `${routeLabels[route.name]} tab`,
           selected: focused,
           onPress: () => {

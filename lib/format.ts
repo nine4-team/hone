@@ -46,3 +46,7 @@ export function formatRelative(value: string) {
   if (days === 1) return 'yesterday';
   return `${days}d ago`;
 }
+
+export function formatHitCount(count: number) {
+  return `${count} ${count === 1 ? 'hit' : 'hits'}`;
+}

@@ -50,14 +50,6 @@ export function CompactButton({ label, onPress }: { label: string; onPress: () =
   );
 }
 
-export function StageChip({ label }: { label: string }) {
-  return (
-    <View style={styles.stageChip}>
-      <Text style={styles.stageChipText}>{label}</Text>
-    </View>
-  );
-}
-
 export function HeaderActionSlot({ children }: { children: ReactNode }) {
   return <View style={styles.headerActionSlot}>{children}</View>;
 }
@@ -99,15 +91,5 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.68,
-  },
-  stageChip: {
-    backgroundColor: colors.surfaceMuted,
-    borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-  stageChipText: {
-    ...textStyles.stageLabel,
-    color: colors.sage,
   },
 });

@@ -5,10 +5,12 @@ import { Screen } from '../../components/Screen';
 import { SkillCard } from '../../components/SkillCard';
 import { useHone } from '../../lib/store';
 import { spacing } from '../../lib/theme';
+import { useToast } from '../../lib/useToast';
 
 export default function ActiveScreen() {
   const router = useRouter();
   const { skills, toggleActive } = useHone();
+  const { toastMessage, showToast } = useToast();
   const activeSkills = skills
     .filter((skill) => skill.active)
     .sort((a, b) => Date.parse(b.lastTouchedAt) - Date.parse(a.lastTouchedAt));
@@ -16,7 +18,9 @@ export default function ActiveScreen() {
   return (
     <Screen
       title="Active Skills"
+      titleIcon="sports-kabaddi"
       subtitle="What you are paying attention to now."
+      toastMessage={toastMessage}
     >
       <View style={styles.list}>
         {activeSkills.length === 0 ? (
@@ -31,7 +35,10 @@ export default function ActiveScreen() {
               skill={skill}
               showStage
               onLongPress={() => router.push(`/log/${skill.id}`)}
-              onToggleActive={() => toggleActive(skill.id)}
+              onToggleActive={(nextActive) => {
+                showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
+                toggleActive(skill.id);
+              }}
             />
           ))
         )}

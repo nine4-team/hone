@@ -37,6 +37,18 @@ export const textStyles = {
     fontWeight: '400',
     lineHeight: 20,
   },
+  formHelp: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '400',
+    lineHeight: 18,
+  },
+  formLabel: {
+    color: colors.ink,
+    fontSize: 15,
+    fontWeight: '700',
+    lineHeight: 20,
+  },
   headerStatus: {
     color: colors.muted,
     fontSize: 12,
@@ -68,13 +80,13 @@ export const textStyles = {
     lineHeight: 18,
   },
   rowValue: {
-    color: colors.sage,
+    color: colors.ink,
     fontSize: 14,
     fontWeight: '700',
     lineHeight: 18,
   },
   rowValueSubtle: {
-    color: colors.sage,
+    color: colors.muted,
     fontSize: 13,
     fontWeight: '500',
     lineHeight: 18,
@@ -86,28 +98,52 @@ export const textStyles = {
     lineHeight: 18,
   },
   rowSummaryValue: {
-    color: colors.sage,
+    color: colors.ink,
     fontSize: 14,
     fontWeight: '800',
     lineHeight: 18,
   },
-  sectionTitle: {
+  listRowTitle: {
     color: colors.ink,
     fontSize: 16,
     fontWeight: '700',
     lineHeight: 22,
   },
-  sectionTitleCount: {
-    color: colors.sage,
-    fontSize: 15,
-    fontWeight: '700',
-    lineHeight: 21,
+  listRowMeta: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 18,
   },
-  screenTitle: {
+  pipelineColumnTitle: {
+    color: colors.ink,
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+  sectionTitle: {
     color: colors.ink,
     fontSize: 18,
     fontWeight: '700',
     lineHeight: 24,
+  },
+  sectionTitleCount: {
+    color: colors.sage,
+    fontSize: 18,
+    fontWeight: '700',
+    lineHeight: 24,
+  },
+  toast: {
+    color: colors.surface,
+    fontSize: 14,
+    fontWeight: '700',
+    lineHeight: 18,
+  },
+  screenTitle: {
+    color: colors.ink,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 26,
   },
   skillCardName: {
     color: colors.ink,
@@ -141,9 +177,9 @@ export const textStyles = {
   },
   detailRecordBody: {
     color: colors.ink,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '400',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   detailRecordMeta: {
     color: colors.quiet,
@@ -155,7 +191,7 @@ export const textStyles = {
     color: colors.ink,
     fontSize: 15,
     fontWeight: '700',
-    lineHeight: 20,
+    lineHeight: 21,
   },
   stageLabel: {
     color: colors.muted,

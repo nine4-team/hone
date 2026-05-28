@@ -1,16 +1,17 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { formatRelative, stageLabels } from '../lib/format';
-import { colors, spacing } from '../lib/theme';
+import { ActivationSwitch } from './ActivationSwitch';
+import { StageMeta } from './StageDisplay';
+import { formatRelative } from '../lib/format';
+import { spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import type { Skill } from '../lib/types';
-import { Card, HeaderActionSlot, IconButton } from './ui';
+import { Card, HeaderActionSlot } from './ui';
 
 type SkillCardProps = {
   skill: Skill;
   showStage?: boolean;
-  onToggleActive?: () => void;
+  onToggleActive?: (nextActive: boolean) => void;
   onLongPress?: () => void;
 };
 
@@ -20,55 +21,54 @@ export function SkillCard({
   onLongPress,
   onToggleActive,
 }: SkillCardProps) {
+  const router = useRouter();
+
   return (
-    <Link href={`/skills/${skill.id}`} asChild>
-      <Pressable
-        accessibilityHint={onLongPress ? 'Long press to log training.' : undefined}
-        accessibilityRole="button"
-        onLongPress={onLongPress}
-        style={({ pressed }) => pressed && styles.pressed}
-      >
-        <Card style={styles.cardContent}>
-          <View style={styles.header}>
-            <View style={styles.titleBlock}>
-              <Text style={styles.name} numberOfLines={2}>
-                {skill.name}
-              </Text>
-            </View>
-
-            <HeaderActionSlot>
-              {onToggleActive ? (
-                <IconButton
-                  accessibilityLabel={skill.active ? 'Deactivate skill' : 'Activate skill'}
-                  onPress={onToggleActive}
-                  selected={skill.active}
-                >
-                  <MaterialIcons
-                    name="push-pin"
-                    size={20}
-                    color={skill.active ? colors.sage : colors.quiet}
-                  />
-                </IconButton>
-              ) : null}
-            </HeaderActionSlot>
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.meta}>
-              {showStage ? (
-                <>
-                  <Text style={styles.metaStrong}>Stage: </Text>
-                  {stageLabels[skill.stage]}
-                  <Text> · </Text>
-                </>
-              ) : null}
-              <Text style={styles.metaStrong}>Last touched: </Text>
-              {formatRelative(skill.lastTouchedAt)}
+    <Card style={styles.cardContent}>
+      <View style={styles.header}>
+        <Pressable
+          accessibilityHint={onLongPress ? 'Long press to log training.' : undefined}
+          accessibilityRole="button"
+          onLongPress={onLongPress}
+          onPress={() => router.push(`/skills/${skill.id}`)}
+          style={({ pressed }) => [styles.titleBlock, pressed && styles.pressed]}
+        >
+          <View>
+            <Text style={styles.name} numberOfLines={2}>
+              {skill.name}
             </Text>
           </View>
-        </Card>
+        </Pressable>
+
+        <HeaderActionSlot>
+          {onToggleActive ? (
+            <ActivationSwitch
+              value={skill.active}
+              onValueChange={(nextActive) => onToggleActive(nextActive)}
+            />
+          ) : null}
+        </HeaderActionSlot>
+      </View>
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push(`/skills/${skill.id}`)}
+        style={({ pressed }) => pressed && styles.pressed}
+      >
+        <View style={styles.footer}>
+          <Text style={styles.meta}>
+            {showStage ? (
+              <>
+                <StageMeta stage={skill.stage} />
+                <Text> · </Text>
+              </>
+            ) : null}
+            <Text style={styles.metaStrong}>Last touched: </Text>
+            {formatRelative(skill.lastTouchedAt)}
+          </Text>
+        </View>
       </Pressable>
-    </Link>
+    </Card>
   );
 }
 

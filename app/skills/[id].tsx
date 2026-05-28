@@ -3,16 +3,21 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Alert, Image, Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Media } from '../../lib/types';
+import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
 import { EmptyState } from '../../components/EmptyState';
 import { FloatingNavigation } from '../../components/FloatingNavigation';
+import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
+import { StageSelector } from '../../components/StageDisplay';
 import { Card, IconButton } from '../../components/ui';
-import { formatDate, stageLabels, stages, trainingLogTypeLabels } from '../../lib/format';
+import { formatDate, trainingLogTypeLabels } from '../../lib/format';
+import { hitRowsByPartner } from '../../lib/hits';
 import { inferMediaType } from '../../lib/mediaMetadata';
 import { useHone } from '../../lib/store';
 import { colors, radius, spacing } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
+import { useToast } from '../../lib/useToast';
 
 export default function SkillDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -21,6 +26,7 @@ export default function SkillDetailScreen() {
     addQuickNote,
     addMedia,
     addStandaloneHit,
+    deleteSkill,
     hits,
     media,
     notes,
@@ -49,6 +55,7 @@ export default function SkillDetailScreen() {
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaNotes, setMediaNotes] = useState('');
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const { toastMessage, showToast } = useToast();
 
   const skillNotes = notes
     .filter((note) => note.skillId === id)
@@ -62,24 +69,29 @@ export default function SkillDetailScreen() {
   const totalMinutes = skillLogs.reduce((sum, log) => sum + (log.durationMinutes ?? 0), 0);
   const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
 
-  const hitList = useMemo(() => {
-    const rows = new Map<string, { id?: string; label: string; count: number }>();
-    hits
-      .filter((hit) => hit.skillId === id)
-      .forEach((hit) => {
-        const partner = partners.find((item) => item.id === hit.partnerId);
-        const key = partner?.id ?? 'unattributed';
-        const label = partner?.name ?? 'Unattributed';
-        const current = rows.get(key) ?? { id: partner?.id, label, count: 0 };
-        rows.set(key, { id: partner?.id, label, count: current.count + hit.count });
-      });
-
-    return Array.from(rows.values()).sort((a, b) => b.count - a.count);
-  }, [hits, id, partners]);
+  const hitList = useMemo(() => hitRowsByPartner(skillHits, partners), [partners, skillHits]);
 
   if (!skill) {
     return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={router.back} />;
   }
+
+  const confirmDeleteSkill = () => {
+    Alert.alert(
+      'Delete Skill',
+      'This removes the skill, media, notes, logs, and hits. Partners stay in your library.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteSkill(skill.id);
+            router.replace('/library');
+          },
+        },
+      ],
+    );
+  };
 
   return (
     <Screen
@@ -93,45 +105,17 @@ export default function SkillDetailScreen() {
       }
       onBack={router.back}
       action={
-        <IconButton
-          accessibilityLabel={skill.active ? 'Deactivate skill' : 'Activate skill'}
-          onPress={() => toggleActive(skill.id)}
-          selected={skill.active}
-        >
-          <MaterialIcons
-            name="push-pin"
-            size={20}
-            color={skill.active ? colors.sage : colors.quiet}
-          />
-        </IconButton>
+        <ActivationSwitch
+          value={skill.active}
+          onValueChange={(nextActive) => {
+            showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
+            toggleActive(skill.id);
+          }}
+        />
       }
+      toastMessage={toastMessage}
       stickyHeader={
-        <View style={styles.stageTop}>
-          {stages.map((stage) => {
-            const selected = skill.stage === stage;
-            const stageIndex = stages.indexOf(stage);
-
-            return (
-              <Pressable
-                key={stage}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                onPress={() => updateStage(skill.id, stage)}
-                style={({ pressed }) => [
-                  styles.pipelineStep,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <View style={styles.stepTrack}>
-                  {stageIndex > 0 ? <View style={styles.stepLine} /> : <View style={styles.stepSpacer} />}
-                  <View style={[styles.stepDot, selected && styles.stepDotActive]} />
-                  {stageIndex < stages.length - 1 ? <View style={styles.stepLine} /> : <View style={styles.stepSpacer} />}
-                </View>
-                <Text style={[styles.stepLabel, selected && styles.stepLabelActive]}>{stageLabels[stage]}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <StageSelector value={skill.stage} onChange={(stage) => updateStage(skill.id, stage)} />
       }
       bottomOverlay={
         <>
@@ -141,7 +125,7 @@ export default function SkillDetailScreen() {
             items={[
               {
                 key: 'active',
-                icon: 'task-alt',
+                icon: 'sports-kabaddi',
                 label: 'Active skills tab',
                 onPress: () => router.push('/'),
               },
@@ -172,6 +156,12 @@ export default function SkillDetailScreen() {
                 key: 'skill',
                 label: 'New Skill',
                 onPress: () => router.push('/skills/new'),
+              },
+              {
+                key: 'delete',
+                label: 'Delete Skill',
+                destructive: true,
+                onPress: confirmDeleteSkill,
               },
             ]}
           />
@@ -253,31 +243,12 @@ export default function SkillDetailScreen() {
             ) : null}
             <View style={styles.hitListRows}>
               {hitList.length === 0 ? (
-                <EmptyState title="No hits yet" body="Hits will aggregate here after training logs." />
+                <EmptyState
+                  framed={false}
+                  title="No hits yet"
+                />
               ) : (
-                hitList.map((row) => {
-                  if (!row.id) {
-                    return (
-                      <View key={row.label} style={styles.listRow}>
-                        <Text style={styles.rowLabel}>{row.label}</Text>
-                        <Text style={styles.rowValue}>{row.count}</Text>
-                      </View>
-                    );
-                  }
-
-                  return (
-                    <Pressable
-                      key={row.id}
-                      accessibilityRole="link"
-                      accessibilityLabel={`Open ${row.label} partner record`}
-                      onPress={() => router.push(`/partners/${row.id}`)}
-                      style={({ pressed }) => [styles.listRow, pressed && styles.pressed]}
-                    >
-                      <Text style={styles.rowLabel}>{row.label}</Text>
-                      <Text style={styles.rowValue}>{row.count}</Text>
-                    </Pressable>
-                  );
-                })
+                <HitSummaryList alignWithSectionAction rows={hitList} />
               )}
             </View>
           </View>
@@ -567,30 +538,7 @@ export default function SkillDetailScreen() {
                           <Text style={styles.logHitsLabel}>Hits</Text>
                           <Text style={styles.logHitsTotal}>{logTotalHits}</Text>
                         </View>
-                        {logHits.map((hit) => {
-                          const partner = partners.find((item) => item.id === hit.partnerId);
-                          if (!partner) {
-                            return (
-                              <View key={hit.id} style={styles.logHitRow}>
-                                <Text style={styles.rowLabel}>Unattributed</Text>
-                                <Text style={styles.logHitValue}>{hit.count}</Text>
-                              </View>
-                            );
-                          }
-
-                          return (
-                            <Pressable
-                              key={hit.id}
-                              accessibilityRole="link"
-                              accessibilityLabel={`Open ${partner.name} partner record`}
-                              onPress={() => router.push(`/partners/${partner.id}`)}
-                              style={({ pressed }) => [styles.logHitRow, pressed && styles.pressed]}
-                            >
-                              <Text style={styles.rowLabel}>{partner.name}</Text>
-                              <Text style={styles.logHitValue}>{hit.count}</Text>
-                            </Pressable>
-                          );
-                        })}
+                        <HitSummaryList rows={hitRowsByPartner(logHits, partners)} />
                       </View>
                     ) : null}
                     {logNotes.map((note) => (
@@ -775,15 +723,6 @@ const styles = StyleSheet.create({
   },
   hitListRows: {
     gap: 2,
-    paddingRight: 8,
-  },
-  listRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 26,
-    paddingHorizontal: 0,
-    paddingVertical: 2,
   },
   logCard: {
     paddingHorizontal: spacing.md,
@@ -816,20 +755,6 @@ const styles = StyleSheet.create({
     ...textStyles.rowSummaryValue,
     minWidth: 32,
     textAlign: 'right',
-  },
-  logHitValue: {
-    ...textStyles.rowValueSubtle,
-    minWidth: 32,
-    textAlign: 'right',
-  },
-  logHitRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 26,
-    paddingHorizontal: 0,
-    paddingRight: 8,
-    paddingVertical: 2,
   },
   logHits: {
     gap: 2,
@@ -945,19 +870,6 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.72,
   },
-  pipelineStep: {
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing.sm,
-  },
-  rowLabel: {
-    ...textStyles.rowLabel,
-  },
-  rowValue: {
-    ...textStyles.rowValue,
-    minWidth: 32,
-    textAlign: 'right',
-  },
   section: {
     marginBottom: spacing.lg,
   },
@@ -981,45 +893,6 @@ const styles = StyleSheet.create({
   },
   stack: {
     gap: spacing.sm,
-  },
-  stageTop: {
-    flexDirection: 'row',
-    paddingBottom: 2,
-    paddingTop: 2,
-  },
-  stepDot: {
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.strongLine,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 16,
-    width: 16,
-  },
-  stepDotActive: {
-    backgroundColor: colors.sage,
-    borderColor: colors.sage,
-  },
-  stepLabel: {
-    ...textStyles.stageLabel,
-    textAlign: 'center',
-  },
-  stepLabelActive: {
-    ...textStyles.stageLabelActive,
-  },
-  stepLine: {
-    backgroundColor: colors.line,
-    flex: 1,
-    height: 1,
-  },
-  stepSpacer: {
-    flex: 1,
-    height: 1,
-  },
-  stepTrack: {
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    flexDirection: 'row',
   },
   headerStatus: {
     ...textStyles.headerStatus,
