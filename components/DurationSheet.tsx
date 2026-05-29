@@ -24,7 +24,9 @@ export function DurationSheet({ visible, value, onChange, onClose }: DurationShe
           style={StyleSheet.absoluteFill}
         />
         <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.title, { color: colors.ink }]}>Duration</Text>
+          <View style={[styles.header, { borderBottomColor: colors.strongLine }]}>
+            <Text style={[styles.title, { color: colors.ink }]}>Duration</Text>
+          </View>
           <DurationWheel onChange={onChange} value={value} />
           <View style={styles.footer}>
             <Button label="Done" onPress={onClose} />
@@ -45,15 +47,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.md,
   },
+  header: {
+    borderBottomWidth: 1,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+  },
   sheet: {
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     paddingBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
   },
   title: {
     ...textStyles.menuTitle,
-    paddingTop: spacing.lg,
     textAlign: 'center',
   },
 });

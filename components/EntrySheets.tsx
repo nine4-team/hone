@@ -1,9 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type React from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import {
-  PartnerPickerSheet,
+  PartnerPickerContent,
   SOLO_PARTNER_KEY,
   type PartnerChoice,
 } from './PartnerPickerSheet';
@@ -32,29 +32,163 @@ type NoteEntrySheetProps = {
   onSave: (body: string) => void;
 };
 
+type QuickAddMode = 'hit' | 'media' | 'note';
+type HitEntryStep = 'form' | 'partner';
+
+type QuickAddEntrySheetProps = {
+  visible: boolean;
+  initialMode?: QuickAddMode | null;
+  title?: string;
+  partners: Partner[];
+  onClose: () => void;
+  onTrainingLog: () => void;
+  onSaveHit: (input: { partnerName?: string; count: number }) => void;
+  onSaveMedia: (input: { url: string; notes?: string }) => Promise<void> | void;
+  onSaveNote: (body: string) => void;
+};
+
 export function HitEntrySheet({ visible, partners, onClose, onSave }: HitEntrySheetProps) {
+  return (
+    <Sheet visible={visible} title="Log Hit" onClose={onClose}>
+      <HitEntryForm
+        key={visible ? 'hit-open' : 'hit-closed'}
+        partners={partners}
+        onCancel={onClose}
+        onSave={(input) => {
+          onSave(input);
+          onClose();
+        }}
+      />
+    </Sheet>
+  );
+}
+
+export function MediaEntrySheet({ visible, onClose, onSave }: MediaEntrySheetProps) {
+  return (
+    <Sheet visible={visible} title="Add Media" onClose={onClose}>
+      <MediaEntryForm
+        key={visible ? 'media-open' : 'media-closed'}
+        onCancel={onClose}
+        onSave={async (input) => {
+          await onSave(input);
+          onClose();
+        }}
+      />
+    </Sheet>
+  );
+}
+
+export function NoteEntrySheet({ visible, onClose, onSave }: NoteEntrySheetProps) {
+  return (
+    <Sheet visible={visible} title="Add Note" onClose={onClose}>
+      <NoteEntryForm
+        key={visible ? 'note-open' : 'note-closed'}
+        onCancel={onClose}
+        onSave={(body) => {
+          onSave(body);
+          onClose();
+        }}
+      />
+    </Sheet>
+  );
+}
+
+export function QuickAddEntrySheet({
+  visible,
+  initialMode = null,
+  title = 'Quick Add',
+  partners,
+  onClose,
+  onTrainingLog,
+  onSaveHit,
+  onSaveMedia,
+  onSaveNote,
+}: QuickAddEntrySheetProps) {
+  const colors = useTheme();
+  const [mode, setMode] = useState<QuickAddMode | null>(initialMode);
+
+  useEffect(() => {
+    if (visible) {
+      setMode(initialMode);
+    } else {
+      setMode(null);
+    }
+  }, [initialMode, visible]);
+
+  const close = () => {
+    setMode(null);
+    onClose();
+  };
+
+  const saveAndClose = <T,>(save: (input: T) => Promise<void> | void) => async (input: T) => {
+    await save(input);
+    close();
+  };
+
+  const sheetTitle = mode === 'hit' ? 'Log Hit' : mode === 'media' ? 'Add Media' : mode === 'note' ? 'Add Note' : title;
+
+  return (
+    <Sheet visible={visible} title={sheetTitle} onClose={close}>
+      {mode === null ? (
+        <View style={styles.menuList}>
+          <QuickAddRow
+            icon="gps-fixed"
+            label="Hit"
+            colors={colors}
+            onPress={() => setMode('hit')}
+          />
+          <QuickAddRow
+            icon="assignment"
+            label="Training Log"
+            colors={colors}
+            onPress={() => {
+              close();
+              onTrainingLog();
+            }}
+          />
+          <QuickAddRow
+            icon="perm-media"
+            label="Media"
+            colors={colors}
+            onPress={() => setMode('media')}
+          />
+          <QuickAddRow
+            icon="edit-note"
+            label="Note"
+            colors={colors}
+            onPress={() => setMode('note')}
+          />
+        </View>
+      ) : mode === 'hit' ? (
+        <HitEntryForm partners={partners} onCancel={close} onSave={saveAndClose(onSaveHit)} />
+      ) : mode === 'media' ? (
+        <MediaEntryForm onCancel={close} onSave={saveAndClose(onSaveMedia)} />
+      ) : (
+        <NoteEntryForm onCancel={close} onSave={saveAndClose(onSaveNote)} />
+      )}
+    </Sheet>
+  );
+}
+
+function HitEntryForm({
+  partners,
+  onCancel,
+  onSave,
+}: {
+  partners: Partner[];
+  onCancel: () => void;
+  onSave: (input: { partnerName?: string; count: number }) => void;
+}) {
   const colors = useTheme();
   const [partnerChoice, setPartnerChoice] = useState<PartnerChoice | null>(null);
   const [count, setCount] = useState(1);
-  const [partnerPickerOpen, setPartnerPickerOpen] = useState(false);
-
-  const reset = () => {
-    setPartnerChoice(null);
-    setCount(1);
-    setPartnerPickerOpen(false);
-  };
-
-  const close = () => {
-    reset();
-    onClose();
-  };
+  const [step, setStep] = useState<HitEntryStep>('form');
 
   const save = () => {
     onSave({
       partnerName: partnerChoice?.key === SOLO_PARTNER_KEY ? undefined : partnerChoice?.name,
       count,
     });
-    close();
   };
 
   const partnerLabel = !partnerChoice
@@ -63,81 +197,76 @@ export function HitEntrySheet({ visible, partners, onClose, onSave }: HitEntrySh
       ? 'No partner'
       : partnerChoice.name ?? 'Partner';
 
-  return (
-    <>
-      <Sheet visible={visible} title="Log Hit" onClose={close}>
-        <View style={styles.fieldStack}>
-          <Text style={[styles.fieldLabel, { color: colors.ink }]}>Partner</Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setPartnerPickerOpen(true)}
-            style={({ pressed }) => [
-              styles.picker,
-              { backgroundColor: colors.surfaceMuted, borderColor: colors.line },
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text
-              numberOfLines={1}
-              style={[styles.pickerLabel, { color: partnerChoice ? colors.ink : colors.quiet }]}
-            >
-              {partnerLabel}
-            </Text>
-            <MaterialIcons name="expand-more" size={20} color={colors.muted} />
-          </Pressable>
-        </View>
-        <View style={styles.fieldStack}>
-          <Text style={[styles.fieldLabel, { color: colors.ink }]}>Hits</Text>
-          <View style={styles.stepperRow}>
-            <Stepper min={1} onChange={setCount} value={count} />
-          </View>
-        </View>
-        <SheetActions
-          canSave={count > 0}
-          onCancel={close}
-          onSave={save}
-          saveLabel="Save Hit"
-        />
-      </Sheet>
-      <PartnerPickerSheet
-        onClose={() => setPartnerPickerOpen(false)}
+  if (step === 'partner') {
+    return (
+      <PartnerPickerContent
+        partners={partners}
         onSelect={(choice) => {
           setPartnerChoice(choice);
-          setPartnerPickerOpen(false);
+          setStep('form');
         }}
-        partners={partners}
-        visible={partnerPickerOpen}
+      />
+    );
+  }
+
+  return (
+    <>
+      <View style={styles.fieldStack}>
+        <Text style={[styles.fieldLabel, { color: colors.ink }]}>Partner</Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setStep('partner')}
+          style={({ pressed }) => [
+            styles.picker,
+            { backgroundColor: colors.surfaceMuted, borderColor: colors.line },
+            pressed && styles.pressed,
+          ]}
+        >
+          <Text
+            numberOfLines={1}
+            style={[styles.pickerLabel, { color: partnerChoice ? colors.ink : colors.quiet }]}
+          >
+            {partnerLabel}
+          </Text>
+          <MaterialIcons name="expand-more" size={20} color={colors.muted} />
+        </Pressable>
+      </View>
+      <View style={styles.fieldStack}>
+        <Text style={[styles.fieldLabel, { color: colors.ink }]}>Hits</Text>
+        <View style={styles.stepperRow}>
+          <Stepper min={1} onChange={setCount} value={count} />
+        </View>
+      </View>
+      <SheetActions
+        canSave={count > 0}
+        onCancel={onCancel}
+        onSave={save}
+        saveLabel="Save Hit"
       />
     </>
   );
 }
 
-export function MediaEntrySheet({ visible, onClose, onSave }: MediaEntrySheetProps) {
+function MediaEntryForm({
+  onCancel,
+  onSave,
+}: {
+  onCancel: () => void;
+  onSave: (input: { url: string; notes?: string }) => Promise<void> | void;
+}) {
   const colors = useTheme();
   const [url, setUrl] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const reset = () => {
-    setUrl('');
-    setNotes('');
-    setSaving(false);
-  };
-
-  const close = () => {
-    reset();
-    onClose();
-  };
-
   const save = async () => {
     if (!url.trim() || saving) return;
     setSaving(true);
     await onSave({ url, notes });
-    close();
   };
 
   return (
-    <Sheet visible={visible} title="Add Media" onClose={close}>
+    <>
       <TextInput
         autoCapitalize="none"
         keyboardType="url"
@@ -173,31 +302,31 @@ export function MediaEntrySheet({ visible, onClose, onSave }: MediaEntrySheetPro
       ) : null}
       <SheetActions
         canSave={Boolean(url.trim()) && !saving}
-        onCancel={close}
+        onCancel={onCancel}
         onSave={save}
         saveLabel={saving ? 'Saving...' : 'Save Media'}
       />
-    </Sheet>
+    </>
   );
 }
 
-export function NoteEntrySheet({ visible, onClose, onSave }: NoteEntrySheetProps) {
+function NoteEntryForm({
+  onCancel,
+  onSave,
+}: {
+  onCancel: () => void;
+  onSave: (body: string) => void;
+}) {
   const colors = useTheme();
   const [body, setBody] = useState('');
-
-  const close = () => {
-    setBody('');
-    onClose();
-  };
 
   const save = () => {
     if (!body.trim()) return;
     onSave(body);
-    close();
   };
 
   return (
-    <Sheet visible={visible} title="Add Note" onClose={close}>
+    <>
       <TextInput
         autoFocus
         multiline
@@ -213,11 +342,11 @@ export function NoteEntrySheet({ visible, onClose, onSave }: NoteEntrySheetProps
       />
       <SheetActions
         canSave={Boolean(body.trim())}
-        onCancel={close}
+        onCancel={onCancel}
         onSave={save}
         saveLabel="Save Note"
       />
-    </Sheet>
+    </>
   );
 }
 
@@ -238,7 +367,9 @@ function Sheet({
     <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={[styles.sheet, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.title, { color: colors.ink }]}>{title}</Text>
+          <View style={[styles.header, { borderBottomColor: colors.strongLine }]}>
+            <Text style={[styles.title, { color: colors.ink }]}>{title}</Text>
+          </View>
           <View style={styles.content}>{children}</View>
         </Pressable>
       </Pressable>
@@ -283,6 +414,36 @@ function SheetActions({
   );
 }
 
+function QuickAddRow({
+  colors,
+  icon,
+  label,
+  onPress,
+}: {
+  colors: ReturnType<typeof useTheme>;
+  icon: keyof typeof MaterialIcons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.menuItem,
+        { borderTopColor: colors.line },
+        pressed && { backgroundColor: colors.surfaceMuted },
+      ]}
+    >
+      <View style={styles.menuItemLabelRow}>
+        <MaterialIcons name={icon} size={21} color={colors.sage} />
+        <Text style={[styles.menuItemText, { color: colors.ink }]}>{label}</Text>
+      </View>
+      <MaterialIcons name="chevron-right" size={22} color={colors.muted} />
+    </Pressable>
+  );
+}
+
 function getHostLabel(url: string) {
   try {
     return new URL(url).hostname.replace(/^www\./, '');
@@ -317,12 +478,18 @@ const styles = StyleSheet.create({
   content: {
     gap: spacing.md,
     paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
   },
   fieldLabel: {
     ...textStyles.formLabel,
   },
   fieldStack: {
     gap: spacing.xs,
+  },
+  header: {
+    borderBottomWidth: 1,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
   },
   input: {
     ...textStyles.formInput,
@@ -343,6 +510,30 @@ const styles = StyleSheet.create({
   mediaHintText: {
     ...textStyles.formHelp,
     flex: 1,
+  },
+  menuItem: {
+    alignItems: 'center',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-between',
+    marginHorizontal: -spacing.xl,
+    minHeight: 52,
+    paddingHorizontal: spacing.xl,
+  },
+  menuItemLabelRow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: spacing.md,
+    minWidth: 0,
+  },
+  menuItemText: {
+    ...textStyles.menuItem,
+    flex: 1,
+  },
+  menuList: {
+    marginTop: -spacing.md,
   },
   noteInput: {
     minHeight: 120,
@@ -381,7 +572,5 @@ const styles = StyleSheet.create({
   },
   title: {
     ...textStyles.menuTitle,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
   },
 });

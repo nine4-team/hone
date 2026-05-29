@@ -5,9 +5,8 @@ import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, TextInp
 import type { Media, TrainingLogType } from '../../lib/types';
 import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
-import { BottomSheetMenu } from '../../components/BottomSheetMenu';
 import { EmptyState } from '../../components/EmptyState';
-import { HitEntrySheet, MediaEntrySheet, NoteEntrySheet } from '../../components/EntrySheets';
+import { QuickAddEntrySheet } from '../../components/EntrySheets';
 import { FloatingNavigation } from '../../components/FloatingNavigation';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
@@ -19,6 +18,8 @@ import { useHitList } from '../../lib/store';
 import { radius, spacing, type ThemeColors, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 import { useToast } from '../../lib/useToast';
+
+type QuickAddMode = 'hit' | 'media' | 'note';
 
 export default function SkillDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -46,14 +47,12 @@ export default function SkillDetailScreen() {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [logsOpen, setLogsOpen] = useState(false);
   const [hitListOpen, setHitListOpen] = useState(false);
-  const [hitSheetOpen, setHitSheetOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
-  const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaNotes, setMediaNotes] = useState('');
-  const [noteSheetOpen, setNoteSheetOpen] = useState(false);
+  const [quickAddMode, setQuickAddMode] = useState<QuickAddMode | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const scrollRef = useRef<ScrollView | null>(null);
@@ -156,7 +155,10 @@ export default function SkillDetailScreen() {
         <>
           <FloatingNavigation
             createLabel="Open quick actions"
-            onCreatePress={() => setQuickAddOpen(true)}
+            onCreatePress={() => {
+              setQuickAddMode(null);
+              setQuickAddOpen(true);
+            }}
             items={[
               {
                 key: 'active',
@@ -178,42 +180,29 @@ export default function SkillDetailScreen() {
               },
             ]}
           />
-          <BottomSheetMenu
+          <QuickAddEntrySheet
             visible={quickAddOpen}
-            onRequestClose={() => setQuickAddOpen(false)}
-            items={[
-              {
-                key: 'training-log',
-                label: 'Training Log',
-                onPress: () => router.push(`/log/${skill.id}`),
-              },
-              {
-                key: 'hit',
-                label: 'Hit',
-                onPress: () => {
-                  setHitListOpen(true);
-                  setHitSheetOpen(true);
-                },
-              },
-              {
-                key: 'media',
-                label: 'Media',
-                onPress: () => {
-                  setMediaOpen(true);
-                  setEditingMediaId(null);
-                  setMediaSheetOpen(true);
-                },
-              },
-              {
-                key: 'note',
-                label: 'Note',
-                onPress: () => {
-                  setNotesOpen(true);
-                  setEditingNoteId(null);
-                  setNoteSheetOpen(true);
-                },
-              },
-            ]}
+            initialMode={quickAddMode}
+            partners={partners}
+            onClose={() => {
+              setQuickAddOpen(false);
+              setQuickAddMode(null);
+            }}
+            onTrainingLog={() => router.push(`/log/${skill.id}`)}
+            onSaveHit={({ partnerName, count }) => {
+              addStandaloneHit({ skillId: skill.id, partnerName, count });
+              setHitListOpen(true);
+            }}
+            onSaveMedia={async ({ url, notes }) => {
+              setEditingMediaId(null);
+              await addMedia({ skillId: skill.id, url, notes });
+              setMediaOpen(true);
+            }}
+            onSaveNote={(body) => {
+              setEditingNoteId(null);
+              addQuickNote(skill.id, body);
+              setNotesOpen(true);
+            }}
           />
         </>
       }
@@ -275,6 +264,7 @@ export default function SkillDetailScreen() {
       <View style={styles.section}>
         <CollapsibleSectionHeader
           colors={colors}
+          icon="gps-fixed"
           title="Hit List"
           open={hitListOpen}
           onToggle={() => setHitListOpen((current) => !current)}
@@ -283,7 +273,8 @@ export default function SkillDetailScreen() {
               accessibilityLabel="Add standalone hit"
               onPress={() => {
                 setHitListOpen(true);
-                setHitSheetOpen(true);
+                setQuickAddMode('hit');
+                setQuickAddOpen(true);
               }}
             >
               <MaterialIcons name="add" size={22} color={colors.sage} />
@@ -320,6 +311,7 @@ export default function SkillDetailScreen() {
       <View style={styles.section}>
         <CollapsibleSectionHeader
           colors={colors}
+          icon="perm-media"
           title="Media"
           open={mediaOpen}
           onToggle={() => setMediaOpen((current) => !current)}
@@ -329,7 +321,8 @@ export default function SkillDetailScreen() {
               onPress={() => {
                 setMediaOpen(true);
                 setEditingMediaId(null);
-                setMediaSheetOpen(true);
+                setQuickAddMode('media');
+                setQuickAddOpen(true);
               }}
             >
               <MaterialIcons name="add" size={22} color={colors.sage} />
@@ -477,6 +470,7 @@ export default function SkillDetailScreen() {
       <View style={styles.section}>
         <CollapsibleSectionHeader
           colors={colors}
+          icon="edit-note"
           title="Notes"
           open={notesOpen}
           onToggle={() => setNotesOpen((current) => !current)}
@@ -486,7 +480,8 @@ export default function SkillDetailScreen() {
               onPress={() => {
                 setNotesOpen(true);
                 setEditingNoteId(null);
-                setNoteSheetOpen(true);
+                setQuickAddMode('note');
+                setQuickAddOpen(true);
               }}
             >
               <MaterialIcons name="add" size={22} color={colors.sage} />
@@ -588,6 +583,7 @@ export default function SkillDetailScreen() {
       >
         <CollapsibleSectionHeader
           colors={colors}
+          icon="assignment"
           title="Training Logs"
           open={logsOpen}
           onToggle={() => setLogsOpen((current) => !current)}
@@ -650,31 +646,6 @@ export default function SkillDetailScreen() {
         ) : null}
       </View>
 
-      <HitEntrySheet
-        partners={partners}
-        visible={hitSheetOpen}
-        onClose={() => setHitSheetOpen(false)}
-        onSave={({ partnerName, count }) => {
-          addStandaloneHit({ skillId: skill.id, partnerName, count });
-          setHitListOpen(true);
-        }}
-      />
-      <MediaEntrySheet
-        visible={mediaSheetOpen}
-        onClose={() => setMediaSheetOpen(false)}
-        onSave={async ({ url, notes }) => {
-          await addMedia({ skillId: skill.id, url, notes });
-          setMediaOpen(true);
-        }}
-      />
-      <NoteEntrySheet
-        visible={noteSheetOpen}
-        onClose={() => setNoteSheetOpen(false)}
-        onSave={(body) => {
-          addQuickNote(skill.id, body);
-          setNotesOpen(true);
-        }}
-      />
     </Screen>
   );
 }
@@ -857,6 +828,7 @@ function CollapsibleSectionHeader({
   action,
   colors,
   count,
+  icon,
   onToggle,
   open,
   title,
@@ -864,6 +836,7 @@ function CollapsibleSectionHeader({
   action?: ReactNode;
   colors: ThemeColors;
   count?: number;
+  icon?: keyof typeof MaterialIcons.glyphMap;
   onToggle: () => void;
   open: boolean;
   title: string;
@@ -875,12 +848,15 @@ function CollapsibleSectionHeader({
         onPress={onToggle}
         style={({ pressed }) => [styles.sectionTitleButton, pressed && styles.pressed]}
       >
-        <Text style={[styles.sectionTitle, { color: colors.ink }]}>
-          {title}
-          {typeof count === 'number' ? (
-            <Text style={[styles.sectionCount, { color: colors.sage }]}> ({count})</Text>
-          ) : null}
-        </Text>
+        <View style={styles.sectionTitleRow}>
+          {icon ? <MaterialIcons name={icon} size={19} color={colors.sage} /> : null}
+          <Text style={[styles.sectionTitle, { color: colors.ink }]}>
+            {title}
+            {typeof count === 'number' ? (
+              <Text style={[styles.sectionCount, { color: colors.sage }]}> ({count})</Text>
+            ) : null}
+          </Text>
+        </View>
         <MaterialIcons
           name={open ? 'expand-less' : 'expand-more'}
           size={20}
@@ -1172,6 +1148,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.xs,
     minHeight: 32,
+  },
+  sectionTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
   },
   stack: {
     gap: spacing.sm,

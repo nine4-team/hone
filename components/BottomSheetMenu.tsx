@@ -7,6 +7,8 @@ export type BottomSheetMenuItem = {
   key: string;
   label: string;
   onPress: () => void;
+  icon?: keyof typeof MaterialIcons.glyphMap;
+  closeBehavior?: 'before-action' | 'after-action' | 'none';
   destructive?: boolean;
   selected?: boolean;
 };
@@ -26,7 +28,7 @@ export function BottomSheetMenu({ visible, title, items, onRequestClose }: Botto
       <Pressable style={styles.backdrop} onPress={onRequestClose}>
         <Pressable style={[styles.sheet, { backgroundColor: colors.surface }]}>
           {title ? (
-            <Text style={[styles.title, { borderBottomColor: colors.line, color: colors.ink }]}>
+            <Text style={[styles.title, { borderBottomColor: colors.strongLine, color: colors.ink }]}>
               {title}
             </Text>
           ) : null}
@@ -35,8 +37,19 @@ export function BottomSheetMenu({ visible, title, items, onRequestClose }: Botto
               key={item.key}
               accessibilityRole="button"
               onPress={() => {
+                if (item.closeBehavior === 'after-action') {
+                  item.onPress();
+                  onRequestClose();
+                  return;
+                }
+
+                if (item.closeBehavior === 'none') {
+                  item.onPress();
+                  return;
+                }
+
                 onRequestClose();
-                setTimeout(item.onPress, 100);
+                item.onPress();
               }}
               style={({ pressed }) => [
                 styles.item,
@@ -44,9 +57,18 @@ export function BottomSheetMenu({ visible, title, items, onRequestClose }: Botto
                 pressed && { backgroundColor: colors.surfaceMuted },
               ]}
             >
-              <Text style={[styles.itemText, { color: item.destructive ? colors.clay : colors.ink }]}>
-                {item.label}
-              </Text>
+              <View style={styles.itemLabelRow}>
+                {item.icon ? (
+                  <MaterialIcons
+                    name={item.icon}
+                    size={21}
+                    color={item.destructive ? colors.clay : colors.sage}
+                  />
+                ) : null}
+                <Text style={[styles.itemText, { color: item.destructive ? colors.clay : colors.ink }]}>
+                  {item.label}
+                </Text>
+              </View>
               {item.selected ? <MaterialIcons name="check" size={20} color={colors.sage} /> : null}
             </Pressable>
           ))}
@@ -70,8 +92,16 @@ const styles = StyleSheet.create({
     minHeight: 52,
     paddingHorizontal: spacing.xl,
   },
+  itemLabelRow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: spacing.md,
+    minWidth: 0,
+  },
   itemText: {
     ...textStyles.menuItem,
+    flex: 1,
   },
   sheet: {
     borderTopLeftRadius: 18,
@@ -81,7 +111,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...textStyles.menuTitle,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
   },

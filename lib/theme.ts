@@ -15,7 +15,7 @@ const BRAND_PRIMARY = '#987E55';
 export const lightColors = {
   bg: '#F7F8FA',
   surface: '#FFFFFF',
-  surfaceMuted: '#F5F3EF',
+  surfaceMuted: '#F1F2F4',
   ink: '#111111',
   muted: '#666666',
   quiet: '#999999',
@@ -33,7 +33,7 @@ export type ThemeColors = typeof lightColors;
 export const darkColors: ThemeColors = {
   bg: '#1E1E1E',
   surface: '#2E2E2E',
-  surfaceMuted: '#3D3224',
+  surfaceMuted: '#373737',
   ink: '#E0E0E0',
   muted: '#B0B0B0',
   quiet: '#888888',
