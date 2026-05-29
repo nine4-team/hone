@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ActivationSwitch } from './ActivationSwitch';
 import { formatRelative } from '../lib/format';
 import { getSkillLevelProgress } from '../lib/hits';
@@ -28,21 +28,21 @@ export function SkillCard({
     : `${hitCount} lifetime hits`;
 
   return (
-    <Card style={styles.cardContent}>
+    <Card
+      accessibilityHint={onLongPress ? 'Long press to log training.' : undefined}
+      accessibilityLabel={`${skill.name}, Level ${levelProgress.level}, ${hitCount} ${
+        hitCount === 1 ? 'hit' : 'hits'
+      }`}
+      onLongPress={onLongPress}
+      onPress={() => router.push(`/skills/${skill.id}`)}
+      style={styles.cardContent}
+    >
       <View style={styles.header}>
-        <Pressable
-          accessibilityHint={onLongPress ? 'Long press to log training.' : undefined}
-          accessibilityRole="button"
-          onLongPress={onLongPress}
-          onPress={() => router.push(`/skills/${skill.id}`)}
-          style={({ pressed }) => [styles.titleBlock, pressed && styles.pressed]}
-        >
-          <View>
-            <Text style={styles.name} numberOfLines={2}>
-              {skill.name}
-            </Text>
-          </View>
-        </Pressable>
+        <View style={styles.titleBlock}>
+          <Text style={styles.name} numberOfLines={2}>
+            {skill.name}
+          </Text>
+        </View>
 
         <HeaderActionSlot>
           {onToggleActive ? (
@@ -54,25 +54,19 @@ export function SkillCard({
         </HeaderActionSlot>
       </View>
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push(`/skills/${skill.id}`)}
-        style={({ pressed }) => pressed && styles.pressed}
-      >
-        <View style={styles.footer}>
-          <Text style={styles.meta}>
-            <Text style={styles.metaStrong}>Level {levelProgress.level}</Text>
-            <Text> · </Text>
-            {hitCount} {hitCount === 1 ? 'hit' : 'hits'}
-            <Text> · </Text>
-            {progressLabel}
-          </Text>
-          <Text style={styles.meta}>
-            <Text style={styles.metaStrong}>Last touched: </Text>
-            {formatRelative(skill.lastTouchedAt)}
-          </Text>
-        </View>
-      </Pressable>
+      <View style={styles.footer}>
+        <Text style={styles.meta}>
+          <Text style={styles.metaStrong}>Level {levelProgress.level}</Text>
+          <Text> · </Text>
+          {hitCount} {hitCount === 1 ? 'hit' : 'hits'}
+          <Text> · </Text>
+          {progressLabel}
+        </Text>
+        <Text style={styles.meta}>
+          <Text style={styles.metaStrong}>Last touched: </Text>
+          {formatRelative(skill.lastTouchedAt)}
+        </Text>
+      </View>
     </Card>
   );
 }
@@ -101,9 +95,6 @@ const styles = StyleSheet.create({
   },
   name: {
     ...textStyles.skillCardName,
-  },
-  pressed: {
-    opacity: 0.72,
   },
   titleBlock: {
     flex: 1,
