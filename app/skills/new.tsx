@@ -6,12 +6,12 @@ import { Button } from '../../components/Button';
 import { FormHelp, FormInput, FormLabel, FormStack } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
 import { Card } from '../../components/ui';
-import { useHone } from '../../lib/store';
+import { useHitList } from '../../lib/store';
 import { spacing } from '../../lib/theme';
 
 export default function NewSkillScreen() {
   const router = useRouter();
-  const { addSkill } = useHone();
+  const { addSkill } = useHitList();
   const [name, setName] = useState('');
   const [active, setActive] = useState(true);
 

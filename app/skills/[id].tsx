@@ -14,7 +14,7 @@ import { Card, IconButton } from '../../components/ui';
 import { formatDate, trainingLogTypeLabels, trainingLogTypes } from '../../lib/format';
 import { HITS_PER_LEVEL, MAX_VISIBLE_LEVEL, getSkillLevelProgress, hitRowsByPartner } from '../../lib/hits';
 import { inferMediaType } from '../../lib/mediaMetadata';
-import { useHone } from '../../lib/store';
+import { useHitList } from '../../lib/store';
 import { colors, radius, spacing } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 import { useToast } from '../../lib/useToast';
@@ -37,7 +37,7 @@ export default function SkillDetailScreen() {
     removeMedia,
     updateMedia,
     updateNote,
-  } = useHone();
+  } = useHitList();
   const skill = skills.find((item) => item.id === id);
   const [noteBody, setNoteBody] = useState('');
   const [notesOpen, setNotesOpen] = useState(false);
@@ -760,10 +760,10 @@ function formatDurationMinutes(minutes: number) {
 }
 
 function formatLoggedHours(minutes: number) {
-  if (minutes <= 0) return '0 HRS';
+  if (minutes <= 0) return '0 hrs';
 
   const hours = Math.round((minutes / 60) * 10) / 10;
-  return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} HRS`;
+  return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} hrs`;
 }
 
 function MediaThumbnail({

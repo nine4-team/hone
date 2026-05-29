@@ -25,7 +25,7 @@ import type {
   UpdateNoteInput,
 } from './types';
 
-type HoneState = {
+type HitListState = {
   skills: Skill[];
   notes: Note[];
   trainingLogs: TrainingLog[];
@@ -46,7 +46,7 @@ type HoneState = {
   deleteSkill: (skillId: string) => void;
 };
 
-const HoneContext = createContext<HoneState | null>(null);
+const HitListContext = createContext<HitListState | null>(null);
 
 function stamp() {
   return new Date().toISOString();
@@ -56,7 +56,7 @@ function id(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function HoneProvider({ children }: PropsWithChildren) {
+export function HitListProvider({ children }: PropsWithChildren) {
   const [skills, setSkills] = useState(seedSkills);
   const [notes, setNotes] = useState(seedNotes);
   const [trainingLogs, setTrainingLogs] = useState(seedTrainingLogs);
@@ -72,7 +72,7 @@ export function HoneProvider({ children }: PropsWithChildren) {
     );
   };
 
-  const value = useMemo<HoneState>(
+  const value = useMemo<HitListState>(
     () => ({
       skills,
       notes,
@@ -339,14 +339,14 @@ export function HoneProvider({ children }: PropsWithChildren) {
     [hits, media, notes, partners, skills, trainingLogs],
   );
 
-  return <HoneContext.Provider value={value}>{children}</HoneContext.Provider>;
+  return <HitListContext.Provider value={value}>{children}</HitListContext.Provider>;
 }
 
-export function useHone() {
-  const value = useContext(HoneContext);
+export function useHitList() {
+  const value = useContext(HitListContext);
 
   if (!value) {
-    throw new Error('useHone must be used inside HoneProvider');
+    throw new Error('useHitList must be used inside HitListProvider');
   }
 
   return value;

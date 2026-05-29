@@ -1,12 +1,12 @@
 import 'expo-dev-client';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { HoneProvider } from '../lib/store';
+import { HitListProvider } from '../lib/store';
 import { colors } from '../lib/theme';
 
 export default function RootLayout() {
   return (
-    <HoneProvider>
+    <HitListProvider>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -23,6 +23,6 @@ export default function RootLayout() {
         <Stack.Screen name="partners/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="share-intake" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
-    </HoneProvider>
+    </HitListProvider>
   );
 }

@@ -16,13 +16,13 @@ import { Screen } from '../components/Screen';
 import { Card } from '../components/ui';
 import { resolveMediaMetadata, type MediaMetadata } from '../lib/mediaMetadata';
 import { normalizeSharedPayloads, normalizeSharedUrl, type SharedUrlChoice } from '../lib/shareIntake';
-import { useHone } from '../lib/store';
+import { useHitList } from '../lib/store';
 import { colors, spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 export default function ShareIntakeScreen() {
   const router = useRouter();
-  const { addMedia, addSkillWithMedia, skills } = useHone();
+  const { addMedia, addSkillWithMedia, skills } = useHitList();
   const [choices, setChoices] = useState<SharedUrlChoice[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [manualUrl, setManualUrl] = useState('');

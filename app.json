@@ -1,18 +1,18 @@
 {
   "expo": {
     "name": "HitList",
-    "slug": "hone",
-    "scheme": "hone",
+    "slug": "hitlist",
+    "scheme": "hitlist",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "bundleIdentifier": "com.benjaminmackenzie.hone",
+      "bundleIdentifier": "com.benjaminmackenzie.hitlist",
       "supportsTablet": true
     },
     "android": {
-      "package": "com.benjaminmackenzie.hone",
+      "package": "com.benjaminmackenzie.hitlist",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -31,8 +31,8 @@
         {
           "ios": {
             "enabled": true,
-            "appGroupId": "group.com.benjaminmackenzie.hone",
-            "extensionBundleIdentifier": "com.benjaminmackenzie.hone.expo-sharing-extension",
+            "appGroupId": "group.com.benjaminmackenzie.hitlist",
+            "extensionBundleIdentifier": "com.benjaminmackenzie.hitlist.expo-sharing-extension",
             "activationRule": {
               "supportsText": true,
               "supportsWebUrlWithMaxCount": 1,

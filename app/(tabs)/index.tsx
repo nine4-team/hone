@@ -5,7 +5,7 @@ import { ActiveSkillTile } from '../../components/ActiveSkillTile';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
 import { EmptyState } from '../../components/EmptyState';
 import { Screen } from '../../components/Screen';
-import { useHone } from '../../lib/store';
+import { useHitList } from '../../lib/store';
 import { spacing } from '../../lib/theme';
 import type { Skill } from '../../lib/types';
 import { useToast } from '../../lib/useToast';
@@ -21,7 +21,7 @@ const activeSkillsHelp = [
 
 export default function ActiveSkillsScreen() {
   const router = useRouter();
-  const { hits, skills, toggleActive } = useHone();
+  const { hits, skills, toggleActive } = useHitList();
   const { toastMessage, showToast } = useToast();
   const [menuSkill, setMenuSkill] = useState<Skill | null>(null);
   const activeSkills = skills

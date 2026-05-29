@@ -8,7 +8,7 @@ import { Screen } from '../../components/Screen';
 import { SkillCard } from '../../components/SkillCard';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { getSkillLevelProgress } from '../../lib/hits';
-import { useHone } from '../../lib/store';
+import { useHitList } from '../../lib/store';
 import { colors, radius, spacing } from '../../lib/theme';
 import { useToast } from '../../lib/useToast';
 
@@ -29,7 +29,7 @@ const sortLabels: Record<ArsenalSort, string> = {
 };
 
 export default function ArsenalScreen() {
-  const { hits, skills, toggleActive } = useHone();
+  const { hits, skills, toggleActive } = useHitList();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ArsenalFilter>('all');
   const [sort, setSort] = useState<ArsenalSort>('level');

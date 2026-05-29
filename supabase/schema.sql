@@ -1,4 +1,4 @@
--- Hone MVP schema draft.
+-- HitList MVP schema draft.
 -- This is a starting point for Supabase/Postgres migrations, not yet applied to a project.
 
 create type public.skill_stage as enum ('saved', 'mechanics', 'resistance', 'proven');
