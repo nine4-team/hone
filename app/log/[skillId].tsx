@@ -20,7 +20,7 @@ import {
   trainingLogTypes,
 } from '../../lib/format';
 import { useHitList } from '../../lib/store';
-import { colors, radius, spacing } from '../../lib/theme';
+import { radius, spacing, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 import type { TrainingLogType } from '../../lib/types';
 
@@ -41,6 +41,7 @@ export default function TrainingLogScreen() {
   const { skillId } = useLocalSearchParams<{ skillId: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const colors = useTheme();
   const { addTrainingLog, partners, skills } = useHitList();
   const skill = skills.find((item) => item.id === skillId);
 
@@ -104,7 +105,16 @@ export default function TrainingLogScreen() {
       subtitle={skill.name}
       onBack={dismiss}
       bottomOverlay={
-        <View style={[styles.saveBar, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
+        <View
+          style={[
+            styles.saveBar,
+            {
+              backgroundColor: colors.bg,
+              borderTopColor: colors.line,
+              paddingBottom: Math.max(insets.bottom, spacing.md),
+            },
+          ]}
+        >
           <Button label="Save Log" onPress={save} />
         </View>
       }
@@ -118,15 +128,23 @@ export default function TrainingLogScreen() {
         <FormPanel>
           <View style={styles.labelRow}>
             <FormLabel>Duration</FormLabel>
-            <Text style={styles.optionalTag}>(optional)</Text>
+            <Text style={[styles.optionalTag, { color: colors.quiet }]}>(optional)</Text>
           </View>
           <Pressable
             accessibilityRole="button"
             onPress={() => setDurationOpen(true)}
-            style={({ pressed }) => [styles.durationField, pressed && styles.pressed]}
+            style={({ pressed }) => [
+              styles.durationField,
+              { backgroundColor: colors.surface, borderColor: colors.line },
+              pressed && styles.pressed,
+            ]}
           >
             <Text
-              style={[styles.pickerLabel, durationMinutes === 0 && styles.pickerPlaceholder]}
+              style={[
+                styles.pickerLabel,
+                { color: durationMinutes === 0 ? colors.quiet : colors.ink },
+                durationMinutes === 0 && styles.pickerPlaceholder,
+              ]}
             >
               {durationMinutes > 0 ? `${durationMinutes} min` : 'Not set'}
             </Text>
@@ -137,7 +155,7 @@ export default function TrainingLogScreen() {
         <FormPanel>
           <View style={styles.panelHeader}>
             <FormLabel>Hits</FormLabel>
-            <Text style={styles.total}>{totalHits} total</Text>
+            <Text style={[styles.total, { color: colors.ink }]}>{totalHits} total</Text>
           </View>
 
           <View style={styles.rows}>
@@ -148,10 +166,18 @@ export default function TrainingLogScreen() {
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => setPickerRowId(row.id)}
-                    style={({ pressed }) => [styles.picker, pressed && styles.pressed]}
+                    style={({ pressed }) => [
+                      styles.picker,
+                      { backgroundColor: colors.surface, borderColor: colors.line },
+                      pressed && styles.pressed,
+                    ]}
                   >
                     <Text
-                      style={[styles.pickerLabel, !selected && styles.pickerPlaceholder]}
+                      style={[
+                        styles.pickerLabel,
+                        { color: selected ? colors.ink : colors.quiet },
+                        !selected && styles.pickerPlaceholder,
+                      ]}
                       numberOfLines={1}
                     >
                       {partnerLabel(row)}
@@ -184,7 +210,7 @@ export default function TrainingLogScreen() {
             style={({ pressed }) => [styles.addRow, pressed && styles.pressed]}
           >
             <MaterialIcons name="add" size={18} color={colors.sage} />
-            <Text style={styles.addLabel}>Add hit row</Text>
+            <Text style={[styles.addLabel, { color: colors.sage }]}>Add hit row</Text>
           </Pressable>
         </FormPanel>
 
@@ -222,7 +248,6 @@ export default function TrainingLogScreen() {
 const styles = StyleSheet.create({
   addLabel: {
     ...textStyles.buttonLabel,
-    color: colors.sage,
   },
   addRow: {
     alignItems: 'center',
@@ -237,14 +262,11 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   optionalTag: {
-    color: colors.quiet,
     fontSize: 13,
     fontWeight: '500',
   },
   durationField: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: 'row',
@@ -259,8 +281,6 @@ const styles = StyleSheet.create({
   },
   picker: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1,
     flex: 1,
@@ -276,7 +296,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   pickerPlaceholder: {
-    color: colors.quiet,
     fontWeight: '400',
   },
   pressed: {
@@ -297,8 +316,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   saveBar: {
-    backgroundColor: colors.bg,
-    borderTopColor: colors.line,
     borderTopWidth: StyleSheet.hairlineWidth,
     bottom: 0,
     left: 0,

@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { ActiveSkillTile } from '../../components/ActiveSkillTile';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
 import { EmptyState } from '../../components/EmptyState';
+import { HitEntrySheet, MediaEntrySheet, NoteEntrySheet } from '../../components/EntrySheets';
 import { Screen } from '../../components/Screen';
 import { useHitList } from '../../lib/store';
 import { spacing } from '../../lib/theme';
@@ -13,7 +14,7 @@ import { useToast } from '../../lib/useToast';
 const activeSkillsHelp = [
   "Active Skills are the set of skills you're currently working on.",
   '',
-  '+ logs training.',
+  '+ opens add menu.',
   '... opens actions.',
   'Inner ring: progress toward Level 10.',
   'Outer ring: progress toward next level (hits).',
@@ -21,9 +22,13 @@ const activeSkillsHelp = [
 
 export default function ActiveSkillsScreen() {
   const router = useRouter();
-  const { hits, skills, toggleActive } = useHitList();
+  const { addMedia, addQuickNote, addStandaloneHit, hits, partners, skills, toggleActive } = useHitList();
   const { toastMessage, showToast } = useToast();
+  const [actionSkill, setActionSkill] = useState<Skill | null>(null);
+  const [hitSheetSkill, setHitSheetSkill] = useState<Skill | null>(null);
+  const [mediaSheetSkill, setMediaSheetSkill] = useState<Skill | null>(null);
   const [menuSkill, setMenuSkill] = useState<Skill | null>(null);
+  const [noteSheetSkill, setNoteSheetSkill] = useState<Skill | null>(null);
   const activeSkills = skills
     .filter((skill) => skill.active)
     .sort((a, b) => Date.parse(b.lastTouchedAt) - Date.parse(a.lastTouchedAt));
@@ -52,12 +57,43 @@ export default function ActiveSkillsScreen() {
                 key={skill.id}
                 hitCount={hitsBySkill[skill.id] ?? 0}
                 skill={skill}
-                onLogPress={() => router.push(`/log/${skill.id}`)}
+                onLogPress={() => setActionSkill(skill)}
                 onMenuPress={() => setMenuSkill(skill)}
               />
             ))
           )}
         </View>
+        <BottomSheetMenu
+          visible={actionSkill !== null}
+          title={actionSkill?.name}
+          onRequestClose={() => setActionSkill(null)}
+          items={
+            actionSkill
+              ? [
+                  {
+                    key: 'training-log',
+                    label: 'Training Log',
+                    onPress: () => router.push(`/log/${actionSkill.id}`),
+                  },
+                  {
+                    key: 'hit',
+                    label: 'Hit',
+                    onPress: () => setHitSheetSkill(actionSkill),
+                  },
+                  {
+                    key: 'media',
+                    label: 'Media',
+                    onPress: () => setMediaSheetSkill(actionSkill),
+                  },
+                  {
+                    key: 'note',
+                    label: 'Note',
+                    onPress: () => setNoteSheetSkill(actionSkill),
+                  },
+                ]
+              : []
+          }
+        />
         <BottomSheetMenu
           visible={menuSkill !== null}
           title={menuSkill?.name}
@@ -87,6 +123,34 @@ export default function ActiveSkillsScreen() {
                 ]
               : []
           }
+        />
+        <HitEntrySheet
+          partners={partners}
+          visible={hitSheetSkill !== null}
+          onClose={() => setHitSheetSkill(null)}
+          onSave={({ partnerName, count }) => {
+            if (!hitSheetSkill) return;
+            addStandaloneHit({ skillId: hitSheetSkill.id, partnerName, count });
+            showToast('Hit logged');
+          }}
+        />
+        <MediaEntrySheet
+          visible={mediaSheetSkill !== null}
+          onClose={() => setMediaSheetSkill(null)}
+          onSave={async ({ url, notes }) => {
+            if (!mediaSheetSkill) return;
+            await addMedia({ skillId: mediaSheetSkill.id, url, notes });
+            showToast('Media added');
+          }}
+        />
+        <NoteEntrySheet
+          visible={noteSheetSkill !== null}
+          onClose={() => setNoteSheetSkill(null)}
+          onSave={(body) => {
+            if (!noteSheetSkill) return;
+            addQuickNote(noteSheetSkill.id, body);
+            showToast('Note added');
+          }}
         />
       </>
     </Screen>

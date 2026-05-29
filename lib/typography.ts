@@ -63,15 +63,15 @@ export const textStyles = {
   },
   menuItem: {
     color: colors.ink,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
-    lineHeight: 22,
+    lineHeight: 21,
   },
   menuTitle: {
     color: colors.ink,
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 18,
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 23,
   },
   rowLabel: {
     color: colors.muted,

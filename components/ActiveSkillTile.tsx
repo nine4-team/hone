@@ -35,7 +35,7 @@ export function ActiveSkillTile({
   return (
     <View style={styles.tile}>
       <Pressable
-        accessibilityLabel={`Log training for ${skill.name}`}
+        accessibilityLabel={`Open add menu for ${skill.name}`}
         accessibilityRole="button"
         hitSlop={8}
         onPress={(event) => {

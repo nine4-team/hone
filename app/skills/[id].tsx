@@ -7,6 +7,7 @@ import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
 import { EmptyState } from '../../components/EmptyState';
+import { HitEntrySheet, MediaEntrySheet, NoteEntrySheet } from '../../components/EntrySheets';
 import { FloatingNavigation } from '../../components/FloatingNavigation';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
@@ -27,7 +28,6 @@ export default function SkillDetailScreen() {
     addQuickNote,
     addMedia,
     addStandaloneHit,
-    deleteSkill,
     hits,
     media,
     notes,
@@ -46,14 +46,14 @@ export default function SkillDetailScreen() {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [logsOpen, setLogsOpen] = useState(false);
   const [hitListOpen, setHitListOpen] = useState(false);
-  const [addingHit, setAddingHit] = useState(false);
-  const [hitPartnerName, setHitPartnerName] = useState('');
-  const [hitCount, setHitCount] = useState('1');
+  const [hitSheetOpen, setHitSheetOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+  const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaNotes, setMediaNotes] = useState('');
+  const [noteSheetOpen, setNoteSheetOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const scrollRef = useRef<ScrollView | null>(null);
@@ -121,24 +121,6 @@ export default function SkillDetailScreen() {
     return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={router.back} />;
   }
 
-  const confirmDeleteSkill = () => {
-    Alert.alert(
-      'Delete Skill',
-      'This removes the skill, media, notes, logs, and hits. Partners stay in your library.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteSkill(skill.id);
-            router.replace('/library');
-          },
-        },
-      ],
-    );
-  };
-
   const scrollToTrainingLogs = () => {
     setLogsOpen(true);
     requestAnimationFrame(() => {
@@ -201,20 +183,35 @@ export default function SkillDetailScreen() {
             onRequestClose={() => setQuickAddOpen(false)}
             items={[
               {
-                key: 'log',
-                label: 'Log Training',
+                key: 'training-log',
+                label: 'Training Log',
                 onPress: () => router.push(`/log/${skill.id}`),
               },
               {
-                key: 'skill',
-                label: 'New Skill',
-                onPress: () => router.push('/skills/new'),
+                key: 'hit',
+                label: 'Hit',
+                onPress: () => {
+                  setHitListOpen(true);
+                  setHitSheetOpen(true);
+                },
               },
               {
-                key: 'delete',
-                label: 'Delete Skill',
-                destructive: true,
-                onPress: confirmDeleteSkill,
+                key: 'media',
+                label: 'Media',
+                onPress: () => {
+                  setMediaOpen(true);
+                  setEditingMediaId(null);
+                  setMediaSheetOpen(true);
+                },
+              },
+              {
+                key: 'note',
+                label: 'Note',
+                onPress: () => {
+                  setNotesOpen(true);
+                  setEditingNoteId(null);
+                  setNoteSheetOpen(true);
+                },
               },
             ]}
           />
@@ -286,7 +283,7 @@ export default function SkillDetailScreen() {
               accessibilityLabel="Add standalone hit"
               onPress={() => {
                 setHitListOpen(true);
-                setAddingHit((current) => !current);
+                setHitSheetOpen(true);
               }}
             >
               <MaterialIcons name="add" size={22} color={colors.sage} />
@@ -295,59 +292,6 @@ export default function SkillDetailScreen() {
         />
         {hitListOpen ? (
           <View style={styles.stack}>
-            {addingHit ? (
-              <Card style={styles.hitComposer}>
-                <View style={styles.hitComposerRow}>
-                  <TextInput
-                    autoCapitalize="words"
-                    onChangeText={setHitPartnerName}
-                    placeholder="Partner"
-                    placeholderTextColor={colors.quiet}
-                    style={[styles.hitInput, styles.hitPartnerInput, { color: colors.ink }]}
-                    value={hitPartnerName}
-                  />
-                  <TextInput
-                    keyboardType="number-pad"
-                    onChangeText={setHitCount}
-                    placeholder="Hits"
-                    placeholderTextColor={colors.quiet}
-                    style={[styles.hitInput, styles.hitCountInput, { color: colors.ink }]}
-                    value={hitCount}
-                  />
-                </View>
-                <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => {
-                      setAddingHit(false);
-                      setHitPartnerName('');
-                      setHitCount('1');
-                    }}
-                    style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
-                  >
-                    <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => {
-                      const count = Number.parseInt(hitCount, 10);
-                      if (!Number.isFinite(count) || count <= 0) return;
-                      addStandaloneHit({
-                        skillId: skill.id,
-                        partnerName: hitPartnerName,
-                        count,
-                      });
-                      setAddingHit(false);
-                      setHitPartnerName('');
-                      setHitCount('1');
-                    }}
-                    style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
-                  >
-                    <Text style={[styles.composerSave, { color: colors.sage }]}>Save</Text>
-                  </Pressable>
-                </View>
-              </Card>
-            ) : null}
             <View style={styles.hitListRows}>
               {hitList.length === 0 ? (
                 <EmptyState
@@ -384,10 +328,8 @@ export default function SkillDetailScreen() {
               accessibilityLabel="Add media"
               onPress={() => {
                 setMediaOpen(true);
-                setAddingMedia(true);
                 setEditingMediaId(null);
-                setMediaUrl('');
-                setMediaNotes('');
+                setMediaSheetOpen(true);
               }}
             >
               <MaterialIcons name="add" size={22} color={colors.sage} />
@@ -543,9 +485,8 @@ export default function SkillDetailScreen() {
               accessibilityLabel="Add note"
               onPress={() => {
                 setNotesOpen(true);
-                setAddingNote(true);
                 setEditingNoteId(null);
-                setNoteBody('');
+                setNoteSheetOpen(true);
               }}
             >
               <MaterialIcons name="add" size={22} color={colors.sage} />
@@ -709,6 +650,31 @@ export default function SkillDetailScreen() {
         ) : null}
       </View>
 
+      <HitEntrySheet
+        partners={partners}
+        visible={hitSheetOpen}
+        onClose={() => setHitSheetOpen(false)}
+        onSave={({ partnerName, count }) => {
+          addStandaloneHit({ skillId: skill.id, partnerName, count });
+          setHitListOpen(true);
+        }}
+      />
+      <MediaEntrySheet
+        visible={mediaSheetOpen}
+        onClose={() => setMediaSheetOpen(false)}
+        onSave={async ({ url, notes }) => {
+          await addMedia({ skillId: skill.id, url, notes });
+          setMediaOpen(true);
+        }}
+      />
+      <NoteEntrySheet
+        visible={noteSheetOpen}
+        onClose={() => setNoteSheetOpen(false)}
+        onSave={(body) => {
+          addQuickNote(skill.id, body);
+          setNotesOpen(true);
+        }}
+      />
     </Screen>
   );
 }

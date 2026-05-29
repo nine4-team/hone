@@ -1,7 +1,7 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Button } from './Button';
 import { DurationWheel } from './DurationWheel';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 type DurationSheetProps = {
@@ -12,6 +12,8 @@ type DurationSheetProps = {
 };
 
 export function DurationSheet({ visible, value, onChange, onClose }: DurationSheetProps) {
+  const colors = useTheme();
+
   return (
     <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
       <View style={styles.backdrop}>
@@ -21,8 +23,8 @@ export function DurationSheet({ visible, value, onChange, onClose }: DurationShe
           onPress={onClose}
           style={StyleSheet.absoluteFill}
         />
-        <View style={styles.sheet}>
-          <Text style={styles.title}>Duration</Text>
+        <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.title, { color: colors.ink }]}>Duration</Text>
           <DurationWheel onChange={onChange} value={value} />
           <View style={styles.footer}>
             <Button label="Done" onPress={onClose} />
@@ -44,7 +46,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   sheet: {
-    backgroundColor: colors.surface,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     paddingBottom: spacing.xl,
