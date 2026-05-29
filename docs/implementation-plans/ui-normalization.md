@@ -1,6 +1,6 @@
 # UI Normalization Plan
 
-Product note: this plan predates the HitList rename and the Arsenal/Equipped Skills redesign. Use [HONE_APP_SPEC.md](../../HONE_APP_SPEC.md) as the source of truth for current navigation and product naming.
+Product note: this plan predates the HitList rename and the Arsenal/Equipped Skills redesign. Use [HITLIST_APP_SPEC.md](../../HITLIST_APP_SPEC.md) as the source of truth for current navigation and product naming.
 
 ## Current Status
 
@@ -33,7 +33,7 @@ Decision:
 Current implementation:
 
 - Uses the stock React Native `Switch` through `components/ActivationSwitch.tsx`.
-- Active track uses Hone's brand accent.
+- Active track uses HitList brand accent.
 - Inactive track uses the neutral line color.
 - Thumb uses the white surface color.
 

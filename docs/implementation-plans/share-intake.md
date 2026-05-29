@@ -1,12 +1,12 @@
 # Share Intake Implementation Plan
 
-Product note: this plan predates the HitList rename and the Arsenal/Equipped Skills redesign. Use [HONE_APP_SPEC.md](../../HONE_APP_SPEC.md) as the source of truth for current naming and skill state.
+Product note: this plan predates the HitList rename and the Arsenal/Equipped Skills redesign. Use [HITLIST_APP_SPEC.md](../../HITLIST_APP_SPEC.md) as the source of truth for current naming and skill state.
 
 ## Goal
 
 Let users share a link from another app into HitList, then either create a new skill with that link attached or add the link as media to an existing skill.
 
-This plan follows the current MVP product constraint in `HONE_APP_SPEC.md`: media is link-only, and titles/thumbnails are fetched metadata rather than required user input.
+This plan follows the current MVP product constraint in `HITLIST_APP_SPEC.md`: media is link-only, and titles/thumbnails are fetched metadata rather than required user input.
 
 ## Expo Compatibility Notes
 
