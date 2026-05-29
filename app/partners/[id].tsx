@@ -3,13 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '../../components/EmptyState';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
-import { Section } from '../../components/Section';
 import { formatDate, formatHitCount } from '../../lib/format';
 import { hitRowsBySkill } from '../../lib/hits';
 import { useHitList } from '../../lib/store';
-import { spacing } from '../../lib/theme';
+import { colors, spacing } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
-import { Card } from '../../components/ui';
 
 export default function PartnerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -23,6 +21,7 @@ export default function PartnerDetailScreen() {
 
   const partnerHits = hits.filter((hit) => hit.partnerId === partner.id);
   const skillRows = hitRowsBySkill(partnerHits, skills);
+  const totalHits = partnerHits.reduce((sum, hit) => sum + hit.count, 0);
 
   const recent = partnerHits
     .map((hit) => ({
@@ -38,46 +37,109 @@ export default function PartnerDetailScreen() {
       subtitle="All hits attributed to this partner."
       onBack={router.back}
     >
-      <Section title="Skills Hit">
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Hit List</Text>
         {skillRows.length === 0 ? (
-          <EmptyState title="No hits yet" body="Attribute hits to this partner while logging training." />
+          <EmptyState
+            framed={false}
+            title="No hits yet"
+            body="Attribute hits to this partner while logging training."
+          />
         ) : (
-          <Card style={styles.card}>
-            <HitSummaryList rows={skillRows} />
-          </Card>
+          <View style={styles.hitListRows}>
+            <HitSummaryList
+              alignWithSectionAction
+              emphasizeLabels
+              rows={[
+                ...skillRows,
+                {
+                  id: 'total',
+                  label: 'Total',
+                  count: totalHits,
+                  total: true,
+                },
+              ]}
+            />
+          </View>
         )}
-      </Section>
+      </View>
 
-      <Section title="Recent">
-        <View style={styles.stack}>
-          {recent.map((row) => (
-            <Card key={row.hit.id} style={styles.card}>
-              <Text style={styles.cardTitle}>
-                {row.skillName}
-              </Text>
-              <Text style={styles.cardMeta}>
-                {formatDate(row.log?.occurredAt ?? row.hit.createdAt)} · {formatHitCount(row.hit.count)}
-              </Text>
-            </Card>
-          ))}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Timeline</Text>
+        <View style={styles.timeline}>
+          {recent.map((row, index) => {
+            const isLast = index === recent.length - 1;
+            return (
+              <View key={row.hit.id} style={styles.timelineRow}>
+                <View style={styles.timelineRail}>
+                  <View style={styles.timelineDot} />
+                  {!isLast ? <View style={styles.timelineLine} /> : null}
+                </View>
+                <View style={[styles.timelineContent, isLast && styles.timelineContentLast]}>
+                  <Text style={styles.cardTitle}>{row.skillName}</Text>
+                  <Text style={styles.cardMeta}>
+                    {formatDate(row.log?.occurredAt ?? row.hit.createdAt)} · {formatHitCount(row.hit.count)}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
         </View>
-      </Section>
+      </View>
     </Screen>
   );
 }
 
+const DOT_SIZE = 10;
+const RAIL_WIDTH = 20;
+
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.lg,
-  },
   cardMeta: {
     ...textStyles.detailRecordMeta,
     marginTop: spacing.xs,
   },
   cardTitle: {
-    ...textStyles.detailRecordTitle,
+    ...textStyles.detailRecordBody,
   },
-  stack: {
-    gap: spacing.md,
+  hitListRows: {
+    gap: 2,
+  },
+  section: {
+    marginBottom: spacing.lg,
+  },
+  sectionTitle: {
+    ...textStyles.sectionTitle,
+    marginBottom: 6,
+  },
+  timeline: {
+    marginTop: spacing.xs,
+  },
+  timelineRow: {
+    flexDirection: 'row',
+  },
+  timelineRail: {
+    alignItems: 'center',
+    width: RAIL_WIDTH,
+  },
+  timelineDot: {
+    backgroundColor: colors.sage,
+    borderRadius: DOT_SIZE / 2,
+    height: DOT_SIZE,
+    marginTop: spacing.xs,
+    width: DOT_SIZE,
+  },
+  timelineLine: {
+    backgroundColor: colors.line,
+    flex: 1,
+    marginTop: spacing.xs,
+    width: 2,
+  },
+  timelineContent: {
+    flex: 1,
+    paddingBottom: spacing.lg,
+    paddingLeft: spacing.sm,
+  },
+  timelineContentLast: {
+    paddingBottom: 0,
   },
 });

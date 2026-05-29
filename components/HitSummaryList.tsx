@@ -13,10 +13,15 @@ export type HitSummaryRow = {
 
 type HitSummaryListProps = {
   alignWithSectionAction?: boolean;
+  emphasizeLabels?: boolean;
   rows: HitSummaryRow[];
 };
 
-export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSummaryListProps) {
+export function HitSummaryList({
+  alignWithSectionAction = false,
+  emphasizeLabels = false,
+  rows,
+}: HitSummaryListProps) {
   const router = useRouter();
 
   return (
@@ -24,10 +29,20 @@ export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSumm
       {rows.map((row) => {
         const content = (
           <>
-            <Text style={[styles.label, row.total && styles.totalLabel]} numberOfLines={1}>
+            <Text
+              style={[styles.label, emphasizeLabels && styles.labelEmphasized, row.total && styles.totalLabel]}
+              numberOfLines={1}
+            >
               {row.label}
             </Text>
-            <Text style={[styles.value, alignWithSectionAction && styles.valueAligned, row.total && styles.totalValue]}>
+            <Text
+              style={[
+                styles.value,
+                emphasizeLabels && styles.labelEmphasized,
+                alignWithSectionAction && styles.valueAligned,
+                row.total && styles.totalValue,
+              ]}
+            >
               {row.count}
             </Text>
           </>
@@ -43,7 +58,6 @@ export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSumm
               style={({ pressed }) => [
                 styles.row,
                 alignWithSectionAction && styles.rowAligned,
-                row.total && styles.totalRow,
                 pressed && styles.pressed,
               ]}
             >
@@ -55,7 +69,7 @@ export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSumm
         return (
           <View
             key={row.id}
-            style={[styles.row, alignWithSectionAction && styles.rowAligned, row.total && styles.totalRow]}
+            style={[styles.row, alignWithSectionAction && styles.rowAligned]}
           >
             {content}
           </View>
@@ -70,6 +84,9 @@ const styles = StyleSheet.create({
     ...textStyles.rowLabel,
     flex: 1,
     minWidth: 0,
+  },
+  labelEmphasized: {
+    ...textStyles.detailRecordBody,
   },
   pressed: {
     opacity: 0.68,
@@ -96,12 +113,6 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     color: colors.sage,
-  },
-  totalRow: {
-    borderTopColor: colors.line,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    marginTop: 4,
-    paddingTop: 6,
   },
   totalValue: {
     color: colors.sage,
