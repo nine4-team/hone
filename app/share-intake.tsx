@@ -209,7 +209,7 @@ export default function ShareIntakeScreen() {
 
             <Card style={styles.panel}>
               <FormLabel>Create new skill</FormLabel>
-              <FormHelp>Saved to the Arsenal by default. You can equip it later.</FormHelp>
+              <FormHelp>Saved to the Arsenal by default. You can activate it later.</FormHelp>
               <FormInput
                 onChangeText={setSkillName}
                 placeholder="Skill name"
@@ -239,7 +239,7 @@ export default function ShareIntakeScreen() {
                         {skill.name}
                       </Text>
                       <Text style={styles.skillMeta}>
-                        {skill.active ? 'Equipped' : 'In Arsenal'}
+                        {skill.active ? 'Active' : 'Inactive'}
                       </Text>
                     </View>
                     <MaterialIcons name="add-link" size={21} color={colors.sage} />

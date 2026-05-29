@@ -28,8 +28,8 @@ export default function NewSkillScreen() {
 
         <Card style={styles.switchRow}>
           <View>
-            <FormLabel>Equipped</FormLabel>
-            <FormHelp>Show this skill on the Equipped Skills screen.</FormHelp>
+            <FormLabel>Active</FormLabel>
+            <FormHelp>Show this skill on the Active Skills screen.</FormHelp>
           </View>
           <ActivationSwitch onValueChange={setActive} value={active} />
         </Card>

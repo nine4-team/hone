@@ -11,7 +11,7 @@ import type { Skill } from '../../lib/types';
 import { useToast } from '../../lib/useToast';
 
 const activeSkillsHelp = [
-  "Equipped Skills are the set of skills you're currently working on.",
+  "Active Skills are the set of skills you're currently working on.",
   '',
   '+ logs training.',
   '... opens actions.',
@@ -19,7 +19,7 @@ const activeSkillsHelp = [
   'Outer ring: progress toward next level (hits).',
 ].join('\n');
 
-export default function EquippedSkillsScreen() {
+export default function ActiveSkillsScreen() {
   const router = useRouter();
   const { hits, skills, toggleActive } = useHone();
   const { toastMessage, showToast } = useToast();
@@ -34,7 +34,7 @@ export default function EquippedSkillsScreen() {
 
   return (
     <Screen
-      title="Equipped Skills"
+      title="Active Skills"
       titleIcon="sports-kabaddi"
       subtitle={activeSkillsHelp}
       toastMessage={toastMessage}
@@ -43,8 +43,8 @@ export default function EquippedSkillsScreen() {
         <View style={styles.list}>
           {activeSkills.length === 0 ? (
             <EmptyState
-              title="No equipped skills yet"
-              body="Equip skills from the Arsenal to make them show up here."
+              title="No active skills yet"
+              body="Activate skills from the Arsenal to make them show up here."
             />
           ) : (
             activeSkills.map((skill) => (
@@ -77,11 +77,11 @@ export default function EquippedSkillsScreen() {
                   },
                   {
                     key: 'deactivate',
-                    label: 'Unequip',
+                    label: 'Deactivate',
                     destructive: true,
                     onPress: () => {
                       toggleActive(menuSkill.id);
-                      showToast('Skill unequipped');
+                      showToast('Skill deactivated');
                     },
                   },
                 ]

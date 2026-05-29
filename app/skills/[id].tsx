@@ -163,7 +163,7 @@ export default function SkillDetailScreen() {
         <ActivationSwitch
           value={skill.active}
           onValueChange={(nextActive) => {
-            showToast(nextActive ? 'Skill equipped' : 'Skill unequipped');
+            showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
             toggleActive(skill.id);
           }}
         />
@@ -178,7 +178,7 @@ export default function SkillDetailScreen() {
               {
                 key: 'active',
                 icon: 'sports-kabaddi',
-                label: 'Equipped skills tab',
+                label: 'Active skills tab',
                 onPress: () => router.push('/'),
               },
               {

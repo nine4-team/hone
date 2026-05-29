@@ -9,7 +9,7 @@ type ActivationSwitchProps = {
 export function ActivationSwitch({ onValueChange, value }: ActivationSwitchProps) {
   return (
     <Switch
-      accessibilityLabel={value ? 'Unequip skill' : 'Equip skill'}
+      accessibilityLabel={value ? 'Deactivate skill' : 'Activate skill'}
       ios_backgroundColor={colors.line}
       onValueChange={onValueChange}
       thumbColor={colors.surface}

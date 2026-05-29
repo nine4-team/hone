@@ -13,7 +13,7 @@ const routeIcons: Record<string, Pick<FloatingNavigationItem, 'icon'>> = {
 };
 
 const routeLabels: Record<string, string> = {
-  index: 'Equipped skills',
+  index: 'Active skills',
   library: 'Arsenal',
   settings: 'Settings',
 };
@@ -66,7 +66,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{ title: 'Equipped Skills' }}
+        options={{ title: 'Active Skills' }}
       />
       <Tabs.Screen
         name="settings"

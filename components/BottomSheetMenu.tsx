@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
@@ -7,6 +8,7 @@ export type BottomSheetMenuItem = {
   label: string;
   onPress: () => void;
   destructive?: boolean;
+  selected?: boolean;
 };
 
 type BottomSheetMenuProps = {
@@ -39,6 +41,7 @@ export function BottomSheetMenu({ visible, title, items, onRequestClose }: Botto
               <Text style={[styles.itemText, item.destructive && styles.destructiveText]}>
                 {item.label}
               </Text>
+              {item.selected ? <MaterialIcons name="check" size={20} color={colors.sage} /> : null}
             </Pressable>
           ))}
         </Pressable>
@@ -57,8 +60,11 @@ const styles = StyleSheet.create({
     color: colors.clay,
   },
   item: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-between',
     minHeight: 52,
-    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
   itemBorder: {
