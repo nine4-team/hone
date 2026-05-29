@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ActivationSwitch } from './ActivationSwitch';
 import { formatRelative } from '../lib/format';
 import { getSkillLevelProgress } from '../lib/hits';
-import { spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import type { Skill } from '../lib/types';
 import { Card, HeaderActionSlot } from './ui';
@@ -22,6 +22,7 @@ export function SkillCard({
   onToggleActive,
 }: SkillCardProps) {
   const router = useRouter();
+  const colors = useTheme();
   const levelProgress = getSkillLevelProgress(hitCount);
   const progressLabel = levelProgress.nextLevel
     ? `${levelProgress.hitsIntoLevel}/10 to Level ${levelProgress.nextLevel}`
@@ -39,7 +40,7 @@ export function SkillCard({
     >
       <View style={styles.header}>
         <View style={styles.titleBlock}>
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={[styles.name, { color: colors.ink }]} numberOfLines={2}>
             {skill.name}
           </Text>
         </View>
@@ -55,15 +56,15 @@ export function SkillCard({
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.meta}>
-          <Text style={styles.metaStrong}>Level {levelProgress.level}</Text>
+        <Text style={[styles.meta, { color: colors.quiet }]}>
+          <Text style={[styles.metaStrong, { color: colors.muted }]}>Level {levelProgress.level}</Text>
           <Text> · </Text>
           {hitCount} {hitCount === 1 ? 'hit' : 'hits'}
           <Text> · </Text>
           {progressLabel}
         </Text>
-        <Text style={styles.meta}>
-          <Text style={styles.metaStrong}>Last touched: </Text>
+        <Text style={[styles.meta, { color: colors.quiet }]}>
+          <Text style={[styles.metaStrong, { color: colors.muted }]}>Last touched: </Text>
           {formatRelative(skill.lastTouchedAt)}
         </Text>
       </View>

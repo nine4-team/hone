@@ -3,7 +3,7 @@ import { useRouter, type Href } from 'expo-router';
 import type { ComponentType } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import { Card } from './ui';
 
@@ -12,6 +12,7 @@ type ListRowIcon =
   | ComponentType<SvgProps & { color?: string; size?: number | string }>;
 
 type ListRowProps = {
+  chevron?: boolean;
   href?: Href;
   icon?: ListRowIcon;
   meta?: string;
@@ -19,8 +20,17 @@ type ListRowProps = {
   title: string;
 };
 
-export function ListRow({ href, icon, meta, onPress, title }: ListRowProps) {
+export function ListRow({
+  chevron,
+  href,
+  icon,
+  meta,
+  onPress,
+  title,
+}: ListRowProps) {
   const router = useRouter();
+  const colors = useTheme();
+  const shouldShowChevron = chevron ?? Boolean(href);
   const row = (
     <Pressable
       accessibilityRole={href ? 'link' : 'button'}
@@ -28,28 +38,28 @@ export function ListRow({ href, icon, meta, onPress, title }: ListRowProps) {
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.titleRow}>
-        {icon ? <RowIcon icon={icon} /> : null}
+        {icon ? <RowIcon color={colors.ink} icon={icon} /> : null}
         <View style={styles.textBlock}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
-          {meta ? <Text style={styles.meta} numberOfLines={1}>{meta}</Text> : null}
+          <Text style={[styles.title, { color: colors.ink }]} numberOfLines={1}>{title}</Text>
+          {meta ? <Text style={[styles.meta, { color: colors.muted }]} numberOfLines={1}>{meta}</Text> : null}
         </View>
       </View>
-      <MaterialIcons name="chevron-right" size={24} color={colors.muted} />
+      {shouldShowChevron ? <MaterialIcons name="chevron-right" size={24} color={colors.muted} /> : null}
     </Pressable>
   );
 
   return <Card>{row}</Card>;
 }
 
-function RowIcon({ icon }: { icon: ListRowIcon }) {
+function RowIcon({ color, icon }: { color: string; icon: ListRowIcon }) {
   if (typeof icon === 'string') {
-    return <MaterialIcons name={icon} size={22} color={colors.ink} style={styles.icon} />;
+    return <MaterialIcons name={icon} size={22} color={color} style={styles.icon} />;
   }
 
   const Icon = icon;
   return (
     <View style={styles.icon}>
-      <Icon color={colors.ink} size={22} />
+      <Icon color={color} size={22} />
     </View>
   );
 }

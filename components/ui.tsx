@@ -8,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { colors, radius, spacing } from '../lib/theme';
+import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 type CardProps = PropsWithChildren<{
@@ -29,6 +29,17 @@ export function Card({
   onPress,
   style,
 }: CardProps) {
+  const colors = useTheme();
+  const cardStyle = [
+    styles.card,
+    {
+      backgroundColor: colors.surface,
+      borderColor: colors.line,
+      shadowColor: colors.ink,
+    },
+    style,
+  ];
+
   if (onPress || onLongPress) {
     return (
       <Pressable
@@ -37,14 +48,14 @@ export function Card({
         accessibilityRole={accessibilityRole ?? 'button'}
         onLongPress={onLongPress}
         onPress={onPress}
-        style={({ pressed }) => [styles.card, style, pressed && styles.cardPressed]}
+        style={({ pressed }) => [cardStyle, pressed && styles.cardPressed]}
       >
         {children}
       </Pressable>
     );
   }
 
-  return <View style={[styles.card, style]}>{children}</View>;
+  return <View style={cardStyle}>{children}</View>;
 }
 
 export function IconButton({
@@ -75,6 +86,8 @@ export function IconButton({
 }
 
 export function CompactButton({ label, onPress }: { label: string; onPress: () => void }) {
+  const colors = useTheme();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -85,7 +98,7 @@ export function CompactButton({ label, onPress }: { label: string; onPress: () =
       }}
       style={({ pressed }) => [styles.compactButton, pressed && styles.pressed]}
     >
-      <Text style={styles.compactButtonText}>{label}</Text>
+      <Text style={[styles.compactButtonText, { color: colors.surface }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -96,11 +109,8 @@ export function HeaderActionSlot({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: radius.lg,
     borderWidth: 1,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
@@ -111,7 +121,7 @@ const styles = StyleSheet.create({
   },
   compactButton: {
     alignItems: 'center',
-    backgroundColor: colors.sage,
+    backgroundColor: '#987E55',
     borderRadius: radius.sm,
     justifyContent: 'center',
     minHeight: 32,
@@ -119,7 +129,6 @@ const styles = StyleSheet.create({
   },
   compactButtonText: {
     ...textStyles.buttonLabelCompact,
-    color: colors.surface,
   },
   headerActionSlot: {
     alignItems: 'center',

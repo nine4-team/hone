@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Alert, Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
-import { colors } from '../lib/theme';
+import { useTheme } from '../lib/theme';
 
 type InfoTooltipProps = {
   accessibilityLabel?: string;
@@ -17,6 +17,8 @@ export function InfoTooltip({
   style,
   title,
 }: InfoTooltipProps) {
+  const colors = useTheme();
+
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel ?? `About ${title}`}

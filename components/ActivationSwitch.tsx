@@ -1,5 +1,5 @@
 import { Switch } from 'react-native';
-import { colors } from '../lib/theme';
+import { useTheme } from '../lib/theme';
 
 type ActivationSwitchProps = {
   onValueChange: (value: boolean) => void;
@@ -7,6 +7,8 @@ type ActivationSwitchProps = {
 };
 
 export function ActivationSwitch({ onValueChange, value }: ActivationSwitchProps) {
+  const colors = useTheme();
+
   return (
     <Switch
       accessibilityLabel={value ? 'Deactivate skill' : 'Activate skill'}

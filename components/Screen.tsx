@@ -12,7 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import type { SvgProps } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { InfoLabel } from './InfoLabel';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 type ScreenTitleIcon =
@@ -49,9 +49,11 @@ export function Screen({
   toastMessage,
   titleIcon,
 }: ScreenProps) {
+  const colors = useTheme();
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg }]}>
+      <View style={[styles.header, { backgroundColor: colors.bg, borderBottomColor: colors.line }]}>
         <View style={styles.headerSide}>
           {onBack ? (
             <Pressable
@@ -68,15 +70,23 @@ export function Screen({
         <View style={styles.titleRow}>
           <View style={styles.titleCenter}>
             <View style={styles.titleGroup}>
-              {titleIcon ? <TitleIcon icon={titleIcon} /> : null}
-              <InfoLabel label={title} body={subtitle} labelStyle={styles.headerTitle} />
+              {titleIcon ? <TitleIcon color={colors.ink} icon={titleIcon} /> : null}
+              <InfoLabel
+                label={title}
+                body={subtitle}
+                labelStyle={[styles.headerTitle, { color: colors.ink }]}
+              />
             </View>
             {status ? <View style={styles.statusLine}>{status}</View> : null}
           </View>
         </View>
         <View style={[styles.headerSide, styles.headerRight]}>{action}</View>
       </View>
-      {stickyHeader ? <View style={styles.stickyHeader}>{stickyHeader}</View> : null}
+      {stickyHeader ? (
+        <View style={[styles.stickyHeader, { backgroundColor: colors.bg, borderBottomColor: colors.line }]}>
+          {stickyHeader}
+        </View>
+      ) : null}
       {scroll ? (
         <ScrollView ref={scrollRef} contentContainerStyle={[styles.content, contentStyle]}>
           {children}
@@ -87,8 +97,8 @@ export function Screen({
       {bottomOverlay}
       {toastMessage ? (
         <View pointerEvents="none" style={styles.toastWrap}>
-          <View style={styles.toast}>
-            <Text style={styles.toastText}>{toastMessage}</Text>
+          <View style={[styles.toast, { backgroundColor: colors.ink }]}>
+            <Text style={[styles.toastText, { color: colors.surface }]}>{toastMessage}</Text>
           </View>
         </View>
       ) : null}
@@ -96,19 +106,18 @@ export function Screen({
   );
 }
 
-function TitleIcon({ icon }: { icon: ScreenTitleIcon }) {
+function TitleIcon({ color, icon }: { color: string; icon: ScreenTitleIcon }) {
   if (typeof icon === 'string') {
-    return <MaterialIcons name={icon} size={20} color={colors.ink} />;
+    return <MaterialIcons name={icon} size={20} color={color} />;
   }
 
   const Icon = icon;
-  return <Icon color={colors.ink} size={20} />;
+  return <Icon color={color} size={20} />;
 }
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.bg,
     position: 'relative',
   },
   content: {
@@ -121,8 +130,6 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    backgroundColor: colors.bg,
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -159,7 +166,6 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   toast: {
-    backgroundColor: colors.ink,
     borderRadius: 999,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
@@ -180,8 +186,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stickyHeader: {
-    backgroundColor: colors.bg,
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
     paddingBottom: spacing.sm,
     paddingHorizontal: spacing.lg,

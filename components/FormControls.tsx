@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { StyleSheet, Text, TextInput, type TextInputProps, View } from 'react-native';
-import { colors, radius, spacing } from '../lib/theme';
+import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import { Card } from './ui';
 
@@ -9,18 +9,28 @@ export function FormPanel({ children }: PropsWithChildren) {
 }
 
 export function FormLabel({ children }: PropsWithChildren) {
-  return <Text style={styles.label}>{children}</Text>;
+  const colors = useTheme();
+
+  return <Text style={[styles.label, { color: colors.ink }]}>{children}</Text>;
 }
 
 export function FormHelp({ children }: PropsWithChildren) {
-  return <Text style={styles.help}>{children}</Text>;
+  const colors = useTheme();
+
+  return <Text style={[styles.help, { color: colors.muted }]}>{children}</Text>;
 }
 
 export function FormInput({ style, ...props }: TextInputProps) {
+  const colors = useTheme();
+
   return (
     <TextInput
       placeholderTextColor={colors.quiet}
-      style={[styles.input, style]}
+      style={[
+        styles.input,
+        { backgroundColor: colors.surface, borderColor: colors.line, color: colors.ink },
+        style,
+      ]}
       {...props}
     />
   );
@@ -41,8 +51,6 @@ const styles = StyleSheet.create({
   },
   input: {
     ...textStyles.formInput,
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1,
     minHeight: 46,

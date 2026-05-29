@@ -2,7 +2,7 @@ import { Tabs, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
-import { colors } from '../../lib/theme';
+import { useTheme } from '../../lib/theme';
 
 const visibleRoutes = ['index', 'library', 'settings'];
 
@@ -56,6 +56,8 @@ function FloatingTabBar({ state, navigation }: any) {
 }
 
 export default function TabsLayout() {
+  const colors = useTheme();
+
   return (
     <Tabs
       tabBar={(props) => <FloatingTabBar {...props} />}

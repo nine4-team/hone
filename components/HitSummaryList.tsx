@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 export type HitSummaryRow = {
@@ -23,6 +23,7 @@ export function HitSummaryList({
   rows,
 }: HitSummaryListProps) {
   const router = useRouter();
+  const colors = useTheme();
 
   return (
     <View style={styles.rows}>
@@ -30,7 +31,11 @@ export function HitSummaryList({
         const content = (
           <>
             <Text
-              style={[styles.label, emphasizeLabels && styles.labelEmphasized, row.total && styles.totalLabel]}
+              style={[
+                styles.label,
+                { color: row.total ? colors.sage : colors.muted },
+                emphasizeLabels && styles.labelEmphasized,
+              ]}
               numberOfLines={1}
             >
               {row.label}
@@ -38,9 +43,9 @@ export function HitSummaryList({
             <Text
               style={[
                 styles.value,
+                { color: row.total ? colors.sage : colors.muted },
                 emphasizeLabels && styles.labelEmphasized,
                 alignWithSectionAction && styles.valueAligned,
-                row.total && styles.totalValue,
               ]}
             >
               {row.count}
@@ -110,12 +115,6 @@ const styles = StyleSheet.create({
     ...textStyles.rowLabel,
     minWidth: 32,
     textAlign: 'right',
-  },
-  totalLabel: {
-    color: colors.sage,
-  },
-  totalValue: {
-    color: colors.sage,
   },
   valueAligned: {
     minWidth: 28,

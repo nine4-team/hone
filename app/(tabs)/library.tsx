@@ -9,7 +9,7 @@ import { SkillCard } from '../../components/SkillCard';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { getSkillLevelProgress } from '../../lib/hits';
 import { useHitList } from '../../lib/store';
-import { colors, radius, spacing } from '../../lib/theme';
+import { radius, spacing, useTheme } from '../../lib/theme';
 import { useToast } from '../../lib/useToast';
 
 type ArsenalFilter = 'all' | 'active' | 'inactive';
@@ -165,6 +165,8 @@ function IconOnlyControl({
   onPress: () => void;
   selected: boolean;
 }) {
+  const colors = useTheme();
+
   return (
     <Pressable
       accessibilityLabel={accessibilityLabel}
@@ -174,7 +176,8 @@ function IconOnlyControl({
       onPress={onPress}
       style={({ pressed }) => [
         styles.iconControl,
-        selected && styles.iconControlSelected,
+        { backgroundColor: colors.surface, borderColor: colors.line },
+        selected && { backgroundColor: colors.ink, borderColor: colors.ink },
         pressed && styles.pressed,
       ]}
     >
@@ -186,17 +189,11 @@ function IconOnlyControl({
 const styles = StyleSheet.create({
   iconControl: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1,
     height: 46,
     justifyContent: 'center',
     width: 46,
-  },
-  iconControlSelected: {
-    backgroundColor: colors.ink,
-    borderColor: colors.ink,
   },
   search: {
     flex: 1,

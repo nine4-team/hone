@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing } from '../lib/theme';
+import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 type StepperProps = {
@@ -12,8 +12,10 @@ type StepperProps = {
 };
 
 export function Stepper({ value, onChange, min = 0, step = 1, format }: StepperProps) {
+  const colors = useTheme();
+
   return (
-    <View style={styles.stepper}>
+    <View style={[styles.stepper, { backgroundColor: colors.surface, borderColor: colors.line }]}>
       <Pressable
         accessibilityLabel="Decrease"
         accessibilityRole="button"
@@ -24,7 +26,7 @@ export function Stepper({ value, onChange, min = 0, step = 1, format }: StepperP
       >
         <MaterialIcons name="remove" size={18} color={value <= min ? colors.quiet : colors.ink} />
       </Pressable>
-      <Text style={styles.value}>{format ? format(value) : value}</Text>
+      <Text style={[styles.value, { color: colors.ink }]}>{format ? format(value) : value}</Text>
       <Pressable
         accessibilityLabel="Increase"
         accessibilityRole="button"
@@ -50,8 +52,6 @@ const styles = StyleSheet.create({
   },
   stepper: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: 'row',

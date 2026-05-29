@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import { getSkillLevelProgress } from '../lib/hits';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import type { Skill } from '../lib/types';
 
 type ActiveSkillTileProps = {
@@ -20,12 +20,14 @@ export function ActiveSkillTile({
   skill,
 }: ActiveSkillTileProps) {
   const router = useRouter();
+  const colors = useTheme();
   const levelProgress = getSkillLevelProgress(hitCount);
   const currentLevelHitLabel = levelProgress.hitsIntoLevel === 1 ? 'HIT' : 'HITS';
   const totalHitLabel = hitCount === 1 ? 'hit' : 'hits';
   const lifetimeHitLabel = hitCount === 1 ? 'lifetime hit' : 'lifetime hits';
   const hitRing = getRingStroke(HIT_RING_RADIUS, levelProgress.progressToNextLevel);
   const levelRing = getRingStroke(LEVEL_RING_RADIUS, levelProgress.level / 10);
+  const dialColors = colors.bg === DARK_PAGE_BACKGROUND ? darkDialColors : lightDialColors;
   const nextLevelHitLabel = `${levelProgress.hitsToNextLevel} ${
     levelProgress.hitsToNextLevel === 1 ? 'hit' : 'hits'
   }`;
@@ -40,7 +42,11 @@ export function ActiveSkillTile({
           event.stopPropagation();
           onLogPress();
         }}
-        style={({ pressed }) => [styles.logChip, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.logChip,
+          { backgroundColor: colors.surface, borderColor: colors.line },
+          pressed && styles.pressed,
+        ]}
       >
         <MaterialIcons name="add" size={14} color={colors.ink} />
       </Pressable>
@@ -66,7 +72,7 @@ export function ActiveSkillTile({
         onPress={() => router.push(`/skills/${skill.id}`)}
         style={({ pressed }) => [styles.tilePressArea, pressed && styles.pressed]}
       >
-        <View style={styles.ringTrack}>
+        <View style={[styles.ringTrack, { backgroundColor: dialColors.center, shadowColor: colors.ink }]}>
           <Svg height={RING_SIZE} pointerEvents="none" style={styles.ringSvg} width={RING_SIZE}>
             <G transform={`rotate(-90 ${RING_CENTER} ${RING_CENTER})`}>
               <Circle
@@ -74,7 +80,7 @@ export function ActiveSkillTile({
                 cy={RING_CENTER}
                 fill="none"
                 r={HIT_RING_RADIUS}
-                stroke={colors.line}
+                stroke={dialColors.outerTrack}
                 strokeWidth={HIT_RING_STROKE}
               />
               <Circle
@@ -82,7 +88,7 @@ export function ActiveSkillTile({
                 cy={RING_CENTER}
                 fill="none"
                 r={HIT_RING_RADIUS}
-                stroke={colors.sage}
+                stroke={dialColors.hitProgress}
                 strokeDasharray={`${hitRing.circumference}, ${hitRing.circumference}`}
                 strokeDashoffset={hitRing.offset}
                 strokeLinecap="butt"
@@ -93,7 +99,7 @@ export function ActiveSkillTile({
                 cy={RING_CENTER}
                 fill="none"
                 r={LEVEL_RING_RADIUS}
-                stroke={LEVEL_RING_TRACK_COLOR}
+                stroke={dialColors.innerTrack}
                 strokeWidth={LEVEL_RING_STROKE}
               />
               <Circle
@@ -101,7 +107,7 @@ export function ActiveSkillTile({
                 cy={RING_CENTER}
                 fill="none"
                 r={LEVEL_RING_RADIUS}
-                stroke={LEVEL_RING_PROGRESS_COLOR}
+                stroke={dialColors.levelProgress}
                 strokeDasharray={`${levelRing.circumference}, ${levelRing.circumference}`}
                 strokeDashoffset={levelRing.offset}
                 strokeLinecap="butt"
@@ -109,38 +115,38 @@ export function ActiveSkillTile({
               />
             </G>
           </Svg>
-          <View style={styles.ringInner}>
-            <Text style={[styles.dialMetric, styles.dialMetricHits]} numberOfLines={1}>
+          <View style={[styles.ringInner, { backgroundColor: dialColors.center }]}>
+            <Text style={[styles.dialMetric, { color: dialColors.hitProgress }]} numberOfLines={1}>
               {levelProgress.hitsIntoLevel}
-              <Text style={[styles.dialMetricLabel, styles.dialMetricHits]}>
+              <Text style={[styles.dialMetricLabel, { color: dialColors.hitProgress }]}>
                 {` ${currentLevelHitLabel}`}
               </Text>
             </Text>
-            <Text style={[styles.dialMetric, styles.dialMetricLevel]} numberOfLines={1}>
-              <Text style={[styles.dialMetricLabel, styles.dialMetricLevelLabel]}>LEVEL </Text>
+            <Text style={[styles.dialMetric, styles.dialMetricLevel, { color: dialColors.levelProgress }]} numberOfLines={1}>
+              <Text style={[styles.dialMetricLabel, styles.dialMetricLevelLabel, { color: dialColors.levelProgress }]}>LEVEL </Text>
               {levelProgress.level}
             </Text>
           </View>
         </View>
 
-        <Text style={styles.name} numberOfLines={1}>
+        <Text style={[styles.name, { color: colors.ink }]} numberOfLines={1}>
           {skill.name.toUpperCase()}
         </Text>
         <View style={styles.metaStack}>
-          <Text style={styles.meta} numberOfLines={1}>
+          <Text style={[styles.meta, { color: colors.muted }]} numberOfLines={1}>
             {levelProgress.nextLevel ? (
               <>
-                <Text style={styles.metaLabel}>{nextLevelHitLabel}</Text>
+                <Text style={[styles.metaLabel, { color: colors.muted }]}>{nextLevelHitLabel}</Text>
                 {` until Level ${levelProgress.nextLevel}`}
               </>
             ) : (
               <>
-                <Text style={styles.metaLabel}>{hitCount} lifetime hits</Text>
+                <Text style={[styles.metaLabel, { color: colors.muted }]}>{hitCount} lifetime hits</Text>
               </>
             )}
           </Text>
-          <Text style={styles.meta} numberOfLines={1}>
-            <Text style={styles.metaLabel}>{hitCount}</Text>
+          <Text style={[styles.meta, { color: colors.muted }]} numberOfLines={1}>
+            <Text style={[styles.metaLabel, { color: colors.muted }]}>{hitCount}</Text>
             {` ${lifetimeHitLabel}`}
           </Text>
         </View>
@@ -155,8 +161,23 @@ const HIT_RING_RADIUS = 55;
 const HIT_RING_STROKE = 8;
 const LEVEL_RING_RADIUS = 47;
 const LEVEL_RING_STROKE = 8;
-const LEVEL_RING_TRACK_COLOR = '#ECECEC';
-const LEVEL_RING_PROGRESS_COLOR = '#666666';
+const DARK_PAGE_BACKGROUND = '#1E1E1E';
+
+const lightDialColors = {
+  center: '#F7F8FA',
+  outerTrack: '#E0E0E0',
+  innerTrack: '#ECECEC',
+  hitProgress: '#987E55',
+  levelProgress: '#666666',
+};
+
+const darkDialColors = {
+  center: '#1E1E1E',
+  outerTrack: '#3F3F3F',
+  innerTrack: '#353535',
+  hitProgress: '#987E55',
+  levelProgress: '#8A8A8A',
+};
 
 function getRingStroke(radius: number, progress: number) {
   const circumference = 2 * Math.PI * radius;
@@ -170,17 +191,12 @@ function getRingStroke(radius: number, progress: number) {
 
 const styles = StyleSheet.create({
   dialMetric: {
-    color: LEVEL_RING_PROGRESS_COLOR,
     fontSize: 14,
     fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 18,
   },
-  dialMetricHits: {
-    color: colors.sage,
-  },
   dialMetricLevel: {
-    color: LEVEL_RING_PROGRESS_COLOR,
     fontSize: 11,
     fontWeight: '500',
     lineHeight: 15,
@@ -193,8 +209,6 @@ const styles = StyleSheet.create({
   },
   logChip: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: 999,
     borderWidth: 1,
     flexDirection: 'row',
@@ -207,13 +221,11 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   meta: {
-    color: colors.muted,
     fontSize: 11,
     fontWeight: '400',
     textAlign: 'center',
   },
   metaLabel: {
-    color: colors.muted,
     fontSize: 11,
     fontWeight: '600',
   },
@@ -230,7 +242,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   name: {
-    color: colors.ink,
     fontSize: 13,
     fontWeight: '600',
     lineHeight: 18,
@@ -242,10 +253,7 @@ const styles = StyleSheet.create({
   },
   ringInner: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
     borderRadius: 42,
-    borderWidth: StyleSheet.hairlineWidth,
     height: 84,
     justifyContent: 'center',
     width: 84,
@@ -256,11 +264,9 @@ const styles = StyleSheet.create({
   },
   ringTrack: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
     borderRadius: RING_SIZE / 2,
     height: RING_SIZE,
     justifyContent: 'center',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,

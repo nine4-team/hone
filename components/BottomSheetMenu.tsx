@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 export type BottomSheetMenuItem = {
@@ -19,11 +19,17 @@ type BottomSheetMenuProps = {
 };
 
 export function BottomSheetMenu({ visible, title, items, onRequestClose }: BottomSheetMenuProps) {
+  const colors = useTheme();
+
   return (
     <Modal animationType="slide" transparent visible={visible} onRequestClose={onRequestClose}>
       <Pressable style={styles.backdrop} onPress={onRequestClose}>
-        <Pressable style={styles.sheet}>
-          {title ? <Text style={styles.title}>{title}</Text> : null}
+        <Pressable style={[styles.sheet, { backgroundColor: colors.surface }]}>
+          {title ? (
+            <Text style={[styles.title, { borderBottomColor: colors.line, color: colors.ink }]}>
+              {title}
+            </Text>
+          ) : null}
           {items.map((item, index) => (
             <Pressable
               key={item.key}
@@ -34,11 +40,11 @@ export function BottomSheetMenu({ visible, title, items, onRequestClose }: Botto
               }}
               style={({ pressed }) => [
                 styles.item,
-                index > 0 && styles.itemBorder,
-                pressed && styles.pressed,
+                index > 0 && { borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth },
+                pressed && { backgroundColor: colors.surfaceMuted },
               ]}
             >
-              <Text style={[styles.itemText, item.destructive && styles.destructiveText]}>
+              <Text style={[styles.itemText, { color: item.destructive ? colors.clay : colors.ink }]}>
                 {item.label}
               </Text>
               {item.selected ? <MaterialIcons name="check" size={20} color={colors.sage} /> : null}
@@ -56,9 +62,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
-  destructiveText: {
-    color: colors.clay,
-  },
   item: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -67,18 +70,10 @@ const styles = StyleSheet.create({
     minHeight: 52,
     paddingHorizontal: spacing.xl,
   },
-  itemBorder: {
-    borderTopColor: colors.line,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
   itemText: {
     ...textStyles.menuItem,
   },
-  pressed: {
-    backgroundColor: colors.surfaceMuted,
-  },
   sheet: {
-    backgroundColor: colors.surface,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     overflow: 'hidden',
@@ -86,7 +81,6 @@ const styles = StyleSheet.create({
   },
   title: {
     ...textStyles.menuTitle,
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,

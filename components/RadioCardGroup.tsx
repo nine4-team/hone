@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing } from '../lib/theme';
+import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 export type RadioCardOption<T extends string> = {
@@ -16,6 +16,8 @@ type RadioCardGroupProps<T extends string> = {
 };
 
 export function RadioCardGroup<T extends string>({ options, value, onChange }: RadioCardGroupProps<T>) {
+  const colors = useTheme();
+
   return (
     <View style={styles.group}>
       {options.map((option) => {
@@ -28,14 +30,19 @@ export function RadioCardGroup<T extends string>({ options, value, onChange }: R
             onPress={() => onChange(option.value)}
             style={({ pressed }) => [
               styles.card,
-              selected && styles.cardSelected,
+              {
+                backgroundColor: selected ? colors.surface : colors.surfaceMuted,
+                borderColor: selected ? colors.sage : colors.line,
+              },
               pressed && styles.pressed,
             ]}
           >
             <View style={styles.text}>
-              <Text style={[styles.label, selected && styles.labelSelected]}>{option.label}</Text>
+              <Text style={[styles.label, { color: selected ? colors.ink : colors.muted }]}>
+                {option.label}
+              </Text>
               {option.description ? (
-                <Text style={styles.description}>{option.description}</Text>
+                <Text style={[styles.description, { color: colors.muted }]}>{option.description}</Text>
               ) : null}
             </View>
             <MaterialIcons
@@ -53,8 +60,6 @@ export function RadioCardGroup<T extends string>({ options, value, onChange }: R
 const styles = StyleSheet.create({
   card: {
     alignItems: 'center',
-    backgroundColor: colors.surfaceMuted,
-    borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1.5,
     flexDirection: 'row',
@@ -62,10 +67,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-  },
-  cardSelected: {
-    backgroundColor: colors.surface,
-    borderColor: colors.sage,
   },
   description: {
     ...textStyles.formHelp,
@@ -76,10 +77,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...textStyles.formLabel,
-    color: colors.muted,
-  },
-  labelSelected: {
-    color: colors.ink,
   },
   pressed: {
     opacity: 0.74,

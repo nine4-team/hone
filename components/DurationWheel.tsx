@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { colors, spacing } from '../lib/theme';
+import { spacing, useTheme } from '../lib/theme';
 
 const STEP = 5;
 const MAX = 180;
@@ -27,6 +27,7 @@ function labelFor(minutes: number) {
 }
 
 export function DurationWheel({ value, onChange }: DurationWheelProps) {
+  const colors = useTheme();
   const initialOffset = useRef(Math.round(value / STEP) * ITEM_HEIGHT).current;
   const scrollY = useRef(new Animated.Value(initialOffset)).current;
 
@@ -73,21 +74,22 @@ export function DurationWheel({ value, onChange }: DurationWheelProps) {
           });
           return (
             <Animated.View key={minutes} style={[styles.item, { opacity, transform: [{ scale }] }]}>
-              <Text style={styles.itemText}>{labelFor(minutes)}</Text>
+              <Text style={[styles.itemText, { color: colors.ink }]}>{labelFor(minutes)}</Text>
             </Animated.View>
           );
         })}
       </Animated.ScrollView>
-      <View pointerEvents="none" style={styles.band} />
+      <View
+        pointerEvents="none"
+        style={[styles.band, { borderBottomColor: colors.line, borderTopColor: colors.line }]}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   band: {
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.line,
     borderTopWidth: StyleSheet.hairlineWidth,
     height: ITEM_HEIGHT,
     left: 0,
@@ -101,7 +103,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   itemText: {
-    color: colors.ink,
     fontSize: 19,
     fontWeight: '600',
   },

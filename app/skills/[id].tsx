@@ -15,13 +15,14 @@ import { formatDate, trainingLogTypeLabels, trainingLogTypes } from '../../lib/f
 import { HITS_PER_LEVEL, MAX_VISIBLE_LEVEL, getSkillLevelProgress, hitRowsByPartner } from '../../lib/hits';
 import { inferMediaType } from '../../lib/mediaMetadata';
 import { useHitList } from '../../lib/store';
-import { colors, radius, spacing } from '../../lib/theme';
+import { radius, spacing, type ThemeColors, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 import { useToast } from '../../lib/useToast';
 
 export default function SkillDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const colors = useTheme();
   const {
     addQuickNote,
     addMedia,
@@ -152,7 +153,7 @@ export default function SkillDetailScreen() {
     <Screen
       title={skill.name}
       status={
-        <Text style={styles.headerLifetimeHits}>
+        <Text style={[styles.headerLifetimeHits, { color: colors.sage }]}>
           <Text style={styles.headerLifetimeHitCount}>{totalHits}</Text>
           {` Lifetime ${totalHits === 1 ? 'Hit' : 'Hits'}`}
         </Text>
@@ -224,11 +225,13 @@ export default function SkillDetailScreen() {
         <Card style={styles.levelCard}>
           <View style={styles.progressStack}>
             <ProgressBarStat
+              colors={colors}
               label="level"
               progress={levelProgress.level / MAX_VISIBLE_LEVEL}
               value={`${levelProgress.level}/${MAX_VISIBLE_LEVEL}`}
             />
             <ProgressBarStat
+              colors={colors}
               label="hits this level"
               progress={levelProgress.progressToNextLevel}
               value={`${levelProgress.hitsIntoLevel}/${HITS_PER_LEVEL}`}
@@ -241,7 +244,7 @@ export default function SkillDetailScreen() {
             onPress={() => setStatsOpen((current) => !current)}
             style={({ pressed }) => [styles.statsToggle, pressed && styles.pressed]}
           >
-            <Text style={styles.statsToggleText}>More</Text>
+            <Text style={[styles.statsToggleText, { color: colors.muted }]}>More</Text>
             <MaterialIcons
               name={statsOpen ? 'expand-less' : 'expand-more'}
               size={18}
@@ -250,19 +253,22 @@ export default function SkillDetailScreen() {
           </Pressable>
 
           {statsOpen ? (
-            <View style={styles.secondaryStats}>
+            <View style={[styles.secondaryStats, { borderTopColor: colors.line }]}>
               {hasMoreStats ? (
                 <>
                   {moreStats.map((stat) => (
                     <TrainingStatRow
                       key={stat.key}
+                      colors={colors}
                       label={stat.label}
                       value={stat.value}
                     />
                   ))}
                 </>
               ) : (
-                <Text style={styles.emptyTrainingStats}>No training stats recorded yet.</Text>
+                <Text style={[styles.emptyTrainingStats, { color: colors.muted }]}>
+                  No training stats recorded yet.
+                </Text>
               )}
             </View>
           ) : null}
@@ -271,6 +277,7 @@ export default function SkillDetailScreen() {
 
       <View style={styles.section}>
         <CollapsibleSectionHeader
+          colors={colors}
           title="Hit List"
           open={hitListOpen}
           onToggle={() => setHitListOpen((current) => !current)}
@@ -296,7 +303,7 @@ export default function SkillDetailScreen() {
                     onChangeText={setHitPartnerName}
                     placeholder="Partner"
                     placeholderTextColor={colors.quiet}
-                    style={[styles.hitInput, styles.hitPartnerInput]}
+                    style={[styles.hitInput, styles.hitPartnerInput, { color: colors.ink }]}
                     value={hitPartnerName}
                   />
                   <TextInput
@@ -304,11 +311,11 @@ export default function SkillDetailScreen() {
                     onChangeText={setHitCount}
                     placeholder="Hits"
                     placeholderTextColor={colors.quiet}
-                    style={[styles.hitInput, styles.hitCountInput]}
+                    style={[styles.hitInput, styles.hitCountInput, { color: colors.ink }]}
                     value={hitCount}
                   />
                 </View>
-                <View style={styles.composerActions}>
+                <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => {
@@ -318,7 +325,7 @@ export default function SkillDetailScreen() {
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.composerCancel}>Cancel</Text>
+                    <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
@@ -336,7 +343,7 @@ export default function SkillDetailScreen() {
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.composerSave}>Save</Text>
+                    <Text style={[styles.composerSave, { color: colors.sage }]}>Save</Text>
                   </Pressable>
                 </View>
               </Card>
@@ -368,6 +375,7 @@ export default function SkillDetailScreen() {
 
       <View style={styles.section}>
         <CollapsibleSectionHeader
+          colors={colors}
           title="Media"
           open={mediaOpen}
           onToggle={() => setMediaOpen((current) => !current)}
@@ -396,7 +404,7 @@ export default function SkillDetailScreen() {
                   onChangeText={setMediaUrl}
                   placeholder="URL"
                   placeholderTextColor={colors.quiet}
-                  style={styles.mediaInput}
+                  style={[styles.mediaInput, { borderBottomColor: colors.line, color: colors.ink }]}
                   value={mediaUrl}
                 />
                 <TextInput
@@ -404,15 +412,19 @@ export default function SkillDetailScreen() {
                   onChangeText={setMediaNotes}
                   placeholder="Note"
                   placeholderTextColor={colors.quiet}
-                  style={[styles.mediaInput, styles.mediaNotesInput]}
+                  style={[
+                    styles.mediaInput,
+                    styles.mediaNotesInput,
+                    { borderBottomColor: colors.line, color: colors.ink },
+                  ]}
                   value={mediaNotes}
                 />
                 {mediaUrl.trim() ? (
                   <View style={styles.mediaPreviewRow}>
-                    <MediaThumbnail url={mediaUrl} type={inferMediaType(mediaUrl)} />
+                    <MediaThumbnail colors={colors} url={mediaUrl} type={inferMediaType(mediaUrl)} />
                   </View>
                 ) : null}
-                <View style={styles.composerActions}>
+                <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => {
@@ -423,7 +435,7 @@ export default function SkillDetailScreen() {
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.composerCancel}>Cancel</Text>
+                    <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
@@ -449,7 +461,7 @@ export default function SkillDetailScreen() {
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.composerSave}>Save</Text>
+                    <Text style={[styles.composerSave, { color: colors.sage }]}>Save</Text>
                   </Pressable>
                 </View>
               </Card>
@@ -465,7 +477,12 @@ export default function SkillDetailScreen() {
                     onPress={() => openMediaUrl(item.url)}
                     style={({ pressed }) => [styles.mediaLinkArea, pressed && styles.pressed]}
                   >
-                    <MediaThumbnail thumbnailUrl={item.thumbnailUrl} url={item.url} type={item.type} />
+                    <MediaThumbnail
+                      colors={colors}
+                      thumbnailUrl={item.thumbnailUrl}
+                      url={item.url}
+                      type={item.type}
+                    />
                   </Pressable>
                   <View style={styles.mediaContent}>
                     <View style={styles.mediaHeader}>
@@ -475,8 +492,12 @@ export default function SkillDetailScreen() {
                         onPress={() => openMediaUrl(item.url)}
                         style={({ pressed }) => [styles.mediaTitleBlock, pressed && styles.pressed]}
                       >
-                        <Text style={styles.cardTitle} numberOfLines={2}>{getMediaPrimaryText(item)}</Text>
-                        <Text style={styles.cardMeta} numberOfLines={1}>{getMediaSourceLabel(item.url)}</Text>
+                        <Text style={[styles.cardTitle, { color: colors.ink }]} numberOfLines={2}>
+                          {getMediaPrimaryText(item)}
+                        </Text>
+                        <Text style={[styles.cardMeta, { color: colors.quiet }]} numberOfLines={1}>
+                          {getMediaSourceLabel(item.url)}
+                        </Text>
                       </Pressable>
                       <View style={styles.mediaActions}>
                         <IconButton
@@ -499,7 +520,11 @@ export default function SkillDetailScreen() {
                         </IconButton>
                       </View>
                     </View>
-                    {item.notes ? <Text style={styles.cardBody} numberOfLines={2}>{item.notes}</Text> : null}
+                    {item.notes ? (
+                      <Text style={[styles.cardBody, { color: colors.ink }]} numberOfLines={2}>
+                        {item.notes}
+                      </Text>
+                    ) : null}
                   </View>
                 </Card>
               ))
@@ -509,6 +534,7 @@ export default function SkillDetailScreen() {
       </View>
       <View style={styles.section}>
         <CollapsibleSectionHeader
+          colors={colors}
           title="Notes"
           open={notesOpen}
           onToggle={() => setNotesOpen((current) => !current)}
@@ -536,10 +562,10 @@ export default function SkillDetailScreen() {
                   onChangeText={setNoteBody}
                   placeholder="Add a note"
                   placeholderTextColor={colors.quiet}
-                  style={styles.noteInput}
+                  style={[styles.noteInput, { color: colors.ink }]}
                   value={noteBody}
                 />
-                <View style={styles.composerActions}>
+                <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => {
@@ -549,7 +575,7 @@ export default function SkillDetailScreen() {
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.composerCancel}>Cancel</Text>
+                    <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
@@ -566,7 +592,7 @@ export default function SkillDetailScreen() {
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
-                    <Text style={styles.composerSave}>Save</Text>
+                    <Text style={[styles.composerSave, { color: colors.sage }]}>Save</Text>
                   </Pressable>
                 </View>
               </Card>
@@ -578,17 +604,17 @@ export default function SkillDetailScreen() {
                 <Card key={note.id} style={styles.contentCard}>
                   <View style={styles.noteHeader}>
                     <View style={styles.noteMetaRow}>
-                      <Text style={styles.cardMeta}>{formatDate(note.createdAt)}</Text>
+                      <Text style={[styles.cardMeta, { color: colors.quiet }]}>{formatDate(note.createdAt)}</Text>
                       {note.trainingLogId ? (
                         <>
-                          <Text style={styles.cardMeta}> · </Text>
+                          <Text style={[styles.cardMeta, { color: colors.quiet }]}> · </Text>
                           <Pressable
                             accessibilityLabel="Jump to training log"
                             accessibilityRole="button"
                             onPress={scrollToTrainingLogs}
                             style={({ pressed }) => pressed && styles.pressed}
                           >
-                            <Text style={styles.noteTrainingLogLink}>Training Log</Text>
+                            <Text style={[styles.noteTrainingLogLink, { color: colors.sage }]}>Training Log</Text>
                           </Pressable>
                         </>
                       ) : null}
@@ -605,7 +631,7 @@ export default function SkillDetailScreen() {
                       <MaterialIcons name="edit" size={18} color={colors.sage} />
                     </IconButton>
                   </View>
-                  <Text style={styles.cardBody}>{note.body}</Text>
+                  <Text style={[styles.cardBody, { color: colors.ink }]}>{note.body}</Text>
                 </Card>
               ))
             )}
@@ -620,6 +646,7 @@ export default function SkillDetailScreen() {
         style={styles.section}
       >
         <CollapsibleSectionHeader
+          colors={colors}
           title="Training Logs"
           open={logsOpen}
           onToggle={() => setLogsOpen((current) => !current)}
@@ -646,8 +673,8 @@ export default function SkillDetailScreen() {
                   <Card key={log.id} style={styles.logCard}>
                     <View style={styles.logHeader}>
                       <View style={styles.logTitleBlock}>
-                        <Text style={styles.logType}>{trainingLogTypeLabels[log.type]}</Text>
-                        <Text style={styles.logMeta}>
+                        <Text style={[styles.logType, { color: colors.ink }]}>{trainingLogTypeLabels[log.type]}</Text>
+                        <Text style={[styles.logMeta, { color: colors.quiet }]}>
                           {formatDate(log.occurredAt)}
                           {log.durationMinutes ? ` · ${formatDurationMinutes(log.durationMinutes)}` : ''}
                           {logTotalHits ? ` · ${logTotalHits} hits` : ''}
@@ -662,15 +689,15 @@ export default function SkillDetailScreen() {
                     </View>
                     {logHits.length > 0 ? (
                       <View style={styles.logHits}>
-                        <View style={styles.logHitsHeader}>
-                          <Text style={styles.logHitsLabel}>Hits</Text>
-                          <Text style={styles.logHitsTotal}>{logTotalHits}</Text>
+                        <View style={[styles.logHitsHeader, { borderBottomColor: colors.line }]}>
+                          <Text style={[styles.logHitsLabel, { color: colors.ink }]}>Hits</Text>
+                          <Text style={[styles.logHitsTotal, { color: colors.ink }]}>{logTotalHits}</Text>
                         </View>
                         <HitSummaryList rows={hitRowsByPartner(logHits, partners)} />
                       </View>
                     ) : null}
                     {logNotes.map((note) => (
-                      <Text key={note.id} style={styles.logNote}>
+                      <Text key={note.id} style={[styles.logNote, { borderTopColor: colors.line, color: colors.ink }]}>
                         {note.body}
                       </Text>
                     ))}
@@ -687,20 +714,38 @@ export default function SkillDetailScreen() {
 }
 
 function TrainingStatRow({
+  colors,
   emphasized,
   label,
   value,
 }: {
+  colors: ThemeColors;
   emphasized?: boolean;
   label: string;
   value: string;
 }) {
   return (
-    <View style={[styles.trainingStatRow, emphasized && styles.trainingStatRowEmphasized]}>
-      <Text style={[styles.trainingStatLabel, emphasized && styles.trainingStatLabelEmphasized]}>
+    <View
+      style={[
+        styles.trainingStatRow,
+        { borderBottomColor: colors.line },
+        emphasized && [styles.trainingStatRowEmphasized, { borderTopColor: colors.line }],
+      ]}
+    >
+      <Text
+        style={[
+          styles.trainingStatLabel,
+          { color: emphasized ? colors.sage : colors.ink },
+        ]}
+      >
         {label}
       </Text>
-      <Text style={[styles.trainingStatValue, emphasized && styles.trainingStatValueEmphasized]}>
+      <Text
+        style={[
+          styles.trainingStatValue,
+          { color: emphasized ? colors.sage : colors.ink },
+        ]}
+      >
         {value}
       </Text>
     </View>
@@ -708,10 +753,12 @@ function TrainingStatRow({
 }
 
 function ProgressBarStat({
+  colors,
   label,
   progress,
   value,
 }: {
+  colors: ThemeColors;
   label: string;
   progress: number;
   value: string;
@@ -723,15 +770,15 @@ function ProgressBarStat({
       <View style={styles.progressBarHeader}>
         <View style={styles.progressBarLabelRow}>
           <MaterialIcons name="bar-chart" size={10} color={colors.sage} />
-          <Text style={styles.progressBarLabel}>{label}</Text>
+          <Text style={[styles.progressBarLabel, { color: colors.sage }]}>{label}</Text>
         </View>
-        <Text style={styles.progressBarValue}>{value}</Text>
+        <Text style={[styles.progressBarValue, { color: colors.muted }]}>{value}</Text>
       </View>
-      <View style={styles.progressBar}>
+      <View style={[styles.progressBar, { backgroundColor: colors.line }]}>
         <View
           accessibilityRole="progressbar"
           accessibilityValue={{ min: 0, max: 100, now: percent }}
-          style={[styles.progressFill, { width: `${percent}%` }]}
+          style={[styles.progressFill, { backgroundColor: colors.sage, width: `${percent}%` }]}
         />
       </View>
     </View>
@@ -767,14 +814,15 @@ function formatLoggedHours(minutes: number) {
 }
 
 function MediaThumbnail({
+  colors,
   thumbnailUrl,
   type,
   url,
-}: Pick<Media, 'thumbnailUrl' | 'type' | 'url'>) {
+}: Pick<Media, 'thumbnailUrl' | 'type' | 'url'> & { colors: ThemeColors }) {
   const resolvedThumbnailUrl = thumbnailUrl || getYoutubeThumbnailUrl(url);
 
   return (
-    <View style={styles.mediaThumb}>
+    <View style={[styles.mediaThumb, { backgroundColor: colors.surfaceMuted, borderColor: colors.line }]}>
       {resolvedThumbnailUrl ? (
         <Image source={{ uri: resolvedThumbnailUrl }} style={styles.mediaThumbImage} />
       ) : (
@@ -787,7 +835,7 @@ function MediaThumbnail({
         </View>
       )}
       {type === 'youtube' ? (
-        <View style={styles.mediaPlayBadge}>
+        <View style={[styles.mediaPlayBadge, { backgroundColor: colors.clay }]}>
           <MaterialIcons name="play-arrow" size={16} color={colors.surface} />
         </View>
       ) : null}
@@ -841,12 +889,14 @@ function openMediaUrl(url: string) {
 
 function CollapsibleSectionHeader({
   action,
+  colors,
   count,
   onToggle,
   open,
   title,
 }: {
   action?: ReactNode;
+  colors: ThemeColors;
   count?: number;
   onToggle: () => void;
   open: boolean;
@@ -859,9 +909,11 @@ function CollapsibleSectionHeader({
         onPress={onToggle}
         style={({ pressed }) => [styles.sectionTitleButton, pressed && styles.pressed]}
       >
-        <Text style={styles.sectionTitle}>
+        <Text style={[styles.sectionTitle, { color: colors.ink }]}>
           {title}
-          {typeof count === 'number' ? <Text style={styles.sectionCount}> ({count})</Text> : null}
+          {typeof count === 'number' ? (
+            <Text style={[styles.sectionCount, { color: colors.sage }]}> ({count})</Text>
+          ) : null}
         </Text>
         <MaterialIcons
           name={open ? 'expand-less' : 'expand-more'}
@@ -891,7 +943,6 @@ const styles = StyleSheet.create({
   },
   composerActions: {
     alignItems: 'center',
-    borderTopColor: colors.line,
     borderTopWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -953,7 +1004,6 @@ const styles = StyleSheet.create({
   },
   logHitsHeader: {
     alignItems: 'center',
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -978,7 +1028,6 @@ const styles = StyleSheet.create({
   },
   logNote: {
     ...textStyles.detailRecordBody,
-    borderTopColor: colors.line,
     borderTopWidth: StyleSheet.hairlineWidth,
     marginTop: spacing.sm,
     paddingTop: spacing.sm,
@@ -1012,7 +1061,6 @@ const styles = StyleSheet.create({
   },
   mediaInput: {
     ...textStyles.formInput,
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
     minHeight: 42,
     paddingHorizontal: spacing.md,
@@ -1027,7 +1075,6 @@ const styles = StyleSheet.create({
   },
   mediaPlayBadge: {
     alignItems: 'center',
-    backgroundColor: colors.clay,
     borderRadius: 12,
     height: 24,
     justifyContent: 'center',
@@ -1044,8 +1091,6 @@ const styles = StyleSheet.create({
   },
   mediaThumb: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.surfaceMuted,
-    borderColor: colors.line,
     borderRadius: radius.sm,
     borderWidth: StyleSheet.hairlineWidth,
     height: 72,
@@ -1086,11 +1131,9 @@ const styles = StyleSheet.create({
   },
   noteTrainingLogLink: {
     ...textStyles.detailRecordMeta,
-    color: colors.sage,
     fontWeight: '700',
   },
   emptyTrainingStats: {
-    color: colors.muted,
     fontSize: 13,
     fontWeight: '600',
     lineHeight: 18,
@@ -1101,14 +1144,12 @@ const styles = StyleSheet.create({
     opacity: 0.72,
   },
   progressBar: {
-    backgroundColor: colors.line,
     borderRadius: 2,
     height: 4,
     overflow: 'hidden',
     width: '100%',
   },
   progressBarLabel: {
-    color: colors.sage,
     fontSize: 10,
     fontWeight: '700',
     includeFontPadding: false,
@@ -1129,7 +1170,6 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   progressBarValue: {
-    color: colors.muted,
     fontSize: 11,
     fontWeight: '600',
     lineHeight: 14,
@@ -1138,7 +1178,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   progressFill: {
-    backgroundColor: colors.sage,
     borderRadius: 2,
     height: '100%',
   },
@@ -1146,7 +1185,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   secondaryStats: {
-    borderTopColor: colors.line,
     borderTopWidth: StyleSheet.hairlineWidth,
     gap: 0,
     paddingTop: spacing.sm,
@@ -1173,7 +1211,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   headerLifetimeHits: {
-    color: colors.sage,
     fontSize: 12,
     fontWeight: '500',
     lineHeight: 16,
@@ -1189,23 +1226,17 @@ const styles = StyleSheet.create({
     minHeight: 28,
   },
   statsToggleText: {
-    color: colors.muted,
     fontSize: 12,
     fontWeight: '700',
     lineHeight: 16,
   },
   trainingStatLabel: {
-    color: colors.ink,
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 18,
   },
-  trainingStatLabelEmphasized: {
-    color: colors.sage,
-  },
   trainingStatRow: {
     alignItems: 'center',
-    borderBottomColor: colors.line,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     gap: spacing.md,
@@ -1215,18 +1246,13 @@ const styles = StyleSheet.create({
   },
   trainingStatRowEmphasized: {
     borderBottomWidth: 0,
-    borderTopColor: colors.line,
     borderTopWidth: StyleSheet.hairlineWidth,
     marginTop: spacing.xs,
   },
   trainingStatValue: {
-    color: colors.ink,
     fontSize: 13,
     fontWeight: '500',
     lineHeight: 18,
     textAlign: 'right',
-  },
-  trainingStatValueEmphasized: {
-    color: colors.sage,
   },
 });

@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { colors, radius, spacing } from '../lib/theme';
+import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 type ButtonProps = {
@@ -10,6 +10,8 @@ type ButtonProps = {
 };
 
 export function Button({ label, onPress, size = 'default', variant = 'primary' }: ButtonProps) {
+  const colors = useTheme();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -17,14 +19,20 @@ export function Button({ label, onPress, size = 'default', variant = 'primary' }
       style={({ pressed }) => [
         styles.base,
         size === 'compact' && styles.compact,
-        styles[variant],
+        variant === 'primary' && { backgroundColor: colors.sage },
+        variant === 'secondary' && {
+          backgroundColor: colors.surface,
+          borderColor: colors.line,
+          borderWidth: 1,
+        },
+        variant === 'ghost' && styles.ghost,
         pressed && styles.pressed,
       ]}
     >
       <Text style={[
         styles.label,
         size === 'compact' && styles.compactLabel,
-        variant === 'primary' ? styles.primaryLabel : styles.darkLabel,
+        { color: variant === 'primary' ? colors.surface : colors.sage },
       ]}>
         {label}
       </Text>
@@ -48,14 +56,6 @@ const styles = StyleSheet.create({
   compactLabel: {
     ...textStyles.buttonLabelCompact,
   },
-  primary: {
-    backgroundColor: colors.sage,
-  },
-  secondary: {
-    backgroundColor: colors.surface,
-    borderColor: colors.line,
-    borderWidth: 1,
-  },
   ghost: {
     backgroundColor: 'transparent',
     paddingHorizontal: spacing.sm,
@@ -65,11 +65,5 @@ const styles = StyleSheet.create({
   },
   label: {
     ...textStyles.buttonLabel,
-  },
-  primaryLabel: {
-    color: colors.surface,
-  },
-  darkLabel: {
-    color: colors.sage,
   },
 });
