@@ -21,6 +21,13 @@ export const trainingLogTypeLabels: Record<TrainingLogType, string> = {
   rolling: 'Rolling',
 };
 
+export const trainingLogTypeDescriptions: Record<TrainingLogType, string> = {
+  study: 'Watch and break down film or instruction.',
+  dialogue_drilling: 'Interactive problem-solving.',
+  constraint_game: 'Positional rounds with set limits.',
+  rolling: 'Live sparring against full resistance.',
+};
+
 export const stages: SkillStage[] = ['saved', 'mechanics', 'resistance', 'proven'];
 
 export const trainingLogTypes: TrainingLogType[] = [

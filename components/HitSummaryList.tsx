@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { spacing } from '../lib/theme';
+import { colors, spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 export type HitSummaryRow = {
@@ -8,6 +8,7 @@ export type HitSummaryRow = {
   label: string;
   count: number;
   href?: string;
+  total?: boolean;
 };
 
 type HitSummaryListProps = {
@@ -23,8 +24,10 @@ export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSumm
       {rows.map((row) => {
         const content = (
           <>
-            <Text style={styles.label} numberOfLines={1}>{row.label}</Text>
-            <Text style={[styles.value, alignWithSectionAction && styles.valueAligned]}>
+            <Text style={[styles.label, row.total && styles.totalLabel]} numberOfLines={1}>
+              {row.label}
+            </Text>
+            <Text style={[styles.value, alignWithSectionAction && styles.valueAligned, row.total && styles.totalValue]}>
               {row.count}
             </Text>
           </>
@@ -40,6 +43,7 @@ export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSumm
               style={({ pressed }) => [
                 styles.row,
                 alignWithSectionAction && styles.rowAligned,
+                row.total && styles.totalRow,
                 pressed && styles.pressed,
               ]}
             >
@@ -49,7 +53,10 @@ export function HitSummaryList({ alignWithSectionAction = false, rows }: HitSumm
         }
 
         return (
-          <View key={row.id} style={[styles.row, alignWithSectionAction && styles.rowAligned]}>
+          <View
+            key={row.id}
+            style={[styles.row, alignWithSectionAction && styles.rowAligned, row.total && styles.totalRow]}
+          >
             {content}
           </View>
         );
@@ -83,9 +90,21 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   value: {
-    ...textStyles.rowValue,
+    ...textStyles.rowLabel,
     minWidth: 32,
     textAlign: 'right',
+  },
+  totalLabel: {
+    color: colors.sage,
+  },
+  totalRow: {
+    borderTopColor: colors.line,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    marginTop: 4,
+    paddingTop: 6,
+  },
+  totalValue: {
+    color: colors.sage,
   },
   valueAligned: {
     minWidth: 28,

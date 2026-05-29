@@ -1,13 +1,19 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, type Href } from 'expo-router';
+import type { ComponentType } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import type { SvgProps } from 'react-native-svg';
 import { colors, spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import { Card } from './ui';
 
+type ListRowIcon =
+  | keyof typeof MaterialIcons.glyphMap
+  | ComponentType<SvgProps & { color?: string; size?: number | string }>;
+
 type ListRowProps = {
   href?: Href;
-  icon?: keyof typeof MaterialIcons.glyphMap;
+  icon?: ListRowIcon;
   meta?: string;
   onPress?: () => void;
   title: string;
@@ -22,7 +28,7 @@ export function ListRow({ href, icon, meta, onPress, title }: ListRowProps) {
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.titleRow}>
-        {icon ? <MaterialIcons name={icon} size={22} color={colors.ink} style={styles.icon} /> : null}
+        {icon ? <RowIcon icon={icon} /> : null}
         <View style={styles.textBlock}>
           <Text style={styles.title} numberOfLines={1}>{title}</Text>
           {meta ? <Text style={styles.meta} numberOfLines={1}>{meta}</Text> : null}
@@ -33,6 +39,19 @@ export function ListRow({ href, icon, meta, onPress, title }: ListRowProps) {
   );
 
   return <Card>{row}</Card>;
+}
+
+function RowIcon({ icon }: { icon: ListRowIcon }) {
+  if (typeof icon === 'string') {
+    return <MaterialIcons name={icon} size={22} color={colors.ink} style={styles.icon} />;
+  }
+
+  const Icon = icon;
+  return (
+    <View style={styles.icon}>
+      <Icon color={colors.ink} size={22} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

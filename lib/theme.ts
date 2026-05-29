@@ -8,6 +8,7 @@ export const colors = {
   line: '#E0E0E0',
   strongLine: '#DDDDDD',
   sage: '#987E55',
+  standardComplete: '#4A7C59',
   clay: '#C64B30',
   gold: '#987E55',
   blue: '#666666',

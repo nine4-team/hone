@@ -6,7 +6,7 @@ import { Screen } from '../../components/Screen';
 import { Section } from '../../components/Section';
 import { formatDate, formatHitCount } from '../../lib/format';
 import { hitRowsBySkill } from '../../lib/hits';
-import { useHone } from '../../lib/store';
+import { useHitList } from '../../lib/store';
 import { spacing } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 import { Card } from '../../components/ui';
@@ -14,7 +14,7 @@ import { Card } from '../../components/ui';
 export default function PartnerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { hits, partners, skills, trainingLogs } = useHone();
+  const { hits, partners, skills, trainingLogs } = useHitList();
   const partner = partners.find((item) => item.id === id);
 
   if (!partner) {

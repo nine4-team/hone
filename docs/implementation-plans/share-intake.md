@@ -1,10 +1,12 @@
 # Share Intake Implementation Plan
 
+Product note: this plan predates the HitList rename and the Arsenal/Equipped Skills redesign. Use [HITLIST_APP_SPEC.md](../../HITLIST_APP_SPEC.md) as the source of truth for current naming and skill state.
+
 ## Goal
 
-Let users share a link from another app into Hone, then either create a new skill with that link attached or add the link as media to an existing skill.
+Let users share a link from another app into HitList, then either create a new skill with that link attached or add the link as media to an existing skill.
 
-This plan follows the current MVP product constraint in `HONE_APP_SPEC.md`: media is link-only, and titles/thumbnails are fetched metadata rather than required user input.
+This plan follows the current MVP product constraint in `HITLIST_APP_SPEC.md`: media is link-only, and titles/thumbnails are fetched metadata rather than required user input.
 
 ## Expo Compatibility Notes
 
@@ -45,8 +47,8 @@ Out of scope for this pass:
 ### Successful Share
 
 1. User taps Share in YouTube, Instagram, Patreon, Safari, or another app.
-2. User chooses Hone from the OS share sheet.
-3. Hone opens to a Share Intake screen.
+2. User chooses HitList from the OS share sheet.
+3. HitList opens to a Share Intake screen.
 4. Screen shows:
    - source/provider guess
    - normalized URL
@@ -55,7 +57,7 @@ Out of scope for this pass:
    - Create New Skill action
    - Add To Existing Skill action
 5. User chooses one path.
-6. Hone saves the media and routes to the affected Skill Detail screen.
+6. HitList saves the media and routes to the affected Skill Detail screen.
 
 ### Multiple URLs
 
@@ -85,8 +87,7 @@ Media
 For new skills:
 
 - Require a skill name before save.
-- Default stage to `saved`.
-- Default active to `false`.
+- Default equipped to `false`.
 - Attach media in the same user action.
 - Route to `/skills/[id]` after save.
 
@@ -197,7 +198,7 @@ Automated/pure test fixtures should include:
 - Should the Share Intake screen live outside the tab layout as a modal, or inside the standard app chrome?
 - Should metadata title be offered as a one-tap skill-name suggestion?
 - Should duplicates show a warning when the normalized URL already exists on any skill?
-- Should existing-skill selection prioritize active skills, recently touched skills, or search-first?
+- Should existing-skill selection prioritize equipped skills, recently touched skills, or search-first?
 - Should Patreon get a first-class media type later, or remain `link` for MVP?
 
 ## Rollout Notes

@@ -16,13 +16,13 @@ import { Screen } from '../components/Screen';
 import { Card } from '../components/ui';
 import { resolveMediaMetadata, type MediaMetadata } from '../lib/mediaMetadata';
 import { normalizeSharedPayloads, normalizeSharedUrl, type SharedUrlChoice } from '../lib/shareIntake';
-import { useHone } from '../lib/store';
+import { useHitList } from '../lib/store';
 import { colors, spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 export default function ShareIntakeScreen() {
   const router = useRouter();
-  const { addMedia, addSkillWithMedia, skills } = useHone();
+  const { addMedia, addSkillWithMedia, skills } = useHitList();
   const [choices, setChoices] = useState<SharedUrlChoice[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [manualUrl, setManualUrl] = useState('');
@@ -49,7 +49,7 @@ export default function ShareIntakeScreen() {
         setManualUrl(incomingChoices[0].url);
         setError(null);
       } catch {
-        setError('Hone could not read the shared item. Paste the link below.');
+        setError('HitList could not read the shared item. Paste the link below.');
       }
     }, []),
   );
@@ -118,7 +118,7 @@ export default function ShareIntakeScreen() {
       clearIncomingShare();
       router.replace(`/skills/${skill.id}`);
     } catch {
-      setError('Hone could not save this skill. Try again.');
+      setError('HitList could not save this skill. Try again.');
     } finally {
       setSaving(false);
     }
@@ -134,7 +134,7 @@ export default function ShareIntakeScreen() {
       clearIncomingShare();
       router.replace(`/skills/${skillId}`);
     } catch {
-      setError('Hone could not add this media. Try again.');
+      setError('HitList could not add this media. Try again.');
     } finally {
       setSaving(false);
     }
@@ -209,7 +209,7 @@ export default function ShareIntakeScreen() {
 
             <Card style={styles.panel}>
               <FormLabel>Create new skill</FormLabel>
-              <FormHelp>Saved by default. You can activate or move it later.</FormHelp>
+              <FormHelp>Saved to the Arsenal by default. You can activate it later.</FormHelp>
               <FormInput
                 onChangeText={setSkillName}
                 placeholder="Skill name"
@@ -238,7 +238,9 @@ export default function ShareIntakeScreen() {
                       <Text style={styles.skillName} numberOfLines={1}>
                         {skill.name}
                       </Text>
-                      <Text style={styles.skillMeta}>{stageLabel(skill.stage)}</Text>
+                      <Text style={styles.skillMeta}>
+                        {skill.active ? 'Active' : 'Inactive'}
+                      </Text>
                     </View>
                     <MaterialIcons name="add-link" size={21} color={colors.sage} />
                   </Pressable>
@@ -300,10 +302,6 @@ function providerLabel(url: string) {
   } catch {
     return 'Shared link';
   }
-}
-
-function stageLabel(stage: string) {
-  return stage.charAt(0).toUpperCase() + stage.slice(1);
 }
 
 const styles = StyleSheet.create({

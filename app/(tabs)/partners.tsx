@@ -3,11 +3,11 @@ import { EmptyState } from '../../components/EmptyState';
 import { ListRow } from '../../components/ListRow';
 import { Screen } from '../../components/Screen';
 import { formatHitCount } from '../../lib/format';
-import { useHone } from '../../lib/store';
+import { useHitList } from '../../lib/store';
 import { spacing } from '../../lib/theme';
 
 export default function PartnersScreen() {
-  const { hits, partners } = useHone();
+  const { hits, partners } = useHitList();
 
   return (
     <Screen title="Partners" titleIcon="group" subtitle="See what you have hit on each person.">

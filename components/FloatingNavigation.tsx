@@ -1,12 +1,16 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import type { ComponentType } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import type { SvgProps } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../lib/theme';
 
+type SvgNavigationIcon = ComponentType<SvgProps & { color?: string; size?: number | string }>;
+
 export type FloatingNavigationItem = {
   key: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon: keyof typeof MaterialIcons.glyphMap | SvgNavigationIcon;
   label: string;
   selected?: boolean;
   onPress: () => void;
@@ -67,13 +71,26 @@ function NavigationButton({ item }: { item: FloatingNavigationItem }) {
         pressed && styles.pressed,
       ]}
     >
-      <MaterialIcons
-        name={item.icon}
-        size={22}
-        color={item.selected ? colors.surface : colors.muted}
-      />
+      <NavigationIcon icon={item.icon} selected={item.selected} />
     </Pressable>
   );
+}
+
+function NavigationIcon({
+  icon,
+  selected,
+}: {
+  icon: FloatingNavigationItem['icon'];
+  selected?: boolean;
+}) {
+  const color = selected ? colors.surface : colors.muted;
+
+  if (typeof icon === 'string') {
+    return <MaterialIcons name={icon} size={22} color={color} />;
+  }
+
+  const Icon = icon;
+  return <Icon color={color} size={22} strokeWidth={2.25} />;
 }
 
 const styles = StyleSheet.create({

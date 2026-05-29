@@ -1,28 +1,31 @@
 import { Tabs, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
 import { colors } from '../../lib/theme';
 
-const visibleRoutes = ['index', 'pipeline', 'settings'];
+const visibleRoutes = ['index', 'library', 'settings'];
 
 const routeIcons: Record<string, Pick<FloatingNavigationItem, 'icon'>> = {
   index: { icon: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap },
-  pipeline: { icon: 'view-column' },
+  library: { icon: ArsenalIcon },
   settings: { icon: 'settings' },
 };
 
 const routeLabels: Record<string, string> = {
   index: 'Active skills',
-  pipeline: 'Pipeline',
+  library: 'Arsenal',
   settings: 'Settings',
 };
 
 function FloatingTabBar({ state, navigation }: any) {
   const pathname = usePathname();
-  const visiblePathnames = new Set(['/', '/pipeline', '/settings', '/library', '/partners']);
+  const visiblePathnames = new Set(['/', '/settings', '/library', '/partners']);
   if (!visiblePathnames.has(pathname)) return null;
 
-  const routes = state.routes.filter((route: any) => visibleRoutes.includes(route.name));
+  const routes = visibleRoutes
+    .map((routeName) => state.routes.find((route: any) => route.name === routeName))
+    .filter(Boolean);
   const activeRouteKey = state.routes[state.index]?.key;
 
   return (
@@ -63,11 +66,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{ title: 'Active' }}
-      />
-      <Tabs.Screen
-        name="pipeline"
-        options={{ title: 'Pipeline' }}
+        options={{ title: 'Active Skills' }}
       />
       <Tabs.Screen
         name="settings"
@@ -75,7 +74,7 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="library"
-        options={{ href: null, title: 'Library' }}
+        options={{ title: 'Arsenal' }}
       />
       <Tabs.Screen
         name="partners"
