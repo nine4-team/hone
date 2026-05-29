@@ -1,17 +1,18 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState, type ReactNode } from 'react';
-import { Alert, Image, Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { Media } from '../../lib/types';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { Media, TrainingLogType } from '../../lib/types';
 import { ActivationSwitch } from '../../components/ActivationSwitch';
+import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
 import { EmptyState } from '../../components/EmptyState';
 import { FloatingNavigation } from '../../components/FloatingNavigation';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
 import { Card, IconButton } from '../../components/ui';
-import { formatDate, trainingLogTypeLabels } from '../../lib/format';
-import { getSkillLevelProgress, hitRowsByPartner } from '../../lib/hits';
+import { formatDate, trainingLogTypeLabels, trainingLogTypes } from '../../lib/format';
+import { HITS_PER_LEVEL, MAX_VISIBLE_LEVEL, getSkillLevelProgress, hitRowsByPartner } from '../../lib/hits';
 import { inferMediaType } from '../../lib/mediaMetadata';
 import { useHone } from '../../lib/store';
 import { colors, radius, spacing } from '../../lib/theme';
@@ -39,20 +40,23 @@ export default function SkillDetailScreen() {
   } = useHone();
   const skill = skills.find((item) => item.id === id);
   const [noteBody, setNoteBody] = useState('');
-  const [notesOpen, setNotesOpen] = useState(true);
+  const [notesOpen, setNotesOpen] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
-  const [logsOpen, setLogsOpen] = useState(true);
-  const [hitListOpen, setHitListOpen] = useState(true);
+  const [logsOpen, setLogsOpen] = useState(false);
+  const [hitListOpen, setHitListOpen] = useState(false);
   const [addingHit, setAddingHit] = useState(false);
   const [hitPartnerName, setHitPartnerName] = useState('');
   const [hitCount, setHitCount] = useState('1');
-  const [mediaOpen, setMediaOpen] = useState(true);
+  const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaNotes, setMediaNotes] = useState('');
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const scrollRef = useRef<ScrollView | null>(null);
+  const trainingLogsY = useRef(0);
   const { toastMessage, showToast } = useToast();
 
   const skillNotes = notes
@@ -65,8 +69,50 @@ export default function SkillDetailScreen() {
   const skillHits = hits.filter((hit) => hit.skillId === id);
   const totalHits = skillHits.reduce((sum, hit) => sum + hit.count, 0);
   const levelProgress = getSkillLevelProgress(totalHits);
-  const totalMinutes = skillLogs.reduce((sum, log) => sum + (log.durationMinutes ?? 0), 0);
-  const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
+  const hitsByTrainingLogId = skillHits.reduce<Record<string, number>>((counts, hit) => {
+    if (!hit.trainingLogId) return counts;
+    counts[hit.trainingLogId] = (counts[hit.trainingLogId] ?? 0) + hit.count;
+    return counts;
+  }, {});
+  const trainingStats = trainingLogTypes.map((type) => {
+    const logsForType = skillLogs.filter((log) => log.type === type);
+    const minutes = logsForType.reduce((sum, log) => sum + (log.durationMinutes ?? 0), 0);
+    const hitCount = logsForType.reduce((sum, log) => sum + (hitsByTrainingLogId[log.id] ?? 0), 0);
+
+    return {
+      type,
+      entryCount: logsForType.length,
+      hitCount,
+      minutes,
+    };
+  });
+  const statsByType = trainingStats.reduce<Partial<Record<TrainingLogType, (typeof trainingStats)[number]>>>(
+    (stats, stat) => ({ ...stats, [stat.type]: stat }),
+    {},
+  );
+  const moreStats = [
+    ...trainingLogTypes
+      .map((type) => ({
+        key: `${type}-time`,
+        label: getTrainingTimeLabel(type),
+        value: formatLoggedHours(statsByType[type]?.minutes ?? 0),
+        visible: (statsByType[type]?.minutes ?? 0) > 0,
+      }))
+      .filter((stat) => stat.visible),
+    {
+      key: 'constraint_game-hits',
+      label: 'Game hits',
+      value: formatHitStat(statsByType.constraint_game?.hitCount ?? 0),
+      visible: (statsByType.constraint_game?.hitCount ?? 0) > 0,
+    },
+    {
+      key: 'rolling-hits',
+      label: 'Rolling hits',
+      value: formatHitStat(statsByType.rolling?.hitCount ?? 0),
+      visible: (statsByType.rolling?.hitCount ?? 0) > 0,
+    },
+  ].filter((stat) => stat.visible);
+  const hasMoreStats = moreStats.length > 0;
 
   const hitList = useMemo(() => hitRowsByPartner(skillHits, partners), [partners, skillHits]);
 
@@ -92,18 +138,26 @@ export default function SkillDetailScreen() {
     );
   };
 
+  const scrollToTrainingLogs = () => {
+    setLogsOpen(true);
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({
+        animated: true,
+        y: Math.max(trainingLogsY.current - spacing.md, 0),
+      });
+    });
+  };
+
   return (
     <Screen
       title={skill.name}
       status={
-        <Text style={styles.headerStatus}>
-          Level <Text style={styles.headerStatusValue}>{levelProgress.level}</Text>
-          <Text style={styles.headerStatusDivider}> · </Text>
-          <Text style={styles.headerStatusValue}>{totalHits}</Text> Hits
-          <Text style={styles.headerStatusDivider}> · </Text>
-          <Text style={styles.headerStatusValue}>{totalHours}</Text> Hours
+        <Text style={styles.headerLifetimeHits}>
+          <Text style={styles.headerLifetimeHitCount}>{totalHits}</Text>
+          {` Lifetime ${totalHits === 1 ? 'Hit' : 'Hits'}`}
         </Text>
       }
+      scrollRef={scrollRef}
       onBack={router.back}
       action={
         <ActivationSwitch
@@ -129,7 +183,7 @@ export default function SkillDetailScreen() {
               },
               {
                 key: 'arsenal',
-                icon: 'inventory-2',
+                icon: ArsenalIcon,
                 label: 'Arsenal tab',
                 onPress: () => router.push('/library'),
               },
@@ -168,53 +222,56 @@ export default function SkillDetailScreen() {
     >
       <View style={styles.section}>
         <Card style={styles.levelCard}>
-          <View style={styles.levelSummary}>
-            <View>
-              <Text style={styles.levelEyebrow}>CURRENT LEVEL</Text>
-              <Text style={styles.levelNumber}>{levelProgress.level}</Text>
-            </View>
-            <View style={styles.levelCopy}>
-              <Text style={styles.levelTitle}>
-                {levelProgress.nextLevel
-                  ? `Level ${levelProgress.level}`
-                  : `${totalHits} lifetime hits`}
-              </Text>
-              <Text style={styles.levelBody}>
-                {levelProgress.nextLevel
-                  ? `${levelProgress.hitsToNextLevel} ${
-                      levelProgress.hitsToNextLevel === 1 ? 'hit' : 'hits'
-                    } until this skill levels up.`
-                  : 'Level 10 is the visible cap. Keep logging hits to build the lifetime record.'}
-              </Text>
-            </View>
+          <View style={styles.progressStack}>
+            <ProgressBarStat
+              label="level"
+              progress={levelProgress.level / MAX_VISIBLE_LEVEL}
+              value={`${levelProgress.level}/${MAX_VISIBLE_LEVEL}`}
+            />
+            <ProgressBarStat
+              label="hits this level"
+              progress={levelProgress.progressToNextLevel}
+              value={`${levelProgress.hitsIntoLevel}/${HITS_PER_LEVEL}`}
+            />
           </View>
-          <View style={styles.progressBarRow}>
-            <View style={styles.progressBarLabelRow}>
-              <MaterialIcons name="bar-chart" size={10} color={colors.sage} />
-              <Text style={styles.progressBarLabel}>level</Text>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: statsOpen }}
+            onPress={() => setStatsOpen((current) => !current)}
+            style={({ pressed }) => [styles.statsToggle, pressed && styles.pressed]}
+          >
+            <Text style={styles.statsToggleText}>More</Text>
+            <MaterialIcons
+              name={statsOpen ? 'expand-less' : 'expand-more'}
+              size={18}
+              color={colors.muted}
+            />
+          </Pressable>
+
+          {statsOpen ? (
+            <View style={styles.secondaryStats}>
+              {hasMoreStats ? (
+                <>
+                  {moreStats.map((stat) => (
+                    <TrainingStatRow
+                      key={stat.key}
+                      label={stat.label}
+                      value={stat.value}
+                    />
+                  ))}
+                </>
+              ) : (
+                <Text style={styles.emptyTrainingStats}>No training stats recorded yet.</Text>
+              )}
             </View>
-            <View style={[styles.progressBar, styles.progressBarRowBar]}>
-              <View
-                accessibilityRole="progressbar"
-                accessibilityValue={{
-                  min: 0,
-                  max: 100,
-                  now: Math.round(levelProgress.progressToNextLevel * 100),
-                }}
-                style={[
-                  styles.progressFill,
-                  { width: `${levelProgress.progressToNextLevel * 100}%` },
-                ]}
-              />
-            </View>
-          </View>
+          ) : null}
         </Card>
       </View>
 
       <View style={styles.section}>
         <CollapsibleSectionHeader
           title="Hit List"
-          count={totalHits}
           open={hitListOpen}
           onToggle={() => setHitListOpen((current) => !current)}
           action={
@@ -291,7 +348,18 @@ export default function SkillDetailScreen() {
                   title="No hits yet"
                 />
               ) : (
-                <HitSummaryList alignWithSectionAction rows={hitList} />
+                <HitSummaryList
+                  alignWithSectionAction
+                  rows={[
+                    ...hitList,
+                    {
+                      id: 'total',
+                      label: 'Total',
+                      count: totalHits,
+                      total: true,
+                    },
+                  ]}
+                />
               )}
             </View>
           </View>
@@ -509,10 +577,22 @@ export default function SkillDetailScreen() {
               skillNotes.filter((note) => note.id !== editingNoteId).map((note) => (
                 <Card key={note.id} style={styles.contentCard}>
                   <View style={styles.noteHeader}>
-                    <Text style={styles.cardMeta}>
-                      {formatDate(note.createdAt)}
-                      {note.trainingLogId ? ' · training log' : ''}
-                    </Text>
+                    <View style={styles.noteMetaRow}>
+                      <Text style={styles.cardMeta}>{formatDate(note.createdAt)}</Text>
+                      {note.trainingLogId ? (
+                        <>
+                          <Text style={styles.cardMeta}> · </Text>
+                          <Pressable
+                            accessibilityLabel="Jump to training log"
+                            accessibilityRole="button"
+                            onPress={scrollToTrainingLogs}
+                            style={({ pressed }) => pressed && styles.pressed}
+                          >
+                            <Text style={styles.noteTrainingLogLink}>Training Log</Text>
+                          </Pressable>
+                        </>
+                      ) : null}
+                    </View>
                     <IconButton
                       accessibilityLabel="Edit note"
                       onPress={() => {
@@ -533,7 +613,12 @@ export default function SkillDetailScreen() {
         ) : null}
       </View>
 
-      <View style={styles.section}>
+      <View
+        onLayout={(event) => {
+          trainingLogsY.current = event.nativeEvent.layout.y;
+        }}
+        style={styles.section}
+      >
         <CollapsibleSectionHeader
           title="Training Logs"
           open={logsOpen}
@@ -564,7 +649,7 @@ export default function SkillDetailScreen() {
                         <Text style={styles.logType}>{trainingLogTypeLabels[log.type]}</Text>
                         <Text style={styles.logMeta}>
                           {formatDate(log.occurredAt)}
-                          {log.durationMinutes ? ` · ${log.durationMinutes}m` : ''}
+                          {log.durationMinutes ? ` · ${formatDurationMinutes(log.durationMinutes)}` : ''}
                           {logTotalHits ? ` · ${logTotalHits} hits` : ''}
                         </Text>
                       </View>
@@ -599,6 +684,86 @@ export default function SkillDetailScreen() {
 
     </Screen>
   );
+}
+
+function TrainingStatRow({
+  emphasized,
+  label,
+  value,
+}: {
+  emphasized?: boolean;
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={[styles.trainingStatRow, emphasized && styles.trainingStatRowEmphasized]}>
+      <Text style={[styles.trainingStatLabel, emphasized && styles.trainingStatLabelEmphasized]}>
+        {label}
+      </Text>
+      <Text style={[styles.trainingStatValue, emphasized && styles.trainingStatValueEmphasized]}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+function ProgressBarStat({
+  label,
+  progress,
+  value,
+}: {
+  label: string;
+  progress: number;
+  value: string;
+}) {
+  const percent = Math.round(progress * 100);
+
+  return (
+    <View style={styles.progressBarStat}>
+      <View style={styles.progressBarHeader}>
+        <View style={styles.progressBarLabelRow}>
+          <MaterialIcons name="bar-chart" size={10} color={colors.sage} />
+          <Text style={styles.progressBarLabel}>{label}</Text>
+        </View>
+        <Text style={styles.progressBarValue}>{value}</Text>
+      </View>
+      <View style={styles.progressBar}>
+        <View
+          accessibilityRole="progressbar"
+          accessibilityValue={{ min: 0, max: 100, now: percent }}
+          style={[styles.progressFill, { width: `${percent}%` }]}
+        />
+      </View>
+    </View>
+  );
+}
+
+function getTrainingTimeLabel(type: TrainingLogType) {
+  switch (type) {
+    case 'study':
+      return 'Study time';
+    case 'dialogue_drilling':
+      return 'Drilling time';
+    case 'constraint_game':
+      return 'Game time';
+    case 'rolling':
+      return 'Rolling time';
+  }
+}
+
+function formatHitStat(count: number) {
+  return `${count} ${count === 1 ? 'hit' : 'hits'}`;
+}
+
+function formatDurationMinutes(minutes: number) {
+  return `${minutes} min`;
+}
+
+function formatLoggedHours(minutes: number) {
+  if (minutes <= 0) return '0 HRS';
+
+  const hours = Math.round((minutes / 60) * 10) / 10;
+  return `${Number.isInteger(hours) ? hours : hours.toFixed(1)} HRS`;
 }
 
 function MediaThumbnail({
@@ -767,40 +932,10 @@ const styles = StyleSheet.create({
   hitListRows: {
     gap: 2,
   },
-  levelBody: {
-    ...textStyles.detailRecordBody,
-    color: colors.muted,
-    marginTop: 2,
-  },
   levelCard: {
-    gap: spacing.md,
-    padding: spacing.lg,
-  },
-  levelCopy: {
-    flex: 1,
-    minWidth: 0,
-  },
-  levelEyebrow: {
-    color: colors.muted,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0,
-  },
-  levelNumber: {
-    color: colors.ink,
-    fontSize: 42,
-    fontWeight: '700',
-    includeFontPadding: false,
-    lineHeight: 46,
-    minWidth: 48,
-  },
-  levelSummary: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing.lg,
-  },
-  levelTitle: {
-    ...textStyles.detailRecordTitle,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
   },
   logCard: {
     paddingHorizontal: spacing.md,
@@ -945,6 +1080,23 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     textAlignVertical: 'top',
   },
+  noteMetaRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  noteTrainingLogLink: {
+    ...textStyles.detailRecordMeta,
+    color: colors.sage,
+    fontWeight: '700',
+  },
+  emptyTrainingStats: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: '600',
+    lineHeight: 18,
+    paddingVertical: spacing.sm,
+    textAlign: 'center',
+  },
   pressed: {
     opacity: 0.72,
   },
@@ -958,23 +1110,32 @@ const styles = StyleSheet.create({
   progressBarLabel: {
     color: colors.sage,
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
     includeFontPadding: false,
+    textTransform: 'uppercase',
     textAlignVertical: 'center',
+  },
+  progressBarHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   progressBarLabelRow: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 2,
-    width: 50,
   },
-  progressBarRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 6,
+  progressBarStat: {
+    gap: 5,
   },
-  progressBarRowBar: {
-    flex: 1,
+  progressBarValue: {
+    color: colors.muted,
+    fontSize: 11,
+    fontWeight: '600',
+    lineHeight: 14,
+  },
+  progressStack: {
+    gap: spacing.sm,
   },
   progressFill: {
     backgroundColor: colors.sage,
@@ -983,6 +1144,12 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.lg,
+  },
+  secondaryStats: {
+    borderTopColor: colors.line,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: 0,
+    paddingTop: spacing.sm,
   },
   sectionHeader: {
     alignItems: 'center',
@@ -1005,14 +1172,61 @@ const styles = StyleSheet.create({
   stack: {
     gap: spacing.sm,
   },
-  headerStatus: {
-    ...textStyles.headerStatus,
-    marginTop: 2,
+  headerLifetimeHits: {
+    color: colors.sage,
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 16,
   },
-  headerStatusDivider: {
-    color: colors.quiet,
+  headerLifetimeHitCount: {
+    fontWeight: '800',
   },
-  headerStatusValue: {
-    ...textStyles.headerStatusValue,
+  statsToggle: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    minHeight: 28,
+  },
+  statsToggleText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 16,
+  },
+  trainingStatLabel: {
+    color: colors.ink,
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 18,
+  },
+  trainingStatLabelEmphasized: {
+    color: colors.sage,
+  },
+  trainingStatRow: {
+    alignItems: 'center',
+    borderBottomColor: colors.line,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-between',
+    minHeight: 34,
+    paddingVertical: spacing.xs,
+  },
+  trainingStatRowEmphasized: {
+    borderBottomWidth: 0,
+    borderTopColor: colors.line,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    marginTop: spacing.xs,
+  },
+  trainingStatValue: {
+    color: colors.ink,
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 18,
+    textAlign: 'right',
+  },
+  trainingStatValueEmphasized: {
+    color: colors.sage,
   },
 });

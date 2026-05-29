@@ -11,16 +11,12 @@ import type { Skill } from '../../lib/types';
 import { useToast } from '../../lib/useToast';
 
 const activeSkillsHelp = [
-  'Equipped Skills are the small set of skills you are currently trying to hit live.',
+  "Equipped Skills are the set of skills you're currently working on.",
   '',
-  'Example circle:',
-  '  +        ...',
-  '     36',
-  '    HITS',
-  'Kimura trap',
-  'Level 3',
-  '',
-  '+ logs training. ... opens actions. The ring fills as you progress toward the next level.',
+  '+ logs training.',
+  '... opens actions.',
+  'Inner ring: progress toward Level 10.',
+  'Outer ring: progress toward next level (hits).',
 ].join('\n');
 
 export default function EquippedSkillsScreen() {

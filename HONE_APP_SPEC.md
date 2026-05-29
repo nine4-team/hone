@@ -72,9 +72,40 @@ Equipped skill cards should show:
 - Current level
 - Hit progress toward next level
 - Total hits
-- A circular progress indicator or dial
+- A two-ring circular progress dial
 - Fast log action
 - Unequip affordance, if it fits cleanly
+
+#### Equipped Skill Dial
+
+The Equipped Skill dial has two concentric rings:
+
+- Outer ring: current-level hit progress toward the next level.
+- Inner ring: current level progress toward Level 10.
+
+The outer ring is the primary progress ring. It uses the brand color and fills from 12 o'clock based on `hitsIntoLevel / 10`.
+
+The inner ring shows level progress. It fills from 12 o'clock based on `currentLevel / 10`.
+
+Ring styling:
+
+- Both rings use square/butt stroke caps, matching the Minimum Standards circular progress implementation.
+- Both rings use the same stroke width.
+- The two rings should sit flush with no visible gap between them.
+- The level ring fill and the center `LEVEL X` text must use the same color.
+- In light mode, the level ring fill should be a light or medium gray rather than black.
+
+Center content:
+
+- The main center number is the number of hits inside the current level, not lifetime hits.
+- Use `X HIT` or `X HITS`.
+- Do not show `/10` text in the center.
+- Show `LEVEL X` below the current-level hit count.
+
+Metadata below the skill name:
+
+- First row: `X hits until Level Y`.
+- Second row: `X lifetime hit` or `X lifetime hits`.
 
 Tooltips can explain that Equipped Skills are the user's focused working set and that skills can be equipped or unequipped from the Arsenal.
 
@@ -99,13 +130,18 @@ The number is not presented as scientific. It is clean, memorable, difficult, an
 
 Level progress is based on total successful live hits for that skill.
 
-The circular progress dial on Equipped Skill cards shows progress toward the next level, not progress toward Level 10.
+The outer progress ring on Equipped Skill cards shows progress toward the next level, not progress toward Level 10. The inner progress ring shows current level progress toward Level 10.
 
 Example:
 
 ```text
 36 hits = Level 3
-Dial = 6/10 toward Level 4
+Center = 6 HITS
+Center level text = LEVEL 3
+Outer ring = 6/10 toward Level 4
+Inner ring = 3/10 toward Level 10
+Metadata row 1 = 4 hits until Level 4
+Metadata row 2 = 36 lifetime hits
 ```
 
 After Level 10:

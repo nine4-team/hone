@@ -108,13 +108,43 @@ Each skill has visible levels from Level 0 through Level 10.
 
 The number is not presented as scientific. It is clean, memorable, difficult, and achievable.
 
-The dial shows progress toward the next level.
+Equipped Skill tiles use a two-ring dial.
+
+The outer ring shows current-level hit progress toward the next level. It fills from 12 o'clock based on `hitsIntoLevel / 10`.
+
+The inner ring shows level progress toward Level 10. It fills from 12 o'clock based on `currentLevel / 10`.
+
+Ring styling:
+
+- Use square/butt stroke caps, matching the Minimum Standards circular progress implementation.
+- Use equal stroke width for both rings.
+- Keep the rings flush with no visible gap between them.
+- Use the brand color for the hit progress fill.
+- Use light or medium gray for the level progress fill in light mode.
+- Match the center `LEVEL X` text color to the level progress fill color.
+
+Center display:
+
+- Show current-level hits, not lifetime hits.
+- Use `X HIT` or `X HITS`.
+- Do not show `/10` text.
+- Show `LEVEL X` below the current-level hit count.
+
+Metadata display:
+
+- First row: `X hits until Level Y`.
+- Second row: `X lifetime hit` or `X lifetime hits`.
 
 Example:
 
 ```text
 36 hits = Level 3
-Dial = 6/10 toward Level 4
+Center = 6 HITS
+Center level text = LEVEL 3
+Outer ring = 6/10 toward Level 4
+Inner ring = 3/10 toward Level 10
+Metadata row 1 = 4 hits until Level 4
+Metadata row 2 = 36 lifetime hits
 ```
 
 ### UI Implication
@@ -125,7 +155,7 @@ Equipped skill tiles should show:
 - Current level
 - Hit progress toward next level
 - Total hits
-- A circular progress indicator or dial
+- A two-ring circular progress dial
 - Fast log action
 
 This makes the Equipped Skills screen the user's current target board, not just a list of things they are studying.

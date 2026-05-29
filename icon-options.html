@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arsenal Icon Options</title>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f3ed;
+        --ink: #20201d;
+        --muted: #68665f;
+        --line: #ded8ce;
+        --panel: #fffdf8;
+        --accent: #496b5d;
+        --accent-soft: #dbe8de;
+        --shadow: 0 12px 30px rgba(44, 39, 31, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      header p {
+        max-width: 620px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      .sources {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      .sources a {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: rgba(255, 253, 248, 0.72);
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      section {
+        margin-top: 34px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+
+      h2 {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+
+      .section-title span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        min-height: 150px;
+        display: grid;
+        grid-template-rows: 1fr auto auto;
+        align-items: center;
+        justify-items: center;
+        gap: 9px;
+        padding: 18px 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .card.recommended {
+        border-color: #9ebba6;
+        background: linear-gradient(180deg, #fffdf8 0%, #f3faf4 100%);
+      }
+
+      .icon-wrap {
+        width: 72px;
+        height: 72px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      iconify-icon {
+        font-size: 42px;
+      }
+
+      .name {
+        max-width: 100%;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 800;
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+
+      .id {
+        max-width: 100%;
+        color: var(--muted);
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          monospace;
+        font-size: 11px;
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+
+      .badge {
+        position: absolute;
+        transform: translate(46px, -50px);
+        border-radius: 999px;
+        padding: 4px 7px;
+        background: var(--accent);
+        color: white;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .sources {
+          justify-content: flex-start;
+        }
+
+        .grid {
+          grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Arsenal Icon Options</h1>
+          <p>
+            A quick contact sheet for the Arsenal tab. These are loaded through
+            Iconify so you can compare several libraries without searching around.
+          </p>
+        </div>
+        <nav class="sources" aria-label="Icon sources">
+          <a href="https://icon-sets.iconify.design/" target="_blank" rel="noreferrer">Iconify</a>
+          <a href="https://lucide.dev/" target="_blank" rel="noreferrer">Lucide</a>
+          <a href="https://phosphoricons.com/" target="_blank" rel="noreferrer">Phosphor</a>
+          <a href="https://tabler.io/icons" target="_blank" rel="noreferrer">Tabler</a>
+          <a href="https://fonts.google.com/icons" target="_blank" rel="noreferrer">Material</a>
+        </nav>
+      </header>
+
+      <section>
+        <div class="section-title">
+          <h2>Best Fit</h2>
+          <span>Loadout, saved skills, equipped kit</span>
+        </div>
+        <div class="grid">
+          <article class="card recommended">
+            <div class="badge">Pick</div>
+            <div class="icon-wrap"><iconify-icon icon="lucide:backpack"></iconify-icon></div>
+            <div class="name">Backpack</div>
+            <div class="id">lucide:backpack</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:backpack"></iconify-icon></div>
+            <div class="name">Backpack</div>
+            <div class="id">ph:backpack</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="tabler:backpack"></iconify-icon></div>
+            <div class="name">Backpack</div>
+            <div class="id">tabler:backpack</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:toolbox"></iconify-icon></div>
+            <div class="name">Toolbox</div>
+            <div class="id">ph:toolbox</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="tabler:tool"></iconify-icon></div>
+            <div class="name">Tool</div>
+            <div class="id">tabler:tool</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="lucide:briefcase-business"></iconify-icon></div>
+            <div class="name">Kit Case</div>
+            <div class="id">lucide:briefcase-business</div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Library Feel</h2>
+          <span>Collection, inventory, browseable archive</span>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="lucide:boxes"></iconify-icon></div>
+            <div class="name">Boxes</div>
+            <div class="id">lucide:boxes</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="lucide:package-open"></iconify-icon></div>
+            <div class="name">Package Open</div>
+            <div class="id">lucide:package-open</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:archive-box"></iconify-icon></div>
+            <div class="name">Archive Box</div>
+            <div class="id">ph:archive-box</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="tabler:archive"></iconify-icon></div>
+            <div class="name">Archive</div>
+            <div class="id">tabler:archive</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="material-symbols:category-outline-rounded"></iconify-icon></div>
+            <div class="name">Category</div>
+            <div class="id">material-symbols:category-outline-rounded</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="material-symbols:inventory-2-outline-rounded"></iconify-icon></div>
+            <div class="name">Inventory 2</div>
+            <div class="id">material-symbols:inventory-2-outline-rounded</div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Power Feel</h2>
+          <span>Abilities, upgrades, heroic flavor</span>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="lucide:sparkles"></iconify-icon></div>
+            <div class="name">Sparkles</div>
+            <div class="id">lucide:sparkles</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:star-four"></iconify-icon></div>
+            <div class="name">Star Four</div>
+            <div class="id">ph:star-four</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="lucide:shield-check"></iconify-icon></div>
+            <div class="name">Shield Check</div>
+            <div class="id">lucide:shield-check</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:shield-check"></iconify-icon></div>
+            <div class="name">Shield Check</div>
+            <div class="id">ph:shield-check</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="game-icons:checked-shield"></iconify-icon></div>
+            <div class="name">Checked Shield</div>
+            <div class="id">game-icons:checked-shield</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:treasure-chest"></iconify-icon></div>
+            <div class="name">Treasure Chest</div>
+            <div class="id">ph:treasure-chest</div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">
+          <h2>Bolder Arsenal</h2>
+          <span>More literal, more game-like</span>
+        </div>
+        <div class="grid">
+          <article class="card recommended">
+            <div class="badge">Pick</div>
+            <div class="icon-wrap"><iconify-icon icon="lucide:swords"></iconify-icon></div>
+            <div class="name">Swords</div>
+            <div class="id">lucide:swords</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="ph:sword"></iconify-icon></div>
+            <div class="name">Sword</div>
+            <div class="id">ph:sword</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="game-icons:crossed-swords"></iconify-icon></div>
+            <div class="name">Crossed Swords</div>
+            <div class="id">game-icons:crossed-swords</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="game-icons:broadsword"></iconify-icon></div>
+            <div class="name">Broadsword</div>
+            <div class="id">game-icons:broadsword</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="game-icons:locked-chest"></iconify-icon></div>
+            <div class="name">Locked Chest</div>
+            <div class="id">game-icons:locked-chest</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="material-symbols:workspace-premium-outline-rounded"></iconify-icon></div>
+            <div class="name">Workspace Premium</div>
+            <div class="id">material-symbols:workspace-premium-outline-rounded</div>
+          </article>
+          <article class="card">
+            <div class="icon-wrap"><iconify-icon icon="tabler:military-award"></iconify-icon></div>
+            <div class="name">Military Award</div>
+            <div class="id">tabler:military-award</div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

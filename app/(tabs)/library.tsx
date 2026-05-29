@@ -4,6 +4,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { FormInput } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
 import { SkillCard } from '../../components/SkillCard';
+import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { getSkillLevelProgress } from '../../lib/hits';
 import { useHone } from '../../lib/store';
 import { colors, spacing } from '../../lib/theme';
@@ -59,7 +60,7 @@ export default function ArsenalScreen() {
   return (
     <Screen
       title="Arsenal"
-      titleIcon="search"
+      titleIcon={ArsenalIcon}
       subtitle="Every skill you have saved, sorted by how developed it is."
       toastMessage={toastMessage}
     >

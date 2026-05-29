@@ -31,14 +31,7 @@ export function ActiveSkillTile({
   }`;
 
   return (
-    <Pressable
-      accessibilityHint="Opens skill details."
-      accessibilityLabel={`${skill.name}, Level ${levelProgress.level}, ${hitCount} ${totalHitLabel}`}
-      accessibilityRole="button"
-      onLongPress={onLogPress}
-      onPress={() => router.push(`/skills/${skill.id}`)}
-      style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
-    >
+    <View style={styles.tile}>
       <Pressable
         accessibilityLabel={`Log training for ${skill.name}`}
         accessibilityRole="button"
@@ -65,85 +58,94 @@ export function ActiveSkillTile({
         <MaterialIcons name="more-horiz" size={18} color={colors.muted} />
       </Pressable>
 
-      <View style={styles.ringTrack}>
-        <Svg height={RING_SIZE} pointerEvents="none" style={styles.ringSvg} width={RING_SIZE}>
-          <G rotation={-90} origin={`${RING_CENTER}, ${RING_CENTER}`}>
-            <Circle
-              cx={RING_CENTER}
-              cy={RING_CENTER}
-              fill="none"
-              r={HIT_RING_RADIUS}
-              stroke={colors.line}
-              strokeWidth={HIT_RING_STROKE}
-            />
-            <Circle
-              cx={RING_CENTER}
-              cy={RING_CENTER}
-              fill="none"
-              r={HIT_RING_RADIUS}
-              stroke={colors.sage}
-              strokeDasharray={`${hitRing.circumference}, ${hitRing.circumference}`}
-              strokeDashoffset={hitRing.offset}
-              strokeLinecap="butt"
-              strokeWidth={HIT_RING_STROKE}
-            />
-            <Circle
-              cx={RING_CENTER}
-              cy={RING_CENTER}
-              fill="none"
-              r={LEVEL_RING_RADIUS}
-              stroke={LEVEL_RING_TRACK_COLOR}
-              strokeWidth={LEVEL_RING_STROKE}
-            />
-            <Circle
-              cx={RING_CENTER}
-              cy={RING_CENTER}
-              fill="none"
-              r={LEVEL_RING_RADIUS}
-              stroke={LEVEL_RING_FILL_COLOR}
-              strokeDasharray={`${levelRing.circumference}, ${levelRing.circumference}`}
-              strokeDashoffset={levelRing.offset}
-              strokeLinecap="butt"
-              strokeWidth={LEVEL_RING_STROKE}
-            />
-          </G>
-        </Svg>
-        <View style={styles.ringInner}>
-          <Text style={[styles.dialMetric, styles.dialMetricHits]} numberOfLines={1}>
-            {levelProgress.hitsIntoLevel}
-            <Text style={[styles.dialMetricLabel, styles.dialMetricHits]}>
-              {` ${currentLevelHitLabel}`}
+      <Pressable
+        accessibilityHint="Opens skill details."
+        accessibilityLabel={`${skill.name}, Level ${levelProgress.level}, ${hitCount} ${totalHitLabel}`}
+        accessibilityRole="button"
+        onLongPress={onLogPress}
+        onPress={() => router.push(`/skills/${skill.id}`)}
+        style={({ pressed }) => [styles.tilePressArea, pressed && styles.pressed]}
+      >
+        <View style={styles.ringTrack}>
+          <Svg height={RING_SIZE} pointerEvents="none" style={styles.ringSvg} width={RING_SIZE}>
+            <G transform={`rotate(-90 ${RING_CENTER} ${RING_CENTER})`}>
+              <Circle
+                cx={RING_CENTER}
+                cy={RING_CENTER}
+                fill="none"
+                r={HIT_RING_RADIUS}
+                stroke={colors.line}
+                strokeWidth={HIT_RING_STROKE}
+              />
+              <Circle
+                cx={RING_CENTER}
+                cy={RING_CENTER}
+                fill="none"
+                r={HIT_RING_RADIUS}
+                stroke={colors.sage}
+                strokeDasharray={`${hitRing.circumference}, ${hitRing.circumference}`}
+                strokeDashoffset={hitRing.offset}
+                strokeLinecap="butt"
+                strokeWidth={HIT_RING_STROKE}
+              />
+              <Circle
+                cx={RING_CENTER}
+                cy={RING_CENTER}
+                fill="none"
+                r={LEVEL_RING_RADIUS}
+                stroke={LEVEL_RING_TRACK_COLOR}
+                strokeWidth={LEVEL_RING_STROKE}
+              />
+              <Circle
+                cx={RING_CENTER}
+                cy={RING_CENTER}
+                fill="none"
+                r={LEVEL_RING_RADIUS}
+                stroke={LEVEL_RING_PROGRESS_COLOR}
+                strokeDasharray={`${levelRing.circumference}, ${levelRing.circumference}`}
+                strokeDashoffset={levelRing.offset}
+                strokeLinecap="butt"
+                strokeWidth={LEVEL_RING_STROKE}
+              />
+            </G>
+          </Svg>
+          <View style={styles.ringInner}>
+            <Text style={[styles.dialMetric, styles.dialMetricHits]} numberOfLines={1}>
+              {levelProgress.hitsIntoLevel}
+              <Text style={[styles.dialMetricLabel, styles.dialMetricHits]}>
+                {` ${currentLevelHitLabel}`}
+              </Text>
             </Text>
+            <Text style={[styles.dialMetric, styles.dialMetricLevel]} numberOfLines={1}>
+              <Text style={[styles.dialMetricLabel, styles.dialMetricLevelLabel]}>LEVEL </Text>
+              {levelProgress.level}
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.name} numberOfLines={1}>
+          {skill.name.toUpperCase()}
+        </Text>
+        <View style={styles.metaStack}>
+          <Text style={styles.meta} numberOfLines={1}>
+            {levelProgress.nextLevel ? (
+              <>
+                <Text style={styles.metaLabel}>{nextLevelHitLabel}</Text>
+                {` until Level ${levelProgress.nextLevel}`}
+              </>
+            ) : (
+              <>
+                <Text style={styles.metaLabel}>{hitCount} lifetime hits</Text>
+              </>
+            )}
           </Text>
-          <Text style={[styles.dialMetric, styles.dialMetricLevel]} numberOfLines={1}>
-            <Text style={[styles.dialMetricLabel, styles.dialMetricLevelLabel]}>LEVEL </Text>
-            {levelProgress.level}
+          <Text style={styles.meta} numberOfLines={1}>
+            <Text style={styles.metaLabel}>{hitCount}</Text>
+            {` ${lifetimeHitLabel}`}
           </Text>
         </View>
-      </View>
-
-      <Text style={styles.name} numberOfLines={1}>
-        {skill.name.toUpperCase()}
-      </Text>
-      <View style={styles.metaStack}>
-        <Text style={styles.meta} numberOfLines={1}>
-          {levelProgress.nextLevel ? (
-            <>
-              <Text style={styles.metaLabel}>{nextLevelHitLabel}</Text>
-              {` until Level ${levelProgress.nextLevel}`}
-            </>
-          ) : (
-            <>
-              <Text style={styles.metaLabel}>{hitCount} lifetime hits</Text>
-            </>
-          )}
-        </Text>
-        <Text style={styles.meta} numberOfLines={1}>
-          <Text style={styles.metaLabel}>{hitCount}</Text>
-          {` ${lifetimeHitLabel}`}
-        </Text>
-      </View>
-    </Pressable>
+      </Pressable>
+    </View>
   );
 }
 
@@ -153,8 +155,8 @@ const HIT_RING_RADIUS = 55;
 const HIT_RING_STROKE = 8;
 const LEVEL_RING_RADIUS = 47;
 const LEVEL_RING_STROKE = 8;
-const LEVEL_RING_FILL_COLOR = '#B6B6B6';
 const LEVEL_RING_TRACK_COLOR = '#ECECEC';
+const LEVEL_RING_PROGRESS_COLOR = '#666666';
 
 function getRingStroke(radius: number, progress: number) {
   const circumference = 2 * Math.PI * radius;
@@ -168,7 +170,7 @@ function getRingStroke(radius: number, progress: number) {
 
 const styles = StyleSheet.create({
   dialMetric: {
-    color: LEVEL_RING_FILL_COLOR,
+    color: LEVEL_RING_PROGRESS_COLOR,
     fontSize: 14,
     fontWeight: '600',
     includeFontPadding: false,
@@ -178,7 +180,7 @@ const styles = StyleSheet.create({
     color: colors.sage,
   },
   dialMetricLevel: {
-    color: LEVEL_RING_FILL_COLOR,
+    color: LEVEL_RING_PROGRESS_COLOR,
     fontSize: 11,
     fontWeight: '500',
     lineHeight: 15,
@@ -265,12 +267,16 @@ const styles = StyleSheet.create({
     width: RING_SIZE,
   },
   tile: {
+    minHeight: 214,
+    position: 'relative',
+    width: '50%',
+  },
+  tilePressArea: {
     alignItems: 'center',
     gap: spacing.sm,
     minHeight: 214,
     paddingHorizontal: spacing.xs,
     paddingTop: spacing.lg,
-    position: 'relative',
-    width: '50%',
+    width: '100%',
   },
 });

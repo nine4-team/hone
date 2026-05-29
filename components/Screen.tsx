@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import type { ComponentType, PropsWithChildren, ReactNode, RefObject } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -9,20 +9,26 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import type { SvgProps } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { InfoLabel } from './InfoLabel';
 import { colors, spacing } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
+type ScreenTitleIcon =
+  | keyof typeof MaterialIcons.glyphMap
+  | ComponentType<SvgProps & { color?: string; size?: number | string }>;
+
 type ScreenProps = PropsWithChildren<{
   title: string;
-  titleIcon?: keyof typeof MaterialIcons.glyphMap;
+  titleIcon?: ScreenTitleIcon;
   subtitle?: string;
   action?: ReactNode;
   bottomOverlay?: ReactNode;
   status?: ReactNode;
   stickyHeader?: ReactNode;
   contentStyle?: StyleProp<ViewStyle>;
+  scrollRef?: RefObject<ScrollView | null>;
   scroll?: boolean;
   toastMessage?: string | null;
   onBack?: () => void;
@@ -36,6 +42,7 @@ export function Screen({
   children,
   onBack,
   contentStyle,
+  scrollRef,
   scroll = true,
   status,
   stickyHeader,
@@ -61,9 +68,7 @@ export function Screen({
         <View style={styles.titleRow}>
           <View style={styles.titleCenter}>
             <View style={styles.titleGroup}>
-              {titleIcon ? (
-                <MaterialIcons name={titleIcon} size={20} color={colors.ink} />
-              ) : null}
+              {titleIcon ? <TitleIcon icon={titleIcon} /> : null}
               <InfoLabel label={title} body={subtitle} labelStyle={styles.headerTitle} />
             </View>
             {status ? <View style={styles.statusLine}>{status}</View> : null}
@@ -73,7 +78,7 @@ export function Screen({
       </View>
       {stickyHeader ? <View style={styles.stickyHeader}>{stickyHeader}</View> : null}
       {scroll ? (
-        <ScrollView contentContainerStyle={[styles.content, contentStyle]}>
+        <ScrollView ref={scrollRef} contentContainerStyle={[styles.content, contentStyle]}>
           {children}
         </ScrollView>
       ) : (
@@ -89,6 +94,15 @@ export function Screen({
       ) : null}
     </SafeAreaView>
   );
+}
+
+function TitleIcon({ icon }: { icon: ScreenTitleIcon }) {
+  if (typeof icon === 'string') {
+    return <MaterialIcons name={icon} size={20} color={colors.ink} />;
+  }
+
+  const Icon = icon;
+  return <Icon color={colors.ink} size={20} />;
 }
 
 const styles = StyleSheet.create({
