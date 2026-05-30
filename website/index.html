@@ -246,7 +246,7 @@
     }
 
     .hero-headline {
-      font-size: clamp(48px, 7vw, 92px);
+      font-size: clamp(38px, 5.4vw, 60px);
       font-weight: 700;
       letter-spacing: -0.015em;
       line-height: 1.05;
@@ -302,6 +302,258 @@
     .btn-secondary:hover {
       background: #987E55;
       color: #ffffff;
+    }
+
+    /* Argument (bespoke layout — left-aligned case, connected spine) */
+    .argument {
+      background: #ffffff;
+      padding: 130px 20px;
+    }
+
+    .arg-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .arg-kicker {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #987E55;
+      margin-bottom: 64px;
+    }
+
+    .arg-track {
+      border-left: 2px solid #ece5d6;
+      margin-left: 7px;
+    }
+
+    .arg-beat {
+      position: relative;
+      padding: 0 0 84px 44px;
+    }
+
+    .arg-beat:last-child {
+      padding-bottom: 0;
+    }
+
+    .arg-beat::before {
+      content: '';
+      position: absolute;
+      left: -9px;
+      top: 4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #987E55;
+      box-shadow: 0 0 0 6px #ffffff;
+    }
+
+    .arg-step {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #987E55;
+      margin-bottom: 16px;
+    }
+
+    .arg-beat h2 {
+      font-size: clamp(30px, 4.4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+      color: #1d1d1f;
+      margin-bottom: 18px;
+      max-width: 900px;
+    }
+
+    .arg-beat p {
+      font-size: 19px;
+      line-height: 1.6;
+      color: #6e6e73;
+      max-width: 760px;
+    }
+
+    .arg-beat p+p {
+      margin-top: 14px;
+    }
+
+    .arg-equation+p,
+    .arg-habits+p {
+      margin-top: 28px;
+    }
+
+    .arg-punch {
+      font-size: clamp(21px, 2.3vw, 27px);
+      font-weight: 600;
+      color: #1d1d1f;
+      line-height: 1.35;
+      margin-top: 24px;
+      max-width: 900px;
+    }
+
+    .arg-punch .hl {
+      color: #987E55;
+    }
+
+    .arg-principles {
+      list-style: none;
+      margin: 28px 0 0;
+      max-width: 100%;
+    }
+
+    .arg-principles li {
+      font-size: 18px;
+      line-height: 1.5;
+      color: #6e6e73;
+      padding: 16px 0;
+      border-top: 1px solid #eeeae0;
+    }
+
+    .arg-principles li:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .arg-principles strong {
+      color: #1d1d1f;
+      font-weight: 650;
+    }
+
+    .arg-mark {
+      font-weight: 650;
+      color: #1d1d1f;
+      background: linear-gradient(transparent 58%, rgba(152, 126, 85, 0.24) 0);
+      padding: 0 1px;
+    }
+
+    .arg-equation {
+      margin: 30px 0 8px;
+      max-width: 100%;
+      padding: 30px 34px;
+      border: 1px solid #ece5d6;
+      border-radius: 16px;
+      background: #ffffff;
+    }
+
+    .arg-equation .eq-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a39b8c;
+      margin-bottom: 14px;
+    }
+
+    .arg-equation .eq-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 14px;
+      font-size: clamp(21px, 2.7vw, 31px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: #1d1d1f;
+    }
+
+    .arg-equation .eq-op {
+      color: #987E55;
+      font-weight: 600;
+    }
+
+    .arg-equation .eq-factor {
+      color: #987E55;
+    }
+
+    .arg-habits {
+      margin-top: 30px;
+      max-width: 100%;
+      padding: 30px 34px;
+      background: #faf8f3;
+      border: 1px solid #efe9dd;
+      border-radius: 16px;
+    }
+
+    .arg-habits-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #987E55;
+      margin-bottom: 10px;
+    }
+
+    .arg-habits .arg-principles {
+      margin-top: 0;
+    }
+
+    /* Section headers (The Method / The App) */
+    .sec-title {
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.04;
+      color: #1d1d1f;
+    }
+
+    .sec-lede {
+      font-size: 19px;
+      line-height: 1.5;
+      color: #6e6e73;
+      margin-top: 16px;
+      max-width: 600px;
+    }
+
+    .arg-masthead {
+      margin-bottom: 64px;
+    }
+
+    .app-intro {
+      background: #ffffff;
+      padding: 120px 40px 0;
+    }
+
+    .app-intro-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 767px) {
+      .arg-masthead {
+        margin-bottom: 48px;
+      }
+
+      .app-intro {
+        padding: 72px 20px 0;
+      }
+    }
+
+    .arg-handoff {
+      margin: 96px auto 0;
+      max-width: 1000px;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: #1d1d1f;
+    }
+
+    .arg-handoff .hl {
+      color: #987E55;
+    }
+
+    @media (max-width: 767px) {
+      .argument {
+        padding: 80px 20px;
+      }
+
+      .arg-beat {
+        padding-left: 32px;
+        padding-bottom: 64px;
+      }
     }
 
     /* Section Base */
@@ -879,7 +1131,7 @@
         <li><a href="#solution">How It Works</a></li>
         <li><a href="#features">Features</a></li>
         <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#start" class="nav-cta">Get Started</a></li>
+        <li><a href="#start" class="nav-cta">Join the Free Beta</a></li>
       </ul>
       <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
         <span></span><span></span><span></span>
@@ -890,7 +1142,7 @@
         <li><a href="#solution">How It Works</a></li>
         <li><a href="#features">Features</a></li>
         <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#start" class="nav-cta">Get Started</a></li>
+        <li><a href="#start" class="nav-cta">Join the Free Beta</a></li>
       </ul>
     </div>
   </nav>
@@ -898,80 +1150,114 @@
   <!-- Hero -->
   <section class="hero">
     <img src="images/hitlist_logo.png" alt="HitList logo" class="hero-logo">
-    <div class="hero-eyebrow"><span class="hero-brand-inline">HitList.</span></div>
-    <h1 class="hero-headline">Hit more moves on your friends.</h1>
-    <p class="hero-subheadline">Improve your jiu jitsu faster — by chasing the only metric that's honest: moves you hit
-      live against resistance.</p>
+    <h1 class="hero-headline">Improve Your Jiu-Jitsu Faster</h1>
+    <p class="hero-subheadline">Using evidence-based training and the only honest
+      metric in combat sports.</p>
     <div class="hero-cta-group">
-      <a href="#solution" class="btn btn-secondary">Why It Works</a>
-      <a href="#start" class="btn btn-primary">Get Started</a>
+      <a href="#start" class="btn btn-primary">Join the Free Beta</a>
     </div>
   </section>
 
-  <!-- Thesis -->
-  <section id="thesis" class="problem-section">
-    <div class="problem-content">
-      <h2>Why do we keep showing up?</h2>
-      <p>Because it's fun to hit cool, annoying, beautiful moves on our friends. Strip away everything else and that's
-        the hobby. Skill is just how you get there.</p>
-      <p>And the honest measure of a skill is simple: can you hit it live, against someone trying to stop you? Notes,
-        instructionals, and drilling are all inputs. The hit is the output.</p>
-      <p class="highlight">So that's what HitList counts.</p>
-    </div>
-  </section>
+  <!-- Argument -->
+  <section id="solution" class="argument">
+    <div class="arg-inner">
+      <header class="arg-masthead">
+        <h2 class="sec-title">The Method</h2>
+        <p class="sec-lede">Why most people stall at jiu jitsu — and how you won't.</p>
+      </header>
 
-  <!-- Philosophy -->
-  <section id="philosophy" class="steps-section">
-    <h2 class="section-headline">Getting better isn't a mystery</h2>
-    <p class="section-subheadline">It comes down to two things: how much you train, and how well you train. HitList is
-      built around both.</p>
-    <div class="steps-container">
-      <div class="step">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <h3>Pick a few skills</h3>
-          <p>You can't deliberately improve everything at once. Choose a small set of skills worth real focus and equip
-            them. Your Arsenal holds the rest until you're ready.</p>
+      <div class="arg-track">
+        <div class="arg-beat">
+          <div class="arg-step">01 — The goal</div>
+          <h2>The belt isn't the point.</h2>
+          <p>You're not training for a stripe. You're training to get better — and the only question that matters is
+            whether you actually are.</p>
+          <p>There's an honest answer: can you land a move you couldn't land before, live, on someone trying to stop
+            you? That's a hit.</p>
+          <p class="arg-punch">More hits, on tougher people, and you're getting better. <span class="hl">If not, you're
+              not.</span></p>
         </div>
-      </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <h3>Train them with intent</h3>
-          <p>Study them. Drill them. Run dialogue drills and live games. Roll hunting for the move on purpose.
-            <span class="highlight-phrase">Quality practice beats logging mat hours.</span>
+
+        <div class="arg-beat">
+          <div class="arg-step">02 — The problem</div>
+          <h2>But most people never get there.</h2>
+          <p>They show up to class, drill whatever the instructor shows, roll without a focus, and forget most of it by
+            next week.</p>
+          <p>Training with no intention is just random reps — and random reps make you better slowly, by accident, if at
+            all.</p>
+          <p class="arg-punch">Don't leave your progress to chance. <span class="hl">Train with intention.</span>
           </p>
         </div>
-      </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <h3>Sustain the focus</h3>
-          <p>Improvement compounds when you keep pointing at the same skills, week after week. The more often you train,
-            the faster it comes.</p>
+
+        <div class="arg-beat">
+          <div class="arg-step">03 — The fix</div>
+          <h2>The solution is the Skill Equation.</h2>
+          <p>Training improvement comes down to <span class="arg-mark">how much you train</span> and <span
+              class="arg-mark">how well you
+              train</span>.</p>
+          <div class="arg-equation">
+            <div class="eq-label">The equation</div>
+            <div class="eq-line">
+              <span>Improvement</span>
+              <span class="eq-op">=</span>
+              <span class="eq-factor">training volume</span>
+              <span class="eq-op">&times;</span>
+              <span class="eq-factor">training quality</span>
+            </div>
+          </div>
+          <p>Improve either factor and you get better faster. It comes down to how you structure your training, and how
+            you spend each session on the mat.</p>
+          <div class="arg-habits">
+            <div class="arg-habits-label">Training Habits</div>
+            <ul class="arg-principles">
+              <li><strong>Commit to a few skills.</strong> Pick a small set worth improving and stay on them for weeks —
+                not whatever the class happens to cover.</li>
+              <li><strong>Train them the right way.</strong> How you practice matters more than how much — quality reps,
+                not mindless ones.</li>
+              <li><strong>Get the volume.</strong> Quantity is the other half of the equation: the more live attempts
+                you get, the faster a skill lands.</li>
+              <li><strong>Track your hits.</strong> Count what lands live — your feedback on what's working and what to
+                fix next.</li>
+            </ul>
+          </div>
+
+          <div class="arg-habits">
+            <div class="arg-habits-label">Training Tools</div>
+            <ul class="arg-principles">
+              <li><strong>Study.</strong> Get the blueprint from instructionals and footage, then break down your own
+                rolls to see where you stand and what's missing.</li>
+              <li><strong>Dialogue drilling.</strong> Interactive problem-solving with a reacting partner — where the
+                mechanics actually click and you learn why a move works.</li>
+              <li><strong>Constraint games.</strong> Live-resistance games scoped to a single exchange, so you bank tons
+                of real reps right where it counts.</li>
+              <li><strong>Live rolling.</strong> Full resistance. Where you prove a skill works — and where the hits
+                happen.</li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="step">
-        <div class="step-number">4</div>
-        <div class="step-content">
-          <h3>Measure it in hits</h3>
-          <p>Forget stripes and gym hours. Count the moves you land live, against resistance.
-            <span class="highlight-phrase">That number tells you the truth — and tells you what to work on next.</span>
-          </p>
-        </div>
-      </div>
+
+      <p class="arg-handoff">That's the whole method. <span class="hl">HitList is built to make you run it.</span></p>
     </div>
   </section>
 
-  <!-- Features -->
-  <div id="features" class="feature-module-wrapper">
+  <!-- The App -->
+  <div id="features" class="app-intro">
+    <div class="app-intro-inner">
+      <h2 class="sec-title">The App</h2>
+      <p class="sec-lede">HitList turns the method into something you actually run.</p>
+    </div>
+  </div>
+
+  <!-- App: the board -->
+  <div class="feature-module-wrapper">
     <section class="feature-module">
       <div class="feature-text">
         <div class="feature-eyebrow">Active Skills</div>
-        <h2 class="feature-headline">Your target board</h2>
-        <p class="feature-description">Your equipped skills, front and center. Each one shows its level, hits into the
-          current level, and lifetime hits on a two-ring dial.</p>
-        <p class="feature-description"><strong>Open the app and you know exactly what you're hunting for.</strong></p>
+        <h2 class="feature-headline">What you're working on, up front</h2>
+        <p class="feature-description">Put the few skills you're chasing right now front and center. Each one gets a
+          dial: how close it is to the next level, and how far it's come.</p>
+        <p class="feature-description"><strong>Open the app and you know exactly what to chase tonight.</strong></p>
       </div>
       <div class="feature-media">
         <img src="images/active-skills.png" alt="Active Skills screen showing skill rings and levels">
@@ -979,56 +1265,11 @@
     </section>
   </div>
 
-  <div class="feature-module-wrapper section-alt">
-    <section class="feature-module reverse">
-      <div class="feature-text">
-        <div class="feature-eyebrow">Skill Detail</div>
-        <h2 class="feature-headline">One skill, fully loaded</h2>
-        <p class="feature-description">Everything for a move lives in one place: a hit list broken down by partner, your
-          media, your notes, and your training logs.</p>
-        <p class="feature-description"><strong>See who you're hitting it on — and what work got you there.</strong></p>
-      </div>
-      <div class="feature-media">
-        <img src="images/skill-detail.png" alt="Skill detail screen for RNC Finish">
-      </div>
-    </section>
-  </div>
-
-  <div class="feature-module-wrapper">
-    <section class="feature-module">
-      <div class="feature-text">
-        <div class="feature-eyebrow">Log a Hit</div>
-        <h2 class="feature-headline">A hit is one tap away</h2>
-        <p class="feature-description">Just landed it in the round? Log it before you forget. Pick the partner, set the
-          count, save.</p>
-        <p class="feature-description"><strong>Capture the win while it's still fresh.</strong></p>
-      </div>
-      <div class="feature-media">
-        <img src="images/log-hit.png" alt="Log Hit sheet with partner picker and hit count">
-      </div>
-    </section>
-  </div>
-
-  <div class="feature-module-wrapper section-alt">
-    <section class="feature-module reverse">
-      <div class="feature-text">
-        <div class="feature-eyebrow">Quick Capture</div>
-        <h2 class="feature-headline">Catch every kind of work</h2>
-        <p class="feature-description">Hits are the metric, but the work around them matters too. Log a training
-          session, drop in a clip, or jot a note — all from one quick menu.</p>
-        <p class="feature-description"><strong>Keep the whole picture of how a move is coming together.</strong></p>
-      </div>
-      <div class="feature-media">
-        <img src="images/quick-add.png" alt="Quick add menu with Hit, Training Log, Media, and Note options">
-      </div>
-    </section>
-  </div>
-
   <!-- Levels -->
   <section class="levels-section">
-    <h2 class="section-headline">Every skill has ten levels</h2>
-    <p class="section-subheadline">The number isn't scientific. It's clean, memorable, hard, and achievable — a target
-      you can actually chase.</p>
+    <h2 class="section-headline">Ten hits to level up. A hundred to own it.</h2>
+    <p class="section-subheadline">Every skill runs 0 to 10. The number isn't scientific — just a target you can
+      actually chase.</p>
     <div class="levels-grid">
       <div class="level-card">
         <div class="big">10</div>
@@ -1048,8 +1289,24 @@
     </div>
   </section>
 
+  <!-- App: the record -->
+  <div class="feature-module-wrapper">
+    <section class="feature-module reverse">
+      <div class="feature-text">
+        <div class="feature-eyebrow">Every skill</div>
+        <h2 class="feature-headline">Nothing gets forgotten by next week</h2>
+        <p class="feature-description">Log a hit in two taps and tag who you caught it on. Keep the instructional, your
+          notes, and what you drilled — all on the skill it belongs to.</p>
+        <p class="feature-description"><strong>Your training stops leaking out.</strong></p>
+      </div>
+      <div class="feature-media">
+        <img src="images/skill-detail.png" alt="Skill detail screen for RNC Finish">
+      </div>
+    </section>
+  </div>
+
   <!-- Pricing -->
-  <section id="pricing" class="pricing-section">
+  <section id="pricing" class="pricing-section" style="background:#fafafa;">
     <h2 class="section-headline">Pricing</h2>
     <p class="section-subheadline">For the athlete chasing hits, and the gym that wants its whole room getting better.
     </p>
@@ -1061,7 +1318,7 @@
         <p class="pricing-description">Everything you need to focus your training and chase hits.</p>
         <ul class="pricing-features">
           <li>Build an unlimited Arsenal of skills</li>
-          <li>Equip a focused set as your target board</li>
+          <li>Focus on the few you're chasing now</li>
           <li>Log hits and tag the partner you hit them on</li>
           <li>Notes, media, and training logs per skill</li>
           <li>Track levels and lifetime hits over time</li>
@@ -1088,11 +1345,10 @@
 
   <!-- Final CTA -->
   <section id="start" class="final-cta">
-    <h2>Hit more moves on your friends.</h2>
-    <p>Pick a skill. Train it. Hit it live. Watch it level up.</p>
+    <h2>Stop drifting.</h2>
+    <p>Pick your skills. Train them on purpose. Watch the hits stack up.</p>
     <div class="hero-cta-group">
-      <a href="#pricing" class="btn btn-secondary"
-        style="background:transparent;border-color:#ffffff;color:#ffffff;">Get Started</a>
+      <a href="#start" class="btn btn-primary">Join the Free Beta</a>
     </div>
   </section>
 
