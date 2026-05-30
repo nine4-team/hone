@@ -30,6 +30,7 @@ export default function SkillDetailScreen() {
     addMedia,
     addStandaloneHit,
     hits,
+    hitListEntries,
     media,
     notes,
     partners,
@@ -45,7 +46,7 @@ export default function SkillDetailScreen() {
   const [notesOpen, setNotesOpen] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
-  const [logsOpen, setLogsOpen] = useState(false);
+  const [logsOpen, setLogsOpen] = useState(true);
   const [hitListOpen, setHitListOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
@@ -115,6 +116,15 @@ export default function SkillDetailScreen() {
   const hasMoreStats = moreStats.length > 0;
 
   const hitList = useMemo(() => hitRowsByPartner(skillHits, partners), [partners, skillHits]);
+  const skillHitListTargets = hitListEntries
+    .filter((entry) => entry.skillId === id)
+    .map((entry) => ({
+      entry,
+      partner: partners.find((partner) => partner.id === entry.partnerId),
+      totalHits: skillHits
+        .filter((hit) => hit.partnerId === entry.partnerId)
+        .reduce((sum, hit) => sum + hit.count, 0),
+    }));
 
   if (!skill) {
     return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={router.back} />;
@@ -165,6 +175,12 @@ export default function SkillDetailScreen() {
                 icon: 'sports-kabaddi',
                 label: 'Active skills tab',
                 onPress: () => router.push('/'),
+              },
+              {
+                key: 'hit-list',
+                icon: 'gps-fixed',
+                label: 'Hit List tab',
+                onPress: () => router.push('/hit-list'),
               },
               {
                 key: 'arsenal',
@@ -283,6 +299,17 @@ export default function SkillDetailScreen() {
         />
         {hitListOpen ? (
           <View style={styles.stack}>
+            {skillHitListTargets.length > 0 ? (
+              <View style={styles.targetStack}>
+                {skillHitListTargets.map(({ entry, partner, totalHits }) => (
+                  <Card key={entry.id} style={styles.targetCard}>
+                    <Text style={[styles.targetName, { color: colors.ink }]}>{partner?.name ?? 'Unknown person'}</Text>
+                    <Text style={[styles.targetReason, { color: colors.muted }]}>{entry.reason}</Text>
+                    <Text style={[styles.targetMeta, { color: colors.sage }]}>{formatHitStat(totalHits)} logged</Text>
+                  </Card>
+                ))}
+              </View>
+            ) : null}
             <View style={styles.hitListRows}>
               {hitList.length === 0 ? (
                 <EmptyState
@@ -924,6 +951,22 @@ const styles = StyleSheet.create({
   },
   hitListRows: {
     gap: 2,
+  },
+  targetCard: {
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  targetMeta: {
+    ...textStyles.rowSummaryLabel,
+  },
+  targetName: {
+    ...textStyles.detailRecordTitle,
+  },
+  targetReason: {
+    ...textStyles.detailRecordMeta,
+  },
+  targetStack: {
+    gap: spacing.sm,
   },
   levelCard: {
     gap: spacing.sm,

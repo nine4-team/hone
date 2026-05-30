@@ -4,23 +4,25 @@ import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
 import { useTheme } from '../../lib/theme';
 
-const visibleRoutes = ['index', 'library', 'settings'];
+const visibleRoutes = ['index', 'hit-list', 'library', 'settings'];
 
 const routeIcons: Record<string, Pick<FloatingNavigationItem, 'icon'>> = {
   index: { icon: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap },
   library: { icon: ArsenalIcon },
+  'hit-list': { icon: 'gps-fixed' },
   settings: { icon: 'settings' },
 };
 
 const routeLabels: Record<string, string> = {
   index: 'Active skills',
   library: 'Arsenal',
+  'hit-list': 'Hit List',
   settings: 'Settings',
 };
 
 function FloatingTabBar({ state, navigation }: any) {
   const pathname = usePathname();
-  const visiblePathnames = new Set(['/', '/settings', '/library', '/partners']);
+  const visiblePathnames = new Set(['/', '/settings', '/library', '/hit-list']);
   if (!visiblePathnames.has(pathname)) return null;
 
   const routes = visibleRoutes
@@ -79,8 +81,8 @@ export default function TabsLayout() {
         options={{ title: 'Arsenal' }}
       />
       <Tabs.Screen
-        name="partners"
-        options={{ href: null, title: 'Partners' }}
+        name="hit-list"
+        options={{ title: 'Hit List' }}
       />
     </Tabs>
   );

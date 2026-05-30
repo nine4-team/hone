@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginHorizontal: -spacing.xs,
+    paddingBottom: spacing.xxl,
     rowGap: spacing.md,
   },
 });

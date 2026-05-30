@@ -3,25 +3,33 @@ import { StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '../../components/EmptyState';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
+import { Card } from '../../components/ui';
 import { formatDate, formatHitCount } from '../../lib/format';
 import { hitRowsBySkill } from '../../lib/hits';
 import { useHitList } from '../../lib/store';
-import { colors, spacing } from '../../lib/theme';
+import { spacing, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 
-export default function PartnerDetailScreen() {
+export default function HitListDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { hits, partners, skills, trainingLogs } = useHitList();
+  const colors = useTheme();
+  const { hitListEntries, hits, partners, skills, trainingLogs } = useHitList();
   const partner = partners.find((item) => item.id === id);
 
   if (!partner) {
-    return <Screen title="Partner not found" subtitle="This partner is not in the local data set." onBack={router.back} />;
+    return <Screen title="Hit List entry not found" subtitle="This person is not in the local data set." onBack={router.back} />;
   }
 
   const partnerHits = hits.filter((hit) => hit.partnerId === partner.id);
   const skillRows = hitRowsBySkill(partnerHits, skills);
   const totalHits = partnerHits.reduce((sum, hit) => sum + hit.count, 0);
+  const targets = hitListEntries
+    .filter((entry) => entry.partnerId === partner.id)
+    .map((entry) => ({
+      entry,
+      skill: skills.find((skill) => skill.id === entry.skillId),
+    }));
 
   const recent = partnerHits
     .map((hit) => ({
@@ -34,16 +42,36 @@ export default function PartnerDetailScreen() {
   return (
     <Screen
       title={partner.name}
-      subtitle="All hits attributed to this partner."
+      subtitle="Targets, history, and proof against this person."
       onBack={router.back}
     >
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Hit List</Text>
+        <Text style={[styles.sectionTitle, { color: colors.ink }]}>Targets</Text>
+        {targets.length === 0 ? (
+          <EmptyState
+            framed={false}
+            title="No targets yet"
+            body="Put this person on a skill Hit List when they represent useful resistance."
+          />
+        ) : (
+          <View style={styles.stack}>
+            {targets.map(({ entry, skill }) => (
+              <Card key={entry.id} style={styles.targetCard}>
+                <Text style={[styles.cardTitle, { color: colors.ink }]}>{skill?.name ?? 'Unknown skill'}</Text>
+                <Text style={[styles.cardMeta, { color: colors.muted }]}>{entry.reason}</Text>
+              </Card>
+            ))}
+          </View>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.ink }]}>Hits By Skill</Text>
         {skillRows.length === 0 ? (
           <EmptyState
             framed={false}
             title="No hits yet"
-            body="Attribute hits to this partner while logging training."
+            body="Attribute hits to this person while logging training."
           />
         ) : (
           <View style={styles.hitListRows}>
@@ -65,19 +93,19 @@ export default function PartnerDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Timeline</Text>
+        <Text style={[styles.sectionTitle, { color: colors.ink }]}>Timeline</Text>
         <View style={styles.timeline}>
           {recent.map((row, index) => {
             const isLast = index === recent.length - 1;
             return (
               <View key={row.hit.id} style={styles.timelineRow}>
                 <View style={styles.timelineRail}>
-                  <View style={styles.timelineDot} />
-                  {!isLast ? <View style={styles.timelineLine} /> : null}
+                  <View style={[styles.timelineDot, { backgroundColor: colors.sage }]} />
+                  {!isLast ? <View style={[styles.timelineLine, { backgroundColor: colors.line }]} /> : null}
                 </View>
                 <View style={[styles.timelineContent, isLast && styles.timelineContentLast]}>
-                  <Text style={styles.cardTitle}>{row.skillName}</Text>
-                  <Text style={styles.cardMeta}>
+                  <Text style={[styles.cardTitle, { color: colors.ink }]}>{row.skillName}</Text>
+                  <Text style={[styles.cardMeta, { color: colors.quiet }]}>
                     {formatDate(row.log?.occurredAt ?? row.hit.createdAt)} · {formatHitCount(row.hit.count)}
                   </Text>
                 </View>
@@ -111,28 +139,14 @@ const styles = StyleSheet.create({
     ...textStyles.sectionTitle,
     marginBottom: 6,
   },
+  stack: {
+    gap: spacing.md,
+  },
+  targetCard: {
+    padding: spacing.lg,
+  },
   timeline: {
     marginTop: spacing.xs,
-  },
-  timelineRow: {
-    flexDirection: 'row',
-  },
-  timelineRail: {
-    alignItems: 'center',
-    width: RAIL_WIDTH,
-  },
-  timelineDot: {
-    backgroundColor: colors.sage,
-    borderRadius: DOT_SIZE / 2,
-    height: DOT_SIZE,
-    marginTop: spacing.xs,
-    width: DOT_SIZE,
-  },
-  timelineLine: {
-    backgroundColor: colors.line,
-    flex: 1,
-    marginTop: spacing.xs,
-    width: 2,
   },
   timelineContent: {
     flex: 1,
@@ -141,5 +155,23 @@ const styles = StyleSheet.create({
   },
   timelineContentLast: {
     paddingBottom: 0,
+  },
+  timelineDot: {
+    borderRadius: DOT_SIZE / 2,
+    height: DOT_SIZE,
+    marginTop: spacing.xs,
+    width: DOT_SIZE,
+  },
+  timelineLine: {
+    flex: 1,
+    marginTop: spacing.xs,
+    width: 2,
+  },
+  timelineRail: {
+    alignItems: 'center',
+    width: RAIL_WIDTH,
+  },
+  timelineRow: {
+    flexDirection: 'row',
   },
 });

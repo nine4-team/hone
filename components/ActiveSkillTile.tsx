@@ -155,11 +155,11 @@ export function ActiveSkillTile({
   );
 }
 
-const RING_SIZE = 120;
+const RING_SIZE = 116;
 const RING_CENTER = RING_SIZE / 2;
-const HIT_RING_RADIUS = 55;
+const HIT_RING_RADIUS = 54;
 const HIT_RING_STROKE = 8;
-const LEVEL_RING_RADIUS = 47;
+const LEVEL_RING_RADIUS = 46;
 const LEVEL_RING_STROKE = 8;
 const DARK_PAGE_BACKGROUND = '#1E1E1E';
 
@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
   meta: {
     fontSize: 11,
     fontWeight: '400',
+    lineHeight: 14,
     textAlign: 'center',
   },
   metaLabel: {
@@ -230,8 +231,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   metaStack: {
-    gap: 1,
-    marginTop: -spacing.xs,
+    gap: 0,
   },
   menuButton: {
     opacity: 0.5,
@@ -244,8 +244,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 13,
     fontWeight: '600',
-    lineHeight: 18,
-    marginTop: 2,
+    lineHeight: 17,
     textAlign: 'center',
   },
   pressed: {
@@ -253,10 +252,10 @@ const styles = StyleSheet.create({
   },
   ringInner: {
     alignItems: 'center',
-    borderRadius: 42,
-    height: 84,
+    borderRadius: 41,
+    height: 82,
     justifyContent: 'center',
-    width: 84,
+    width: 82,
     zIndex: 1,
   },
   ringSvg: {
@@ -273,16 +272,16 @@ const styles = StyleSheet.create({
     width: RING_SIZE,
   },
   tile: {
-    minHeight: 214,
+    minHeight: 196,
     position: 'relative',
     width: '50%',
   },
   tilePressArea: {
     alignItems: 'center',
-    gap: spacing.sm,
-    minHeight: 214,
+    gap: spacing.xs,
+    minHeight: 196,
     paddingHorizontal: spacing.xs,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.md,
     width: '100%',
   },
 });

@@ -48,6 +48,15 @@ export type Partner = {
   updatedAt: string;
 };
 
+export type HitListEntry = {
+  id: string;
+  partnerId: string;
+  skillId: string;
+  reason: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Media = {
   id: string;
   skillId: string;

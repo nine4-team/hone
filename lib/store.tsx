@@ -1,6 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
 import {
   seedHits,
+  seedHitListEntries,
   seedMedia,
   seedNotes,
   seedPartners,
@@ -10,6 +11,7 @@ import {
 import { inferMediaType, resolveMediaMetadata } from './mediaMetadata';
 import type {
   Hit,
+  HitListEntry,
   Media,
   NewMediaInput,
   NewStandaloneHitInput,
@@ -30,6 +32,7 @@ type HitListState = {
   notes: Note[];
   trainingLogs: TrainingLog[];
   hits: Hit[];
+  hitListEntries: HitListEntry[];
   partners: Partner[];
   media: Media[];
   addSkill: (input: NewSkillInput) => Skill;
@@ -61,6 +64,7 @@ export function HitListProvider({ children }: PropsWithChildren) {
   const [notes, setNotes] = useState(seedNotes);
   const [trainingLogs, setTrainingLogs] = useState(seedTrainingLogs);
   const [hits, setHits] = useState(seedHits);
+  const [hitListEntries] = useState(seedHitListEntries);
   const [partners, setPartners] = useState(seedPartners);
   const [media, setMedia] = useState(seedMedia);
 
@@ -78,6 +82,7 @@ export function HitListProvider({ children }: PropsWithChildren) {
       notes,
       trainingLogs,
       hits,
+      hitListEntries,
       partners,
       media,
       addSkill(input) {
@@ -336,7 +341,7 @@ export function HitListProvider({ children }: PropsWithChildren) {
         touchSkill(input.skillId, now);
       },
     }),
-    [hits, media, notes, partners, skills, trainingLogs],
+    [hitListEntries, hits, media, notes, partners, skills, trainingLogs],
   );
 
   return <HitListContext.Provider value={value}>{children}</HitListContext.Provider>;
