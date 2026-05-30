@@ -8,12 +8,12 @@
     content="HitList is a deliberate-practice app for grapplers. Pick a skill, train it, hit it live, level it up — and chase the only metric that's honest: hits that land against resistance.">
   <meta property="og:title" content="HitList">
   <meta property="og:description" content="Improve your jiu jitsu faster. Hit more moves on your friends and rivals.">
-  <meta property="og:image" content="images/hitlist_logo.png">
+  <meta property="og:image" content="images/hitlist-logo.png">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HitList">
   <meta name="twitter:description" content="Improve your jiu jitsu faster. Hit more moves on your friends and rivals.">
-  <meta name="twitter:image" content="images/hitlist_logo.png">
+  <meta name="twitter:image" content="images/hitlist-logo.png">
   <title>HitList — Improve your jiu jitsu faster</title>
   <style>
     * {
@@ -70,10 +70,10 @@
     }
 
     .nav-logo img {
-      height: 32px;
-      width: auto;
-      border-radius: 8px;
+      height: 34px;
+      width: 34px;
       display: block;
+      border-radius: 8px;
     }
 
     /* Hero logo size (adjustable) */
@@ -82,8 +82,6 @@
       height: auto;
       display: block;
       margin: 0 auto 24px;
-      border-radius: 26px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
     }
 
     .hero-brand-inline {
@@ -764,7 +762,7 @@
       padding: 100px 40px;
       display: grid;
       gap: 60px;
-      align-items: center;
+      align-items: start;
       grid-template-columns: 1fr;
       max-width: 1400px;
       margin: 0 auto;
@@ -811,11 +809,12 @@
 
     .feature-media {
       width: 100%;
-      max-width: 360px;
-      aspect-ratio: 1 / 1.9;
-      background: #1d1d1f;
-      border-radius: 28px;
-      box-shadow: 0 -8px 12px rgba(0, 0, 0, 0.04), 0 12px 16px rgba(0, 0, 0, 0.16);
+      max-width: 320px;
+      aspect-ratio: 1170 / 2532;
+      background: #f1f2f4;
+      border: 1px solid #e6e6ea;
+      border-radius: 38px;
+      box-shadow: 0 -8px 12px rgba(0, 0, 0, 0.03), 0 18px 36px rgba(0, 0, 0, 0.12);
       position: relative;
       overflow: hidden;
       margin: 0 auto;
@@ -829,48 +828,103 @@
       object-position: top center;
     }
 
-    /* Levels callout */
-    .levels-section {
-      background: #fafafa;
-      padding: 120px 20px;
+    /* Swappable screenshot carousel (Hit List section) */
+    .hl-carousel {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin: 0 auto;
     }
 
-    .levels-grid {
-      max-width: 1000px;
-      margin: 40px auto 0;
-      display: grid;
-      gap: 24px;
-      grid-template-columns: repeat(3, 1fr);
+    .hl-phone {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 1170 / 2532;
+      background: #f1f2f4;
+      border: 1px solid #e6e6ea;
+      border-radius: 38px;
+      box-shadow: 0 -8px 12px rgba(0, 0, 0, 0.03), 0 18px 36px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      touch-action: pan-y;
+      cursor: grab;
+      user-select: none;
     }
 
-    .level-card {
-      background: #ffffff;
-      border: 1px solid #e8e8ed;
-      border-radius: 24px;
-      padding: 40px 32px;
-      text-align: center;
+    .hl-phone:active {
+      cursor: grabbing;
     }
 
-    .level-card .big {
-      font-size: 52px;
+    .hl-phone img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    .hl-phone img.is-active {
+      opacity: 1;
+    }
+
+    .hl-dots {
+      display: flex;
+      gap: 9px;
+    }
+
+    .hl-dot {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: #d8d2c4;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .hl-dot.is-active {
+      background: #987E55;
+      transform: scale(1.15);
+    }
+
+    /* Leveling stats — lives inside the Active Skills text column */
+    .board-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 8px;
+      padding-top: 28px;
+      border-top: 1px solid #eeeae0;
+      flex-wrap: wrap;
+    }
+
+    .board-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .board-stat .bs-num {
+      font-size: 38px;
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: #987E55;
       line-height: 1;
-      margin-bottom: 12px;
+      color: #987E55;
     }
 
-    .level-card h3 {
-      font-size: 21px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #1d1d1f;
-    }
-
-    .level-card p {
-      font-size: 16px;
-      line-height: 1.5;
+    .board-stat .bs-label {
+      font-size: 14px;
+      line-height: 1.35;
       color: #6e6e73;
+      margin-top: 8px;
+      max-width: 120px;
     }
 
     /* Pricing */
@@ -1016,8 +1070,20 @@
       .feature-module {
         grid-template-columns: 1fr 1fr;
         grid-template-areas: "text media";
-        gap: 60px;
+        gap: 72px;
         align-items: center;
+      }
+
+      .feature-media {
+        max-width: 270px;
+      }
+
+      .hl-carousel {
+        grid-area: media;
+      }
+
+      .hl-carousel .hl-phone {
+        max-width: 270px;
       }
 
       .feature-text {
@@ -1063,10 +1129,6 @@
         grid-template-columns: 1fr;
       }
 
-      .levels-grid {
-        grid-template-columns: 1fr;
-      }
-
       .problem-section {
         padding: 80px 20px;
       }
@@ -1093,7 +1155,6 @@
     @media (prefers-reduced-motion: no-preference) {
 
       .feature-module,
-      .level-card,
       .pricing-card,
       .step {
         opacity: 0;
@@ -1113,9 +1174,9 @@
       }
     }
   </style>
-  <link rel="icon" type="image/png" sizes="32x32" href="images/hitlist_logo.png">
-  <link rel="apple-touch-icon" href="images/hitlist_logo.png">
-  <link rel="shortcut icon" href="images/hitlist_logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/hitlist-logo.png">
+  <link rel="apple-touch-icon" href="images/hitlist-logo.png">
+  <link rel="shortcut icon" href="images/hitlist-logo.png">
 </head>
 
 <body>
@@ -1124,7 +1185,7 @@
   <nav class="nav">
     <div class="nav-content">
       <a href="#" class="nav-logo">
-        <img src="images/hitlist_logo.png" alt="HitList logo">
+        <img src="images/hitlist-logo.png" alt="HitList logo">
         <span>HitList</span>
       </a>
       <ul class="nav-links">
@@ -1149,10 +1210,10 @@
 
   <!-- Hero -->
   <section class="hero">
-    <img src="images/hitlist_logo.png" alt="HitList logo" class="hero-logo">
-    <h1 class="hero-headline">Improve Your Jiu-Jitsu Faster</h1>
-    <p class="hero-subheadline">Using evidence-based training and the only honest
-      metric in combat sports.</p>
+    <img src="images/hitlist-logo-body.png" alt="HitList logo" class="hero-logo">
+    <h1 class="hero-headline">Accelerate Your Jiu-Jitsu</h1>
+    <p class="hero-subheadline">Get better faster using evidence-based training so you can hit more moves on
+      your friends and rivals.</p>
     <div class="hero-cta-group">
       <a href="#start" class="btn btn-primary">Join the Free Beta</a>
     </div>
@@ -1236,8 +1297,6 @@
           </div>
         </div>
       </div>
-
-      <p class="arg-handoff">That's the whole method. <span class="hl">HitList is built to make you run it.</span></p>
     </div>
   </section>
 
@@ -1245,62 +1304,112 @@
   <div id="features" class="app-intro">
     <div class="app-intro-inner">
       <h2 class="sec-title">The App</h2>
-      <p class="sec-lede">HitList turns the method into something you actually run.</p>
+      <p class="sec-lede">Every part of HitList maps to a piece of the method. Here's how you run it.</p>
     </div>
   </div>
 
-  <!-- App: the board -->
-  <div class="feature-module-wrapper">
+  <!-- App: Active Skills board + leveling -->
+  <div class="feature-module-wrapper app-board">
     <section class="feature-module">
       <div class="feature-text">
         <div class="feature-eyebrow">Active Skills</div>
-        <h2 class="feature-headline">What you're working on, up front</h2>
-        <p class="feature-description">Put the few skills you're chasing right now front and center. Each one gets a
-          dial: how close it is to the next level, and how far it's come.</p>
-        <p class="feature-description"><strong>Open the app and you know exactly what to chase tonight.</strong></p>
+        <h2 class="feature-headline">Your board keeps you on the metric</h2>
+        <p class="feature-description">The handful of skills you're working right now sit on one board. Each gets a
+          two-ring dial: hits toward the next level on the outside, levels toward Level 10 on the inside.</p>
+        <p class="feature-description"><strong>Open the app and the only number that matters is staring back:
+            hits.</strong></p>
+        <div class="board-stats">
+          <div class="board-stat">
+            <span class="bs-num">10</span>
+            <span class="bs-label">hits earns a level</span>
+          </div>
+          <div class="board-stat">
+            <span class="bs-num">10</span>
+            <span class="bs-label">levels to the top</span>
+          </div>
+        </div>
       </div>
       <div class="feature-media">
-        <img src="images/active-skills.png" alt="Active Skills screen showing skill rings and levels">
+        <img src="images/active-skills.png"
+          alt="Active Skills board with two-ring level dials for RNC Finish, K Guard Entry, and Wrist Ride Back Take">
       </div>
     </section>
   </div>
 
-  <!-- Levels -->
-  <section class="levels-section">
-    <h2 class="section-headline">Ten hits to level up. A hundred to own it.</h2>
-    <p class="section-subheadline">Every skill runs 0 to 10. The number isn't scientific — just a target you can
-      actually chase.</p>
-    <div class="levels-grid">
-      <div class="level-card">
-        <div class="big">10</div>
-        <h3>hits earns a level</h3>
-        <p>Ten live hits moves a skill up one level. Steady progress you can feel.</p>
-      </div>
-      <div class="level-card">
-        <div class="big">100</div>
-        <h3>hits to Level 10</h3>
-        <p>Land a move a hundred times against resistance and you've genuinely got it.</p>
-      </div>
-      <div class="level-card">
-        <div class="big">∞</div>
-        <h3>lifetime hits</h3>
-        <p>Set a skill aside, then come back to level it up. The count never resets.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- App: the record -->
-  <div class="feature-module-wrapper">
+  <!-- App: Log training -->
+  <div class="feature-module-wrapper section-alt">
     <section class="feature-module reverse">
       <div class="feature-text">
-        <div class="feature-eyebrow">Every skill</div>
-        <h2 class="feature-headline">Nothing gets forgotten by next week</h2>
-        <p class="feature-description">Log a hit in two taps and tag who you caught it on. Keep the instructional, your
-          notes, and what you drilled — all on the skill it belongs to.</p>
-        <p class="feature-description"><strong>Your training stops leaking out.</strong></p>
+        <div class="feature-eyebrow">Training Logs</div>
+        <h2 class="feature-headline">Log how you trained, not just that you did</h2>
+        <p class="feature-description">Every session is one of four types — study, dialogue drilling, constraint games,
+          or rolling. Set a duration, tag a partner, and count the hits that landed.</p>
+        <p class="feature-description"><strong>The training that actually builds skill, on the record.</strong></p>
       </div>
       <div class="feature-media">
-        <img src="images/skill-detail.png" alt="Skill detail screen for RNC Finish">
+        <img src="images/log-training.png"
+          alt="Log Training sheet with Study, Dialogue Drilling, Constraint Game, and Rolling types, plus duration, partner, and hit count">
+      </div>
+    </section>
+  </div>
+
+  <!-- App: Skill detail (the lab) -->
+  <div class="feature-module-wrapper">
+    <section class="feature-module">
+      <div class="feature-text">
+        <div class="feature-eyebrow">The skill page</div>
+        <h2 class="feature-headline">Where you go back to the lab</h2>
+        <p class="feature-description">Open a skill and everything you've gathered is right there — the instructional
+          you're studying, your notes, and a log of every session you've put in. Read back through what you've drilled,
+          find the gap, and sharpen your understanding.</p>
+        <p class="feature-description"><strong>The work that turns into a higher hit rate.</strong></p>
+      </div>
+      <div class="feature-media">
+        <img src="images/skill-detail.png"
+          alt="Skill detail screen for RNC Finish with the training log open, showing past sessions">
+      </div>
+    </section>
+  </div>
+
+  <!-- App: Partners -->
+  <div class="feature-module-wrapper section-alt">
+    <section class="feature-module reverse">
+      <div class="feature-text">
+        <div class="feature-eyebrow">Hit List</div>
+        <h2 class="feature-headline">See who you're hitting it on</h2>
+        <p class="feature-description">Tag every hit with the partner you caught it on, and they stack into a ranked Hit
+          List. Tap a name for their hits by skill and a dated timeline — where your reps actually come from. 100 hits on
+          a fresh white belt isn't 100 hits on a black belt.</p>
+        <p class="feature-description"><strong>Proof a skill holds up against people who can stop it.</strong></p>
+      </div>
+      <div class="hl-carousel" data-carousel data-interval="4000">
+        <div class="hl-phone">
+          <img class="is-active" src="images/hit-list.png"
+            alt="Hit List screen ranking training partners by how many times you've hit a skill on them">
+          <img src="images/hit-list-detail.png"
+            alt="Hit List detail for Alex showing hits by skill and a dated hit timeline">
+        </div>
+        <div class="hl-dots">
+          <button class="hl-dot is-active" type="button" aria-label="Show the ranked Hit List"></button>
+          <button class="hl-dot" type="button" aria-label="Show a partner's hit breakdown"></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- App: Arsenal -->
+  <div class="feature-module-wrapper">
+    <section class="feature-module">
+      <div class="feature-text">
+        <div class="feature-eyebrow">Arsenal</div>
+        <h2 class="feature-headline">Every skill you own, in one place</h2>
+        <p class="feature-description">The Arsenal holds all your skills. Flip a few onto the board to focus on; the
+          rest wait with their levels, hits, and history intact.</p>
+        <p class="feature-description"><strong>Move on without losing what you built.</strong></p>
+      </div>
+      <div class="feature-media">
+        <img src="images/arsenal.png"
+          alt="Arsenal screen listing all skills with levels, hit counts, and active toggles">
       </div>
     </section>
   </div>
@@ -1346,7 +1455,7 @@
   <!-- Final CTA -->
   <section id="start" class="final-cta">
     <h2>Stop drifting.</h2>
-    <p>Pick your skills. Train them on purpose. Watch the hits stack up.</p>
+    <p>Pick your skills. Train them with intention. Watch the hits stack up.</p>
     <div class="hero-cta-group">
       <a href="#start" class="btn btn-primary">Join the Free Beta</a>
     </div>
@@ -1379,6 +1488,46 @@
           }
         });
       }
+
+      // Swappable screenshot carousels
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelectorAll('[data-carousel]').forEach(function (car) {
+        const slides = car.querySelectorAll('.hl-phone img');
+        const dots = car.querySelectorAll('.hl-dot');
+        if (slides.length < 2) return;
+        const interval = parseInt(car.getAttribute('data-interval'), 10) || 4000;
+        let index = 0;
+        let timer = null;
+
+        function show(n) {
+          index = (n + slides.length) % slides.length;
+          slides.forEach(function (s, k) { s.classList.toggle('is-active', k === index); });
+          dots.forEach(function (d, k) { d.classList.toggle('is-active', k === index); });
+        }
+        function start() { if (!reduceMotion) timer = setInterval(function () { show(index + 1); }, interval); }
+        function reset() { clearInterval(timer); start(); }
+
+        dots.forEach(function (d, k) {
+          d.addEventListener('click', function () { show(k); reset(); });
+        });
+
+        const frame = car.querySelector('.hl-phone');
+        let startX = null;
+        frame.addEventListener('pointerdown', function (e) {
+          startX = e.clientX;
+          if (frame.setPointerCapture) { try { frame.setPointerCapture(e.pointerId); } catch (err) { } }
+        });
+        frame.addEventListener('pointerup', function (e) {
+          if (startX === null) return;
+          const dx = e.clientX - startX;
+          if (Math.abs(dx) > 40) { show(index + (dx < 0 ? 1 : -1)); reset(); }
+          startX = null;
+        });
+        frame.addEventListener('pointercancel', function () { startX = null; });
+        frame.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+        start();
+      });
     });
   </script>
 
