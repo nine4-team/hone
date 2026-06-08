@@ -43,7 +43,7 @@ Default sort should show the user's strongest skills first:
 The Arsenal should support:
 
 - Search by skill name
-- Filter equipped/unequipped
+- Filter active/inactive
 - Sort by level, hits, recent activity, created date, and name
 - Future grouping by position or category
 
@@ -53,20 +53,20 @@ Arsenal rows/cards should show:
 - Current level
 - Total hits
 - Progress toward next level
-- Equipped/unequipped state
+- Active/inactive state
 - Last touched, if it fits cleanly
 
 Future Arsenal grouping may show skills by position or category with level markers.
 
-### Equipped Skills
+### Hit List
 
-Equipped Skills are the small set of skills the user is currently trying to hit live.
+The Hit List is the small set of active skills the user is currently trying to hit live.
 
-Equipping a skill makes it appear on the Equipped Skills screen. Unequipping a skill removes it from that screen, but does not delete it or reset progress. Unequipped skills remain in the Arsenal.
+Activating a skill makes it appear on the Hit List screen. Deactivating a skill removes it from that screen, but does not delete it or reset progress. Inactive skills remain in the Arsenal.
 
-The Equipped Skills screen is the main screen.
+The Hit List screen is the main screen.
 
-Equipped skill cards should show:
+Hit List skill cards should show:
 
 - Skill name
 - Current level
@@ -74,11 +74,11 @@ Equipped skill cards should show:
 - Total hits
 - A two-ring circular progress dial
 - Fast log action
-- Unequip affordance, if it fits cleanly
+- Deactivate affordance, if it fits cleanly
 
-#### Equipped Skill Dial
+#### Hit List Skill Dial
 
-The Equipped Skill dial has two concentric rings:
+The Hit List skill dial has two concentric rings:
 
 - Outer ring: current-level hit progress toward the next level.
 - Inner ring: current level progress toward Level 10.
@@ -107,7 +107,7 @@ Metadata below the skill name:
 - First row: `X hits until Level Y`.
 - Second row: `X lifetime hit` or `X lifetime hits`.
 
-Tooltips can explain that Equipped Skills are the user's focused working set and that skills can be equipped or unequipped from the Arsenal.
+Tooltips can explain that the Hit List is the user's focused working set and that skills can be activated or deactivated from the Arsenal.
 
 The create-skill action belongs in the persistent bottom menu as a plus button, not as a per-screen header/content button.
 
@@ -194,11 +194,12 @@ For detailed logging, the user should be able to add partner-attributed hit rows
 
 Primary bottom navigation should stay focused on:
 
-- Equipped Skills
+- Hit List
+- Partners
 - Arsenal
 - Settings
 
-Partners are accessed through Settings. They remain a first-class product surface, but they should not occupy a primary bottom-nav slot during the MVP.
+The Hit List tab is the user's active skills board. Partners stay as the fourth nav tab and are no longer linked from Settings.
 
 There should not be a standalone Pipeline tab in the HitList MVP. Levels provide the main progress system, and the Arsenal provides the whole-skill-set view.
 
@@ -210,7 +211,7 @@ Sections:
 
 - Header
 - Level Progress
-- Hit List
+- Hits
 - Media
 - Notes
 - Training Logs
@@ -220,20 +221,20 @@ Header should include:
 - Skill name
 - Current level
 - Total hits
-- Equipped/unequipped control
+- Active/inactive control
 
 Skill Detail should keep the persistent bottom navigation visible.
 
-## Hit List
+## Hits
 
-Skill Detail should include a Hit List section that aggregates hits by partner.
+Skill Detail should include a Hits section that aggregates hits by partner.
 
-This is the skill-specific hit list: the people the user has hit this skill on.
+This is the skill-specific hit view: the people the user has hit this skill on.
 
 Example:
 
 ```text
-K Guard Entry Hit List
+K Guard Entry Hits
 
 Alex          8
 Jordan        4
@@ -402,7 +403,7 @@ For new skills created from shared media:
 
 - The user must confirm or enter a skill name before saving.
 - Fetched metadata may suggest a skill name, but must not silently create a skill name without user confirmation.
-- The new skill should default to unequipped unless the user changes that in the create flow.
+- The new skill should default to inactive unless the user changes that in the create flow.
 
 For existing skills:
 
@@ -421,8 +422,8 @@ History is separate from notes.
 History records system events such as:
 
 - Skill created
-- Skill equipped
-- Skill unequipped
+- Skill activated
+- Skill deactivated
 - Media added
 - Training log created
 - Hit logged

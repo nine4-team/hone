@@ -81,7 +81,7 @@ Each skill can have:
 - Training logs
 - Hits
 - Partner history
-- Equipped/unequipped status
+- Active/inactive status
 - Level progress
 
 The primary user experience is:
@@ -108,7 +108,7 @@ Each skill has visible levels from Level 0 through Level 10.
 
 The number is not presented as scientific. It is clean, memorable, difficult, and achievable.
 
-Equipped Skill tiles use a two-ring dial.
+Hit List skill tiles use a two-ring dial.
 
 The outer ring shows current-level hit progress toward the next level. It fills from 12 o'clock based on `hitsIntoLevel / 10`.
 
@@ -149,7 +149,7 @@ Metadata row 2 = 36 lifetime hits
 
 ### UI Implication
 
-Equipped skill tiles should show:
+Hit List skill tiles should show:
 
 - Skill name
 - Current level
@@ -158,7 +158,7 @@ Equipped skill tiles should show:
 - A two-ring circular progress dial
 - Fast log action
 
-This makes the Equipped Skills screen the user's current target board, not just a list of things they are studying.
+This makes the Hit List screen the user's current target board, not just a list of things they are studying.
 
 ### After Level 10
 
@@ -172,13 +172,13 @@ Post-Level-10 naming can wait until the core level experience feels good in the 
 
 Do not use "mastered" language for Level 10.
 
-## Arsenal And Equipped Skills
+## Arsenal And Hit List
 
 The **Arsenal** is where all skills live, regardless of whether the user is currently focusing on them.
 
-**Equipped Skills** are the small set of skills the user is currently trying to hit live.
+The **Hit List** is the small set of skills the user is currently trying to hit live.
 
-Equipping a skill makes it appear on the Equipped Skills screen. Unequipping a skill removes it from that screen, but the skill remains in the Arsenal with its notes, media, logs, hits, partner history, and level progress.
+Activating a skill makes it appear on the Hit List screen. Deactivating a skill removes it from that screen, but the skill remains in the Arsenal with its notes, media, logs, hits, partner history, and level progress.
 
 Levels communicate progress. Training log types communicate how the user worked on the skill.
 
@@ -200,8 +200,8 @@ This supports the metaphor:
 
 - Skills are weapons.
 - The Arsenal is the user's full collection of skills.
-- The user equips a small number of skills to focus on in training.
-- With equipped skills, the user starts hunting for hits.
+- The user activates a small number of skills to focus on in training.
+- With Hit List skills, the user starts hunting for hits.
 
 ### Hits
 
@@ -333,12 +333,12 @@ Avoid heavy-handed certification language. A light honesty nudge is enough.
 - Make hits and levels the primary progress model.
 - Keep "hit" defined as successful execution against resistance.
 - Use Arsenal as the home for all skills.
-- Use Equipped Skills as the main focused working set.
+- Use Hit List as the main focused working set.
 
 ### Next
 
 - Update the app spec around the HitList direction.
-- Sketch the revised Equipped Skills screen around level dials.
+- Sketch the revised Hit List screen around level dials.
 - Define exact level calculations and copy.
 - Decide the first-pass Arsenal filtering and sorting controls.
 - Update onboarding and marketing copy around the hit thesis.

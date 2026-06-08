@@ -30,7 +30,6 @@ export default function SkillDetailScreen() {
     addMedia,
     addStandaloneHit,
     hits,
-    hitListEntries,
     media,
     notes,
     partners,
@@ -47,7 +46,7 @@ export default function SkillDetailScreen() {
   const [addingNote, setAddingNote] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [logsOpen, setLogsOpen] = useState(true);
-  const [hitListOpen, setHitListOpen] = useState(false);
+  const [hitsOpen, setHitsOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
@@ -115,16 +114,7 @@ export default function SkillDetailScreen() {
   ].filter((stat) => stat.visible);
   const hasMoreStats = moreStats.length > 0;
 
-  const hitList = useMemo(() => hitRowsByPartner(skillHits, partners), [partners, skillHits]);
-  const skillHitListTargets = hitListEntries
-    .filter((entry) => entry.skillId === id)
-    .map((entry) => ({
-      entry,
-      partner: partners.find((partner) => partner.id === entry.partnerId),
-      totalHits: skillHits
-        .filter((hit) => hit.partnerId === entry.partnerId)
-        .reduce((sum, hit) => sum + hit.count, 0),
-    }));
+  const hitsByPartner = useMemo(() => hitRowsByPartner(skillHits, partners), [partners, skillHits]);
 
   if (!skill) {
     return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={router.back} />;
@@ -172,15 +162,15 @@ export default function SkillDetailScreen() {
             items={[
               {
                 key: 'active',
-                icon: 'sports-kabaddi',
-                label: 'Active skills tab',
+                icon: 'gps-fixed',
+                label: 'Hit List tab',
                 onPress: () => router.push('/'),
               },
               {
-                key: 'hit-list',
-                icon: 'gps-fixed',
-                label: 'Hit List tab',
-                onPress: () => router.push('/hit-list'),
+                key: 'partners',
+                icon: 'sports-kabaddi',
+                label: 'Partners tab',
+                onPress: () => router.push('/partners'),
               },
               {
                 key: 'arsenal',
@@ -207,7 +197,7 @@ export default function SkillDetailScreen() {
             onTrainingLog={() => router.push(`/log/${skill.id}`)}
             onSaveHit={({ partnerName, count }) => {
               addStandaloneHit({ skillId: skill.id, partnerName, count });
-              setHitListOpen(true);
+              setHitsOpen(true);
             }}
             onSaveMedia={async ({ url, notes }) => {
               setEditingMediaId(null);
@@ -281,14 +271,14 @@ export default function SkillDetailScreen() {
         <CollapsibleSectionHeader
           colors={colors}
           icon="gps-fixed"
-          title="Hit List"
-          open={hitListOpen}
-          onToggle={() => setHitListOpen((current) => !current)}
+          title="Hits"
+          open={hitsOpen}
+          onToggle={() => setHitsOpen((current) => !current)}
           action={
             <IconButton
               accessibilityLabel="Add standalone hit"
               onPress={() => {
-                setHitListOpen(true);
+                setHitsOpen(true);
                 setQuickAddMode('hit');
                 setQuickAddOpen(true);
               }}
@@ -297,40 +287,27 @@ export default function SkillDetailScreen() {
             </IconButton>
           }
         />
-        {hitListOpen ? (
-          <View style={styles.stack}>
-            {skillHitListTargets.length > 0 ? (
-              <View style={styles.targetStack}>
-                {skillHitListTargets.map(({ entry, partner, totalHits }) => (
-                  <Card key={entry.id} style={styles.targetCard}>
-                    <Text style={[styles.targetName, { color: colors.ink }]}>{partner?.name ?? 'Unknown person'}</Text>
-                    <Text style={[styles.targetReason, { color: colors.muted }]}>{entry.reason}</Text>
-                    <Text style={[styles.targetMeta, { color: colors.sage }]}>{formatHitStat(totalHits)} logged</Text>
-                  </Card>
-                ))}
-              </View>
-            ) : null}
-            <View style={styles.hitListRows}>
-              {hitList.length === 0 ? (
-                <EmptyState
-                  framed={false}
-                  title="No hits yet"
-                />
-              ) : (
-                <HitSummaryList
-                  alignWithSectionAction
-                  rows={[
-                    ...hitList,
-                    {
-                      id: 'total',
-                      label: 'Total',
-                      count: totalHits,
-                      total: true,
-                    },
-                  ]}
-                />
-              )}
-            </View>
+        {hitsOpen ? (
+          <View style={styles.hitListRows}>
+            {hitsByPartner.length === 0 ? (
+              <EmptyState
+                framed={false}
+                title="No hits yet"
+              />
+            ) : (
+              <HitSummaryList
+                alignWithSectionAction
+                rows={[
+                  ...hitsByPartner,
+                  {
+                    id: 'total',
+                    label: 'Total',
+                    count: totalHits,
+                    total: true,
+                  },
+                ]}
+              />
+            )}
           </View>
         ) : null}
       </View>
@@ -951,22 +928,6 @@ const styles = StyleSheet.create({
   },
   hitListRows: {
     gap: 2,
-  },
-  targetCard: {
-    gap: spacing.xs,
-    padding: spacing.md,
-  },
-  targetMeta: {
-    ...textStyles.rowSummaryLabel,
-  },
-  targetName: {
-    ...textStyles.detailRecordTitle,
-  },
-  targetReason: {
-    ...textStyles.detailRecordMeta,
-  },
-  targetStack: {
-    gap: spacing.sm,
   },
   levelCard: {
     gap: spacing.sm,

@@ -29,7 +29,7 @@ export default function NewSkillScreen() {
         <Card style={styles.switchRow}>
           <View>
             <FormLabel>Active</FormLabel>
-            <FormHelp>Show this skill on the Active Skills screen.</FormHelp>
+            <FormHelp>Show this skill on your Hit List.</FormHelp>
           </View>
           <ActivationSwitch onValueChange={setActive} value={active} />
         </Card>

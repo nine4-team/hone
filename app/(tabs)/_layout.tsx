@@ -4,25 +4,25 @@ import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
 import { useTheme } from '../../lib/theme';
 
-const visibleRoutes = ['index', 'hit-list', 'library', 'settings'];
+const visibleRoutes = ['index', 'library', 'partners', 'settings'];
 
 const routeIcons: Record<string, Pick<FloatingNavigationItem, 'icon'>> = {
-  index: { icon: 'sports-kabaddi' as keyof typeof MaterialIcons.glyphMap },
+  index: { icon: 'gps-fixed' as keyof typeof MaterialIcons.glyphMap },
   library: { icon: ArsenalIcon },
-  'hit-list': { icon: 'gps-fixed' },
+  partners: { icon: 'sports-kabaddi' },
   settings: { icon: 'settings' },
 };
 
 const routeLabels: Record<string, string> = {
-  index: 'Active skills',
+  index: 'Hit List',
   library: 'Arsenal',
-  'hit-list': 'Hit List',
+  partners: 'Partners',
   settings: 'Settings',
 };
 
 function FloatingTabBar({ state, navigation }: any) {
   const pathname = usePathname();
-  const visiblePathnames = new Set(['/', '/settings', '/library', '/hit-list']);
+  const visiblePathnames = new Set(['/', '/settings', '/library', '/partners']);
   if (!visiblePathnames.has(pathname)) return null;
 
   const routes = visibleRoutes
@@ -70,19 +70,19 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{ title: 'Active Skills' }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{ title: 'Settings' }}
+        options={{ title: 'Hit List' }}
       />
       <Tabs.Screen
         name="library"
         options={{ title: 'Arsenal' }}
       />
       <Tabs.Screen
-        name="hit-list"
-        options={{ title: 'Hit List' }}
+        name="partners"
+        options={{ title: 'Partners' }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{ title: 'Settings' }}
       />
     </Tabs>
   );

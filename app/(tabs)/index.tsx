@@ -12,7 +12,7 @@ import type { Skill } from '../../lib/types';
 import { useToast } from '../../lib/useToast';
 
 const activeSkillsHelp = [
-  "Active Skills are the set of skills you're currently working on.",
+  "Your Hit List is the handful of skills you're hunting right now.",
   '',
   '+ opens add menu.',
   '... opens actions.',
@@ -20,7 +20,7 @@ const activeSkillsHelp = [
   'Outer ring: progress toward next level (hits).',
 ].join('\n');
 
-export default function ActiveSkillsScreen() {
+export default function HitListScreen() {
   const router = useRouter();
   const { addMedia, addQuickNote, addStandaloneHit, hits, partners, skills, toggleActive } = useHitList();
   const { toastMessage, showToast } = useToast();
@@ -36,8 +36,8 @@ export default function ActiveSkillsScreen() {
 
   return (
     <Screen
-      title="Active Skills"
-      titleIcon="sports-kabaddi"
+      title="Hit List"
+      titleIcon="gps-fixed"
       subtitle={activeSkillsHelp}
       toastMessage={toastMessage}
     >
@@ -45,8 +45,8 @@ export default function ActiveSkillsScreen() {
         <View style={styles.list}>
           {activeSkills.length === 0 ? (
             <EmptyState
-              title="No active skills yet"
-              body="Activate skills from the Arsenal to make them show up here."
+              title="Nothing on your Hit List yet"
+              body="Activate skills from the Arsenal to add them to your Hit List."
             />
           ) : (
             activeSkills.map((skill) => (

@@ -18,7 +18,6 @@ export default function SettingsScreen() {
   return (
     <Screen title="Settings" titleIcon="settings" toastMessage={toastMessage}>
       <View style={styles.list}>
-        <ListRow href="/hit-list" icon="gps-fixed" title="Hit List" />
         <View style={[styles.themeCard, { backgroundColor: colors.surface, borderColor: colors.line }]}>
           <View style={[styles.segmentedControl, { backgroundColor: colors.bg }]}>
             {themeOptions.map((option) => {

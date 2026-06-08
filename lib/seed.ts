@@ -1,4 +1,4 @@
-import type { Hit, HitListEntry, Media, Note, Partner, Skill, TrainingLog } from './types';
+import type { Hit, Media, Note, Partner, Skill, TrainingLog } from './types';
 
 const now = new Date();
 const daysAgo = (days: number) => new Date(now.getTime() - days * 86400000).toISOString();
@@ -65,33 +65,6 @@ export const seedPartners: Partner[] = [
   { id: 'partner-dillon', name: 'Dillon', createdAt: daysAgo(28), updatedAt: daysAgo(3) },
   { id: 'partner-jordan', name: 'Jordan', createdAt: daysAgo(24), updatedAt: daysAgo(2) },
   { id: 'partner-sam', name: 'Sam', createdAt: daysAgo(12), updatedAt: daysAgo(4) },
-];
-
-export const seedHitListEntries: HitListEntry[] = [
-  {
-    id: 'hit-list-dillon-k-guard',
-    partnerId: 'partner-dillon',
-    skillId: 'skill-k-guard',
-    reason: 'Dillon shuts down the entry with a heavy knee-line counter.',
-    createdAt: daysAgo(28),
-    updatedAt: daysAgo(3),
-  },
-  {
-    id: 'hit-list-alex-rnc',
-    partnerId: 'partner-alex',
-    skillId: 'skill-rnc',
-    reason: 'Alex hand-fights early, so finishing clean means the back control is real.',
-    createdAt: daysAgo(22),
-    updatedAt: daysAgo(1),
-  },
-  {
-    id: 'hit-list-alex-wrist-ride',
-    partnerId: 'partner-alex',
-    skillId: 'skill-wrist-ride',
-    reason: 'Alex posts fast and makes the hip switch timing honest.',
-    createdAt: daysAgo(16),
-    updatedAt: daysAgo(5),
-  },
 ];
 
 export const seedTrainingLogs: TrainingLog[] = [

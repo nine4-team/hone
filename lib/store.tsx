@@ -1,7 +1,6 @@
 import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
 import {
   seedHits,
-  seedHitListEntries,
   seedMedia,
   seedNotes,
   seedPartners,
@@ -11,7 +10,6 @@ import {
 import { inferMediaType, resolveMediaMetadata } from './mediaMetadata';
 import type {
   Hit,
-  HitListEntry,
   Media,
   NewMediaInput,
   NewStandaloneHitInput,
@@ -25,6 +23,7 @@ import type {
   TrainingLog,
   UpdateMediaInput,
   UpdateNoteInput,
+  UpdatePartnerInput,
 } from './types';
 
 type HitListState = {
@@ -32,7 +31,6 @@ type HitListState = {
   notes: Note[];
   trainingLogs: TrainingLog[];
   hits: Hit[];
-  hitListEntries: HitListEntry[];
   partners: Partner[];
   media: Media[];
   addSkill: (input: NewSkillInput) => Skill;
@@ -41,6 +39,7 @@ type HitListState = {
   updateStage: (skillId: string, stage: SkillStage) => void;
   addQuickNote: (skillId: string, body: string) => void;
   updateNote: (input: UpdateNoteInput) => void;
+  updatePartner: (input: UpdatePartnerInput) => void;
   addTrainingLog: (input: NewTrainingLogInput) => void;
   addStandaloneHit: (input: NewStandaloneHitInput) => void;
   addMedia: (input: NewMediaInput) => Promise<void>;
@@ -64,7 +63,6 @@ export function HitListProvider({ children }: PropsWithChildren) {
   const [notes, setNotes] = useState(seedNotes);
   const [trainingLogs, setTrainingLogs] = useState(seedTrainingLogs);
   const [hits, setHits] = useState(seedHits);
-  const [hitListEntries] = useState(seedHitListEntries);
   const [partners, setPartners] = useState(seedPartners);
   const [media, setMedia] = useState(seedMedia);
 
@@ -82,7 +80,6 @@ export function HitListProvider({ children }: PropsWithChildren) {
       notes,
       trainingLogs,
       hits,
-      hitListEntries,
       partners,
       media,
       addSkill(input) {
@@ -173,6 +170,17 @@ export function HitListProvider({ children }: PropsWithChildren) {
         );
 
         if (existing) touchSkill(existing.skillId, now);
+      },
+      updatePartner(input) {
+        const now = stamp();
+
+        setPartners((current) =>
+          current.map((partner) =>
+            partner.id === input.id
+              ? { ...partner, name: input.name.trim(), updatedAt: now }
+              : partner,
+          ),
+        );
       },
       addStandaloneHit(input) {
         const now = stamp();
@@ -341,7 +349,7 @@ export function HitListProvider({ children }: PropsWithChildren) {
         touchSkill(input.skillId, now);
       },
     }),
-    [hitListEntries, hits, media, notes, partners, skills, trainingLogs],
+    [hits, media, notes, partners, skills, trainingLogs],
   );
 
   return <HitListContext.Provider value={value}>{children}</HitListContext.Provider>;

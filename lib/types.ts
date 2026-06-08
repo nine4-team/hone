@@ -48,15 +48,6 @@ export type Partner = {
   updatedAt: string;
 };
 
-export type HitListEntry = {
-  id: string;
-  partnerId: string;
-  skillId: string;
-  reason: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
 export type Media = {
   id: string;
   skillId: string;
@@ -112,4 +103,9 @@ export type UpdateMediaInput = {
 export type UpdateNoteInput = {
   id: string;
   body: string;
+};
+
+export type UpdatePartnerInput = {
+  id: string;
+  name: string;
 };

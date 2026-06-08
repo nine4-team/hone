@@ -31,7 +31,7 @@ function AppStack() {
         <Stack.Screen name="skills/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="skills/new" options={{ headerShown: false, presentation: 'modal' }} />
         <Stack.Screen name="log/[skillId]" options={{ headerShown: false, presentation: 'modal' }} />
-        <Stack.Screen name="hit-list/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="partners/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="share-intake" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
     </HitListProvider>

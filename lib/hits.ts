@@ -42,7 +42,7 @@ export function hitRowsByPartner(hits: Hit[], partners: Partner[]): HitSummaryRo
       id,
       label,
       count: (current?.count ?? 0) + hit.count,
-      href: partner ? `/hit-list/${partner.id}` : undefined,
+      href: partner ? `/partners/${partner.id}` : undefined,
     });
   });
 
