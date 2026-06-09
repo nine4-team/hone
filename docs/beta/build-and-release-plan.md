@@ -19,7 +19,9 @@ Expo SDK 56 docs should be checked before implementation work that touches Expo/
   - URL scheme: `hitlist`
   - `expo-sharing` config for both platforms
 - `package.json` includes Expo SDK 56 dependencies.
-- There is no `eas.json` in the repo yet.
+- `eas.json` defines development, simulator development, preview, and production build profiles.
+- EAS CLI is available via `npx eas-cli@latest`.
+- The current shell is not logged into Expo. Remote EAS project initialization and builds require `npx eas-cli@latest login` or an `EXPO_TOKEN`.
 
 ## EAS Distribution Strategy
 
@@ -63,8 +65,9 @@ Add `eas.json` with at least:
 
 ## Phase 2: EAS Setup
 
-- Run EAS project initialization.
-- Add `eas.json`.
+- Run `npx eas-cli@latest login`.
+- Run `npx eas-cli@latest init` or `npx eas-cli@latest build:configure --platform all`.
+- Confirm `extra.eas.projectId` is written to `app.json`.
 - Decide app version and build-number policy.
 - Configure iOS credentials.
 - Configure Android credentials.
@@ -116,5 +119,10 @@ Before any beta candidate:
 
 - Use EAS remote app versioning or repo-managed versions?
 - Ship first beta through EAS internal links, stores, or both?
-- Require separate staging and production Supabase projects?
 - Which testers need iOS ad hoc access before TestFlight?
+
+## Current Architecture Choices
+
+- Use one Supabase project for beta unless release risk changes.
+- Keep Supabase access behind a modular repository/data layer.
+- Keep EAS profiles explicit about environment variables even if they point to the same Supabase project.

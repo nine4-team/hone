@@ -82,6 +82,10 @@ export type NewTrainingLogInput = {
   }>;
 };
 
+export type UpdateTrainingLogInput = Omit<NewTrainingLogInput, 'skillId'> & {
+  id: string;
+};
+
 export type NewStandaloneHitInput = {
   skillId: string;
   partnerName?: string;

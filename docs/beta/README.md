@@ -40,10 +40,27 @@ Beta readiness is therefore not a ground-up UI build. The remaining work is to m
 - Expo Router is the app entry and navigation layer.
 - `app.json` already defines iOS and Android app identifiers.
 - `expo-sharing` is configured for iOS and Android share intake.
-- `supabase/schema.sql` exists as a schema draft.
-- App state is currently backed by local React state seeded from `lib/seed.ts`.
-- No `eas.json` is currently present.
-- No automated test scripts are currently visible in `package.json`.
+- `supabase/schema.sql` is finalized for beta and mirrored into `supabase/migrations/20260608000000_hitlist_beta_schema.sql`.
+- App state is wired through Supabase Auth/Postgres via `lib/supabase/*` and the existing `useHitList` boundary.
+- `eas.json` is present with development, preview, and production build profiles.
+- `package.json` includes `typecheck`, `test`, and `check` scripts.
+- Training-log edit helpers have focused unit coverage in `lib/trainingLogEditing.test.ts`.
+
+## Supabase Connection
+
+Project:
+
+- Name: `hitlist`
+- Project ref: `mmtdlutpnfafkszyybja`
+- Region: `us-west-1`
+- API URL: `https://mmtdlutpnfafkszyybja.supabase.co`
+
+The app reads public Supabase client config from:
+
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+
+`EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` is also accepted and is configured in local `.env.local` for this project. Do not put service-role or secret keys in Expo public environment variables.
 
 ## Beta Definition
 

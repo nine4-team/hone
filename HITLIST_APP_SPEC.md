@@ -20,6 +20,12 @@ The app is organized around specific skills the user wants to improve. It helps 
 
 Notes, media, training logs, and partner history support that experience. They help the user remember what matters, train with more intent, and see where their hits are coming from.
 
+## Beta Auth And Persistence
+
+The beta app requires Supabase Auth. App data is stored in Supabase Postgres behind row-level security, with every user-owned table restricted to rows where `auth.uid() = user_id`.
+
+The client reads only public Supabase connection values from Expo public environment variables. Service-role and secret keys must never be shipped in the app.
+
 ## Product Model
 
 ### Arsenal
@@ -164,7 +170,7 @@ Use this model:
 Hit
 - id
 - skill_id
-- training_log_id
+- training_log_id nullable
 - partner_id nullable
 - count
 - created_at
@@ -452,3 +458,7 @@ Use the Minimum Standards look and feel.
 Use Expo Router unless implementation work reveals a strong reason to change.
 
 Supabase is the preferred backend direction over Firebase unless implementation work reveals a strong reason to change. The likely advantages are developer experience, relational data modeling, SQL migrations, and a clean fit for the app's objects: Skills, Notes, Training Logs, Hits, Partners, and Media.
+
+Use a modular data-access layer rather than placing backend calls directly inside screens. Keep app-facing operations small and testable so user journeys can be automated with confidence.
+
+`stage` is legacy product vocabulary. Do not carry it into new persistence work unless needed for temporary migration compatibility. Levels, active state, hits, training logs, notes, partners, and media are the beta model.

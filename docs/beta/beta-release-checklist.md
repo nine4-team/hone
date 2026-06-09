@@ -4,15 +4,16 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 
 ## Build
 
-- [ ] Expo SDK 56 docs checked for relevant build/config work.
-- [ ] Dependencies install cleanly.
-- [ ] Expo dependency validation passes.
-- [ ] `eas.json` exists.
-- [ ] EAS project is configured.
-- [ ] iOS credentials are configured.
-- [ ] Android credentials are configured.
+- [x] Expo SDK 56 docs checked for relevant build/config work.
+- [x] Dependencies install cleanly.
+- [x] `npm run check` passes.
+- [x] Expo dependency validation passes.
+- [x] `eas.json` exists.
+- [x] EAS project is configured.
+- [x] iOS credentials are configured.
+- [x] Android credentials are configured.
 - [ ] iOS preview build succeeds.
-- [ ] Android preview build succeeds.
+- [x] Android preview build succeeds.
 - [ ] iOS build installs on a physical device.
 - [ ] Android build installs on a physical device.
 
@@ -27,8 +28,9 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 
 ## Persistence
 
-- [ ] Supabase schema/migrations are applied.
-- [ ] RLS is enabled and verified.
+- [x] Supabase project is created.
+- [x] `supabase/migrations/20260608000000_hitlist_beta_schema.sql` is applied.
+- [ ] RLS is enabled and verified against two users.
 - [ ] Skills persist.
 - [ ] Active/inactive state persists.
 - [ ] Partners persist.
@@ -50,6 +52,7 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 - [ ] Quick-log unattributed hit.
 - [ ] Quick-log partner hit.
 - [ ] Log full training session.
+- [ ] Edit training log.
 - [ ] Add/remove hit rows.
 - [ ] Select partners.
 - [ ] Add note.
@@ -92,9 +95,11 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 
 ## Store Beta
 
-- [ ] App Store Connect app record exists.
-- [ ] TestFlight build uploaded.
-- [ ] Internal TestFlight group configured.
+- [x] App Store Connect app record exists.
+- [x] TestFlight build uploaded.
+- [x] Internal TestFlight group configured.
+- [ ] External TestFlight beta review submitted.
+- [ ] TestFlight public link enabled.
 - [ ] Google Play app record exists.
 - [ ] Google Play internal testing track configured.
 - [ ] Android beta artifact uploaded.

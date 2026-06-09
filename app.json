@@ -9,12 +9,21 @@
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.benjaminmackenzie.hitlist",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.benjaminmackenzie.hitlist"
+        ]
+      },
+      "infoPlist": {
+        "CFBundleDisplayName": "HitList",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.benjaminmackenzie.hitlist",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1A1A1A",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -46,7 +55,32 @@
             ]
           }
         }
-      ]
-    ]
+      ],
+      "expo-sqlite"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "expo-sharing-extension",
+                  "bundleIdentifier": "com.benjaminmackenzie.hitlist.expo-sharing-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.benjaminmackenzie.hitlist"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "7030d68c-7b08-49de-8d89-682e0f9f60d4"
+      }
+    },
+    "owner": "nine4-team"
   }
 }

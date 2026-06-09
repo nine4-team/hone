@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { Screen } from '../../components/Screen';
 import { Card } from '../../components/ui';
@@ -10,7 +11,7 @@ import { spacing, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
 
 export default function PartnersScreen() {
-  const { hits, partners } = useHitList();
+  const { error, hits, loading, partners, reload } = useHitList();
   const colors = useTheme();
   const router = useRouter();
 
@@ -27,6 +28,24 @@ export default function PartnersScreen() {
     })
     .filter((row) => row.totalHits > 0)
     .sort((a, b) => b.totalHits - a.totalHits || a.partner.name.localeCompare(b.partner.name));
+
+  if (loading || error) {
+    return (
+      <Screen
+        title="Partners"
+        titleIcon="sports-kabaddi"
+        subtitle="Who you've landed each skill on."
+      >
+        <View style={styles.list}>
+          <EmptyState
+            title={loading ? 'Loading partners' : 'Could not load partners'}
+            body={error ?? 'Syncing partner-attributed hits.'}
+          />
+          {error ? <Button label="Retry" onPress={reload} variant="secondary" /> : null}
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen

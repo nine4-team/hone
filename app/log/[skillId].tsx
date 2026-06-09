@@ -22,7 +22,7 @@ import {
 import { useHitList } from '../../lib/store';
 import { radius, spacing, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
-import type { TrainingLogType } from '../../lib/types';
+import type { Hit, Partner, TrainingLogType } from '../../lib/types';
 
 type HitRow = {
   id: string;
@@ -38,22 +38,28 @@ const typeOptions: RadioCardOption<TrainingLogType>[] = trainingLogTypes.map((ty
 }));
 
 export default function TrainingLogScreen() {
-  const { skillId } = useLocalSearchParams<{ skillId: string }>();
+  const { logId, skillId } = useLocalSearchParams<{ logId?: string; skillId: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const colors = useTheme();
-  const { addTrainingLog, partners, skills } = useHitList();
+  const { addTrainingLog, hits, notes, partners, skills, trainingLogs, updateTrainingLog } = useHitList();
   const skill = skills.find((item) => item.id === skillId);
+  const editingLog = logId ? trainingLogs.find((log) => log.id === logId) : undefined;
+  const editingHits = editingLog ? hits.filter((hit) => hit.trainingLogId === editingLog.id) : [];
+  const editingNotes = editingLog ? notes.filter((note) => note.trainingLogId === editingLog.id) : [];
+  const initialRows = editingLog ? hitRowsToFormRows(editingHits, partners) : [{ id: 'row-0', count: 1 }];
+  const editingNoteBody = editingNotes.map((note) => note.body).join('\n\n');
 
-  const rowId = useRef(1);
+  const rowId = useRef(initialRows.length);
   const nextRowId = () => `row-${rowId.current++}`;
 
-  const [type, setType] = useState<TrainingLogType>('rolling');
-  const [durationMinutes, setDurationMinutes] = useState(0);
-  const [noteBody, setNoteBody] = useState('');
-  const [rows, setRows] = useState<HitRow[]>([{ id: 'row-0', count: 1 }]);
+  const [type, setType] = useState<TrainingLogType>(editingLog?.type ?? 'rolling');
+  const [durationMinutes, setDurationMinutes] = useState(editingLog?.durationMinutes ?? 0);
+  const [noteBody, setNoteBody] = useState(editingNoteBody);
+  const [rows, setRows] = useState<HitRow[]>(initialRows);
   const [pickerRowId, setPickerRowId] = useState<string | null>(null);
   const [durationOpen, setDurationOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const totalHits = rows.reduce((sum, row) => sum + row.count, 0);
 
@@ -61,6 +67,10 @@ export default function TrainingLogScreen() {
 
   if (!skill) {
     return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={dismiss} />;
+  }
+
+  if (logId && !editingLog) {
+    return <Screen title="Training log not found" subtitle="This log is not in the local data set." onBack={dismiss} />;
   }
 
   const updateRow = (id: string, patch: Partial<HitRow>) =>
@@ -79,9 +89,10 @@ export default function TrainingLogScreen() {
     .filter((row) => row.id !== pickerRowId && row.partnerKey)
     .map((row) => row.partnerKey as string);
 
-  const save = () => {
-    addTrainingLog({
-      skillId: skill.id,
+  const save = async () => {
+    if (saving) return;
+
+    const input = {
       type,
       durationMinutes: durationMinutes > 0 ? durationMinutes : undefined,
       noteBody,
@@ -89,8 +100,20 @@ export default function TrainingLogScreen() {
         partnerName: row.partnerKey === SOLO_PARTNER_KEY ? undefined : row.partnerName,
         count: row.count,
       })),
-    });
-    dismiss();
+    };
+
+    setSaving(true);
+    try {
+      if (editingLog) {
+        await updateTrainingLog({ id: editingLog.id, ...input });
+      } else {
+        await addTrainingLog({ skillId: skill.id, ...input });
+      }
+
+      dismiss();
+    } finally {
+      setSaving(false);
+    }
   };
 
   const partnerLabel = (row: HitRow) => {
@@ -101,7 +124,7 @@ export default function TrainingLogScreen() {
 
   return (
     <Screen
-      title="Log Training"
+      title={editingLog ? 'Edit Training' : 'Log Training'}
       subtitle={skill.name}
       onBack={dismiss}
       bottomOverlay={
@@ -115,7 +138,10 @@ export default function TrainingLogScreen() {
             },
           ]}
         >
-          <Button label="Save Log" onPress={save} />
+          <Button
+            label={saving ? 'Saving...' : editingLog ? 'Save Changes' : 'Save Log'}
+            onPress={save}
+          />
         </View>
       }
     >
@@ -243,6 +269,19 @@ export default function TrainingLogScreen() {
       />
     </Screen>
   );
+}
+
+function hitRowsToFormRows(hits: Hit[], partners: Partner[]): HitRow[] {
+  return hits.map((hit, index) => {
+    const partner = hit.partnerId ? partners.find((item) => item.id === hit.partnerId) : undefined;
+
+    return {
+      id: `row-${index}`,
+      partnerKey: partner?.id ?? SOLO_PARTNER_KEY,
+      partnerName: partner?.name,
+      count: hit.count,
+    };
+  });
 }
 
 const styles = StyleSheet.create({

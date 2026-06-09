@@ -14,6 +14,7 @@ export default function NewSkillScreen() {
   const { addSkill } = useHitList();
   const [name, setName] = useState('');
   const [active, setActive] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   return (
     <Screen title="New Skill" subtitle="Name is the only required field." onBack={router.back}>
@@ -35,11 +36,16 @@ export default function NewSkillScreen() {
         </Card>
 
         <Button
-          label="Create Skill"
-          onPress={() => {
-            if (!name.trim()) return;
-            const skill = addSkill({ name, stage: 'saved', active });
-            router.replace(`/skills/${skill.id}`);
+          label={saving ? 'Creating...' : 'Create Skill'}
+          onPress={async () => {
+            if (!name.trim() || saving) return;
+            setSaving(true);
+            try {
+              const skill = await addSkill({ name, stage: 'saved', active });
+              router.replace(`/skills/${skill.id}`);
+            } finally {
+              setSaving(false);
+            }
           }}
         />
       </FormStack>

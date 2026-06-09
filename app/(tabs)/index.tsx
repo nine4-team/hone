@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActiveSkillTile } from '../../components/ActiveSkillTile';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
+import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { QuickAddEntrySheet } from '../../components/EntrySheets';
 import { Screen } from '../../components/Screen';
@@ -22,7 +23,18 @@ const activeSkillsHelp = [
 
 export default function HitListScreen() {
   const router = useRouter();
-  const { addMedia, addQuickNote, addStandaloneHit, hits, partners, skills, toggleActive } = useHitList();
+  const {
+    addMedia,
+    addQuickNote,
+    addStandaloneHit,
+    error,
+    hits,
+    loading,
+    partners,
+    reload,
+    skills,
+    toggleActive,
+  } = useHitList();
   const { toastMessage, showToast } = useToast();
   const [actionSkill, setActionSkill] = useState<Skill | null>(null);
   const [menuSkill, setMenuSkill] = useState<Skill | null>(null);
@@ -33,6 +45,20 @@ export default function HitListScreen() {
     totals[hit.skillId] = (totals[hit.skillId] ?? 0) + hit.count;
     return totals;
   }, {});
+
+  if (loading || error) {
+    return (
+      <Screen title="Hit List" titleIcon="gps-fixed" subtitle={activeSkillsHelp}>
+        <View style={styles.stateStack}>
+          <EmptyState
+            title={loading ? 'Loading your Hit List' : 'Could not load your Hit List'}
+            body={error ?? 'Syncing your skills, hits, and training logs.'}
+          />
+          {error ? <Button label="Retry" onPress={reload} variant="secondary" /> : null}
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen
@@ -68,20 +94,32 @@ export default function HitListScreen() {
           onTrainingLog={() => {
             if (actionSkill) router.push(`/log/${actionSkill.id}`);
           }}
-          onSaveHit={({ partnerName, count }) => {
+          onSaveHit={async ({ partnerName, count }) => {
             if (!actionSkill) return;
-            addStandaloneHit({ skillId: actionSkill.id, partnerName, count });
-            showToast('Hit logged');
+            try {
+              await addStandaloneHit({ skillId: actionSkill.id, partnerName, count });
+              showToast('Hit logged');
+            } catch {
+              showToast('Could not log hit');
+            }
           }}
           onSaveMedia={async ({ url, notes }) => {
             if (!actionSkill) return;
-            await addMedia({ skillId: actionSkill.id, url, notes });
-            showToast('Media added');
+            try {
+              await addMedia({ skillId: actionSkill.id, url, notes });
+              showToast('Media added');
+            } catch {
+              showToast('Could not add media');
+            }
           }}
-          onSaveNote={(body) => {
+          onSaveNote={async (body) => {
             if (!actionSkill) return;
-            addQuickNote(actionSkill.id, body);
-            showToast('Note added');
+            try {
+              await addQuickNote(actionSkill.id, body);
+              showToast('Note added');
+            } catch {
+              showToast('Could not add note');
+            }
           }}
         />
         <BottomSheetMenu
@@ -105,9 +143,13 @@ export default function HitListScreen() {
                     key: 'deactivate',
                     label: 'Deactivate',
                     destructive: true,
-                    onPress: () => {
-                      toggleActive(menuSkill.id);
-                      showToast('Skill deactivated');
+                    onPress: async () => {
+                      try {
+                        await toggleActive(menuSkill.id);
+                        showToast('Skill deactivated');
+                      } catch {
+                        showToast('Could not update skill');
+                      }
                     },
                   },
                 ]
@@ -126,5 +168,8 @@ const styles = StyleSheet.create({
     marginHorizontal: -spacing.xs,
     paddingBottom: spacing.xxl,
     rowGap: spacing.md,
+  },
+  stateStack: {
+    gap: spacing.md,
   },
 });

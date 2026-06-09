@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ListRow } from '../../components/ListRow';
 import { Screen } from '../../components/Screen';
+import { useAuth } from '../../lib/supabase/auth';
 import { useToast } from '../../lib/useToast';
 import { radius, spacing, type ThemePreference, useTheme, useThemePreference } from '../../lib/theme';
 
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
   const { showToast, toastMessage } = useToast();
   const colors = useTheme();
   const { preference, setPreference } = useThemePreference();
+  const { signOut, user } = useAuth();
 
   return (
     <Screen title="Settings" titleIcon="settings" toastMessage={toastMessage}>
@@ -51,8 +53,14 @@ export default function SettingsScreen() {
         </View>
         <ListRow
           icon="logout"
-          onPress={() => showToast('No active session to sign out of.')}
-          title="Sign out"
+          onPress={async () => {
+            try {
+              await signOut();
+            } catch {
+              showToast('Could not sign out. Try again.');
+            }
+          }}
+          title={user?.email ? `Sign out ${user.email}` : 'Sign out'}
         />
       </View>
     </Screen>

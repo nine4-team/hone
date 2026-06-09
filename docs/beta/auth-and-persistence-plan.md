@@ -12,7 +12,7 @@ HitList needs authenticated, durable user data before beta. The current app scre
 
 ## Current State
 
-- `supabase/schema.sql` exists as a draft schema.
+- `supabase/schema.sql` has been finalized for beta and mirrored into `supabase/migrations/20260608000000_hitlist_beta_schema.sql`.
 - The schema includes:
   - `skills`
   - `partners`
@@ -20,27 +20,38 @@ HitList needs authenticated, durable user data before beta. The current app scre
   - `notes`
   - `hits`
   - `media`
-- Tables include `user_id` and RLS policies.
-- The React app currently uses `HitListProvider` in `lib/store.tsx`.
-- `Settings` currently shows a placeholder sign-out toast.
+- Tables include database-owned `user_id` defaults using `auth.uid()` and RLS policies.
+- Explicit authenticated-role grants are included because newer Supabase projects may not expose new public tables to the Data API automatically.
+- The React app uses `HitListProvider` in `lib/store.tsx` as the app-facing persistence boundary.
+- `Settings` signs out through Supabase Auth.
 
 ## Target Architecture
 
 - Supabase Auth for accounts and sessions.
 - Supabase Postgres for durable app data.
-- Client-side app state wraps Supabase reads/writes.
-- Secure session storage on native platforms.
-- Route gating so unauthenticated users see auth screens, not app data.
+- Client-side app state wraps Supabase reads/writes through a repository/data-access layer.
+- Supabase session persistence uses the current Expo/Supabase quickstart path: `react-native-url-polyfill` plus `expo-sqlite/localStorage`.
+- Route gating uses Expo Router SDK 56 protected routes (`Stack.Protected`) so unauthenticated users see auth screens, not app data.
+- One Supabase project is acceptable for beta. Separate staging can come later if tester volume, production data risk, or release process complexity makes it worthwhile.
+
+## Code Architecture Principles
+
+- Keep UI screens free of direct Supabase query details.
+- Use small functions that do one thing and can be unit-tested.
+- Keep DB row mapping in one place.
+- Keep `useHitList` or an equivalent app-facing hook as the screen boundary.
+- Let the database be the source of truth for IDs, timestamps, and user ownership once Supabase is wired.
+- Treat `stage` as legacy. Levels, active state, hits, logs, notes, partners, and media are the beta model.
 
 ## Phase 1: Supabase Project Setup
 
-- Confirm Supabase project.
-- Review and finalize schema.
-- Convert schema draft into migrations.
-- Apply migrations.
+- Confirm/create the beta Supabase project.
+- Apply `supabase/migrations/20260608000000_hitlist_beta_schema.sql`.
 - Verify RLS policies.
 - Verify authenticated API access to all tables.
-- Decide whether beta uses a staging Supabase project.
+- Use a single Supabase project for beta unless the release process changes.
+
+Current implementation note: the local Codex session did not have Supabase MCP tools, `SUPABASE_ACCESS_TOKEN`, or an authenticated CLI profile, so the hosted project could not be created or migrated from this environment. The repo is ready for either `npx supabase db push` after `supabase link`, or pasting the migration SQL into the Supabase SQL editor.
 
 ## Phase 2: Auth Flow
 
@@ -91,9 +102,11 @@ Verify these behaviors:
 - Active/inactive state persists.
 - `last_touched_at` updates when expected.
 - Standalone hits can be unattributed.
+- Standalone hits do not require `training_log_id`.
 - Training-log hits can be partner-attributed or unattributed.
-- Partner names are deduped per user.
+- Partner names are deduped per user using database-generated normalized names.
 - Notes can be standalone or tied to training logs.
+- Training logs can be edited after creation.
 - Media metadata failures do not prevent saving a URL.
 - Deleting/removing entities does not orphan visible broken UI.
 

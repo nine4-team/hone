@@ -4,13 +4,15 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~56.0.5",
-    "expo-constants": "^56.0.16",
-    "expo-dev-client": "~56.0.16",
+    "@supabase/supabase-js": "^2.108.0",
+    "expo": "~56.0.9",
+    "expo-constants": "~56.0.17",
+    "expo-dev-client": "~56.0.19",
     "expo-font": "^56.0.5",
-    "expo-linking": "~56.0.12",
-    "expo-router": "~56.2.7",
-    "expo-sharing": "~56.0.14",
+    "expo-linking": "~56.0.13",
+    "expo-router": "~56.2.9",
+    "expo-sharing": "~56.0.16",
+    "expo-sqlite": "~56.0.4",
     "expo-status-bar": "~56.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -20,11 +22,14 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
     "react-native-svg": "15.15.4",
+    "react-native-url-polyfill": "^3.0.0",
     "react-native-web": "^0.21.2",
     "react-native-worklets": "0.8.3"
   },
   "devDependencies": {
+    "@types/node": "^25.9.2",
     "@types/react": "~19.2.2",
+    "tsx": "^4.22.4",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -35,7 +40,20 @@
     "dev:android": "expo run:android",
     "dev:ios": "expo run:ios",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:dev:ios": "npx eas-cli@latest build -p ios --profile development",
+    "build:dev:android": "npx eas-cli@latest build -p android --profile development",
+    "build:preview:ios": "npx eas-cli@latest build -p ios --profile preview",
+    "build:preview:android": "npx eas-cli@latest build -p android --profile preview",
+    "build:production:ios": "npx eas-cli@latest build -p ios --profile production",
+    "build:production:android": "npx eas-cli@latest build -p android --profile production",
+    "build:testflight:ios": "scripts/build-testflight-ios.sh",
+    "testflight:distribute:ios": "scripts/distribute-testflight-ios.sh",
+    "testflight:public-link:ios": "ruby scripts/testflight-public-link.rb",
+    "submit:testflight:ios": "npx eas-cli@latest submit -p ios --profile production --latest --wait",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test lib/trainingLogEditing.test.ts",
+    "check": "npm run typecheck && npm test"
   },
   "private": true
 }

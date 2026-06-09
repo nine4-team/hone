@@ -1,13 +1,22 @@
-import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
+import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useAuth } from './supabase/auth';
 import {
-  seedHits,
-  seedMedia,
-  seedNotes,
-  seedPartners,
-  seedSkills,
-  seedTrainingLogs,
-} from './seed';
-import { inferMediaType, resolveMediaMetadata } from './mediaMetadata';
+  createMedia,
+  createQuickNote,
+  createSkill,
+  createSkillWithMedia,
+  createStandaloneHit,
+  createTrainingLog,
+  deleteMedia,
+  deleteSkillById,
+  loadHitListData,
+  saveMedia,
+  saveNote,
+  savePartner,
+  saveTrainingLog,
+  setSkillActive,
+  type HitListData,
+} from './supabase/repository';
 import type {
   Hit,
   Media,
@@ -24,332 +33,140 @@ import type {
   UpdateMediaInput,
   UpdateNoteInput,
   UpdatePartnerInput,
+  UpdateTrainingLogInput,
 } from './types';
 
-type HitListState = {
-  skills: Skill[];
-  notes: Note[];
-  trainingLogs: TrainingLog[];
-  hits: Hit[];
-  partners: Partner[];
-  media: Media[];
-  addSkill: (input: NewSkillInput) => Skill;
+type HitListState = HitListData & {
+  error: string | null;
+  loading: boolean;
+  reload: () => Promise<void>;
+  addSkill: (input: NewSkillInput) => Promise<Skill>;
   addSkillWithMedia: (input: NewSkillWithMediaInput) => Promise<Skill>;
-  toggleActive: (skillId: string) => void;
-  updateStage: (skillId: string, stage: SkillStage) => void;
-  addQuickNote: (skillId: string, body: string) => void;
-  updateNote: (input: UpdateNoteInput) => void;
-  updatePartner: (input: UpdatePartnerInput) => void;
-  addTrainingLog: (input: NewTrainingLogInput) => void;
-  addStandaloneHit: (input: NewStandaloneHitInput) => void;
+  toggleActive: (skillId: string) => Promise<void>;
+  updateStage: (skillId: string, stage: SkillStage) => Promise<void>;
+  addQuickNote: (skillId: string, body: string) => Promise<void>;
+  updateNote: (input: UpdateNoteInput) => Promise<void>;
+  updatePartner: (input: UpdatePartnerInput) => Promise<void>;
+  addTrainingLog: (input: NewTrainingLogInput) => Promise<void>;
+  updateTrainingLog: (input: UpdateTrainingLogInput) => Promise<void>;
+  addStandaloneHit: (input: NewStandaloneHitInput) => Promise<void>;
   addMedia: (input: NewMediaInput) => Promise<void>;
   updateMedia: (input: UpdateMediaInput) => Promise<void>;
-  removeMedia: (mediaId: string) => void;
-  deleteSkill: (skillId: string) => void;
+  removeMedia: (mediaId: string) => Promise<void>;
+  deleteSkill: (skillId: string) => Promise<void>;
+};
+
+const emptyData: HitListData = {
+  hits: [],
+  media: [],
+  notes: [],
+  partners: [],
+  skills: [],
+  trainingLogs: [],
 };
 
 const HitListContext = createContext<HitListState | null>(null);
 
-function stamp() {
-  return new Date().toISOString();
-}
-
-function id(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
 export function HitListProvider({ children }: PropsWithChildren) {
-  const [skills, setSkills] = useState(seedSkills);
-  const [notes, setNotes] = useState(seedNotes);
-  const [trainingLogs, setTrainingLogs] = useState(seedTrainingLogs);
-  const [hits, setHits] = useState(seedHits);
-  const [partners, setPartners] = useState(seedPartners);
-  const [media, setMedia] = useState(seedMedia);
+  const { session } = useAuth();
+  const [data, setData] = useState<HitListData>(emptyData);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const touchSkill = (skillId: string, when = stamp()) => {
-    setSkills((current) =>
-      current.map((skill) =>
-        skill.id === skillId ? { ...skill, lastTouchedAt: when, updatedAt: when } : skill,
-      ),
-    );
-  };
+  const reload = useCallback(async () => {
+    if (!session) {
+      setData(emptyData);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      setData(await loadHitListData());
+    } catch {
+      setError('HitList could not load your data. Check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
+  const runAndReload = useCallback(
+    async <T,>(operation: () => Promise<T>) => {
+      setError(null);
+      try {
+        const result = await operation();
+        setData(await loadHitListData());
+        return result;
+      } catch (nextError) {
+        setError('HitList could not save your change. Try again.');
+        throw nextError;
+      }
+    },
+    [],
+  );
 
   const value = useMemo<HitListState>(
     () => ({
-      skills,
-      notes,
-      trainingLogs,
-      hits,
-      partners,
-      media,
+      ...data,
+      error,
+      loading,
+      reload,
       addSkill(input) {
-        const now = stamp();
-        const skill: Skill = {
-          id: id('skill'),
-          name: input.name.trim(),
-          stage: input.stage,
-          active: input.active,
-          lastTouchedAt: now,
-          createdAt: now,
-          updatedAt: now,
-        };
-        setSkills((current) => [skill, ...current]);
-        return skill;
+        return runAndReload(() => createSkill(input));
       },
-      async addSkillWithMedia(input) {
-        const now = stamp();
-        const skill: Skill = {
-          id: id('skill'),
-          name: input.name.trim(),
-          stage: input.stage,
-          active: input.active,
-          lastTouchedAt: now,
-          createdAt: now,
-          updatedAt: now,
-        };
-        const url = input.mediaUrl.trim();
-        const metadata = await resolveMediaMetadata(url);
-        const mediaItem: Media = {
-          id: id('media'),
-          skillId: skill.id,
-          type: inferMediaType(url),
-          url,
-          title: metadata.title,
-          thumbnailUrl: metadata.thumbnailUrl,
-          notes: input.mediaNotes?.trim() || undefined,
-          createdAt: now,
-          updatedAt: now,
-        };
-
-        setSkills((current) => [skill, ...current]);
-        setMedia((current) => [mediaItem, ...current]);
-        return skill;
+      addSkillWithMedia(input) {
+        return runAndReload(() => createSkillWithMedia(input));
       },
-      toggleActive(skillId) {
-        const now = stamp();
-        setSkills((current) =>
-          current.map((skill) =>
-            skill.id === skillId
-              ? { ...skill, active: !skill.active, lastTouchedAt: now, updatedAt: now }
-              : skill,
-          ),
-        );
+      async toggleActive(skillId) {
+        const skill = data.skills.find((item) => item.id === skillId);
+        if (!skill) return;
+        await runAndReload(() => setSkillActive(skillId, !skill.active));
       },
-      updateStage(skillId, stage) {
-        const now = stamp();
-        setSkills((current) =>
-          current.map((skill) =>
-            skill.id === skillId
-              ? { ...skill, stage, lastTouchedAt: now, updatedAt: now }
-              : skill,
-          ),
-        );
+      async updateStage() {
+        await Promise.resolve();
       },
-      addQuickNote(skillId, body) {
-        const now = stamp();
-        const note: Note = {
-          id: id('note'),
-          skillId,
-          body: body.trim(),
-          createdAt: now,
-          updatedAt: now,
-        };
-        setNotes((current) => [note, ...current]);
-        touchSkill(skillId, now);
+      async addQuickNote(skillId, body) {
+        await runAndReload(() => createQuickNote(skillId, body));
       },
-      updateNote(input) {
-        const now = stamp();
-        const existing = notes.find((note) => note.id === input.id);
-
-        setNotes((current) =>
-          current.map((note) =>
-            note.id === input.id
-              ? { ...note, body: input.body.trim(), updatedAt: now }
-              : note,
-          ),
-        );
-
-        if (existing) touchSkill(existing.skillId, now);
+      async updateNote(input) {
+        await runAndReload(() => saveNote(input));
       },
-      updatePartner(input) {
-        const now = stamp();
-
-        setPartners((current) =>
-          current.map((partner) =>
-            partner.id === input.id
-              ? { ...partner, name: input.name.trim(), updatedAt: now }
-              : partner,
-          ),
-        );
+      async updatePartner(input) {
+        await runAndReload(() => savePartner(input));
       },
-      addStandaloneHit(input) {
-        const now = stamp();
-        const partnerName = input.partnerName?.trim();
-        let partnerId: string | undefined;
-
-        if (partnerName) {
-          const existing = partners.find(
-            (partner) => partner.name.toLowerCase() === partnerName.toLowerCase(),
-          );
-
-          if (existing) {
-            partnerId = existing.id;
-          } else {
-            const partner: Partner = {
-              id: id('partner'),
-              name: partnerName,
-              createdAt: now,
-              updatedAt: now,
-            };
-            partnerId = partner.id;
-            setPartners((current) => [partner, ...current]);
-          }
-        }
-
-        const hit: Hit = {
-          id: id('hit'),
-          skillId: input.skillId,
-          partnerId,
-          count: input.count,
-          createdAt: now,
-          updatedAt: now,
-        };
-
-        setHits((current) => [hit, ...current]);
-        touchSkill(input.skillId, now);
+      async addTrainingLog(input) {
+        await runAndReload(() => createTrainingLog(input));
+      },
+      async updateTrainingLog(input) {
+        const existingLog = data.trainingLogs.find((log) => log.id === input.id);
+        if (!existingLog) return;
+        await runAndReload(() => saveTrainingLog(input, existingLog));
+      },
+      async addStandaloneHit(input) {
+        await runAndReload(() => createStandaloneHit(input));
       },
       async addMedia(input) {
-        const now = stamp();
-        const url = input.url.trim();
-        const metadata = await resolveMediaMetadata(url);
-        const mediaItem: Media = {
-          id: id('media'),
-          skillId: input.skillId,
-          type: inferMediaType(url),
-          url,
-          title: metadata.title,
-          thumbnailUrl: metadata.thumbnailUrl,
-          notes: input.notes?.trim() || undefined,
-          createdAt: now,
-          updatedAt: now,
-        };
-
-        setMedia((current) => [mediaItem, ...current]);
-        touchSkill(input.skillId, now);
+        await runAndReload(() => createMedia(input));
       },
       async updateMedia(input) {
-        const now = stamp();
-        const existing = media.find((item) => item.id === input.id);
-        const url = input.url.trim();
-        const metadata =
-          existing?.url === url
-            ? { title: existing.title, thumbnailUrl: existing.thumbnailUrl }
-            : await resolveMediaMetadata(url);
-
-        setMedia((current) =>
-          current.map((item) => {
-            if (item.id !== input.id) return item;
-            return {
-              ...item,
-              type: inferMediaType(url),
-              url,
-              title: metadata.title,
-              thumbnailUrl: metadata.thumbnailUrl,
-              notes: input.notes?.trim() || undefined,
-              updatedAt: now,
-            };
-          }),
-        );
-
-        if (existing) touchSkill(existing.skillId, now);
+        const existing = data.media.find((item) => item.id === input.id);
+        await runAndReload(() => saveMedia(input, existing));
       },
-      removeMedia(mediaId) {
-        const now = stamp();
-        const existing = media.find((item) => item.id === mediaId);
-
-        setMedia((current) => current.filter((item) => item.id !== mediaId));
-
-        if (existing) touchSkill(existing.skillId, now);
+      async removeMedia(mediaId) {
+        const existing = data.media.find((item) => item.id === mediaId);
+        await runAndReload(() => deleteMedia(mediaId, existing));
       },
-      deleteSkill(skillId) {
-        setSkills((current) => current.filter((skill) => skill.id !== skillId));
-        setNotes((current) => current.filter((note) => note.skillId !== skillId));
-        setTrainingLogs((current) => current.filter((log) => log.skillId !== skillId));
-        setHits((current) => current.filter((hit) => hit.skillId !== skillId));
-        setMedia((current) => current.filter((item) => item.skillId !== skillId));
-      },
-      addTrainingLog(input) {
-        const now = stamp();
-        const log: TrainingLog = {
-          id: id('log'),
-          skillId: input.skillId,
-          type: input.type,
-          occurredAt: now,
-          durationMinutes: input.durationMinutes,
-          createdAt: now,
-          updatedAt: now,
-        };
-
-        setTrainingLogs((current) => [log, ...current]);
-
-        if (input.noteBody?.trim()) {
-          const note: Note = {
-            id: id('note'),
-            skillId: input.skillId,
-            trainingLogId: log.id,
-            body: input.noteBody.trim(),
-            createdAt: now,
-            updatedAt: now,
-          };
-          setNotes((current) => [note, ...current]);
-        }
-
-        const newHits: Hit[] = [];
-
-        input.hits
-          .filter((hit) => hit.count > 0)
-          .forEach((hit) => {
-            let partnerId: string | undefined;
-            const partnerName = hit.partnerName?.trim();
-
-            if (partnerName) {
-              const existing = partners.find(
-                (partner) => partner.name.toLowerCase() === partnerName.toLowerCase(),
-              );
-
-              if (existing) {
-                partnerId = existing.id;
-              } else {
-                const partner: Partner = {
-                  id: id('partner'),
-                  name: partnerName,
-                  createdAt: now,
-                  updatedAt: now,
-                };
-                partnerId = partner.id;
-                setPartners((current) => [partner, ...current]);
-              }
-            }
-
-            newHits.push({
-              id: id('hit'),
-              skillId: input.skillId,
-              trainingLogId: log.id,
-              partnerId,
-              count: hit.count,
-              createdAt: now,
-              updatedAt: now,
-            });
-          });
-
-        if (newHits.length > 0) {
-          setHits((current) => [...newHits, ...current]);
-        }
-
-        touchSkill(input.skillId, now);
+      async deleteSkill(skillId) {
+        await runAndReload(() => deleteSkillById(skillId));
       },
     }),
-    [hits, media, notes, partners, skills, trainingLogs],
+    [data, error, loading, reload, runAndReload],
   );
 
   return <HitListContext.Provider value={value}>{children}</HitListContext.Provider>;

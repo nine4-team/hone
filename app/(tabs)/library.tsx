@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { BottomSheetMenu } from '../../components/BottomSheetMenu';
+import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { FormInput } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
@@ -29,7 +30,7 @@ const sortLabels: Record<ArsenalSort, string> = {
 };
 
 export default function ArsenalScreen() {
-  const { hits, skills, toggleActive } = useHitList();
+  const { error, hits, loading, reload, skills, toggleActive } = useHitList();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ArsenalFilter>('all');
   const [sort, setSort] = useState<ArsenalSort>('level');
@@ -82,6 +83,24 @@ export default function ArsenalScreen() {
       });
   }, [filter, hitsBySkill, query, skills, sort]);
 
+  if (loading || error) {
+    return (
+      <Screen
+        title="Arsenal"
+        titleIcon={ArsenalIcon}
+        subtitle="Every skill you have saved, sorted by how developed it is."
+      >
+        <View style={styles.stateStack}>
+          <EmptyState
+            title={loading ? 'Loading your Arsenal' : 'Could not load your Arsenal'}
+            body={error ?? 'Syncing your saved skills.'}
+          />
+          {error ? <Button label="Retry" onPress={reload} variant="secondary" /> : null}
+        </View>
+      </Screen>
+    );
+  }
+
   return (
     <Screen
       title="Arsenal"
@@ -120,9 +139,13 @@ export default function ArsenalScreen() {
               key={skill.id}
               hitCount={hitsBySkill[skill.id] ?? 0}
               skill={skill}
-              onToggleActive={(nextActive) => {
-                showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
-                toggleActive(skill.id);
+              onToggleActive={async (nextActive) => {
+                try {
+                  await toggleActive(skill.id);
+                  showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
+                } catch {
+                  showToast('Could not update skill');
+                }
               }}
             />
           ))
@@ -210,5 +233,8 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.72,
+  },
+  stateStack: {
+    gap: spacing.md,
   },
 });

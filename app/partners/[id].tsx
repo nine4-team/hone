@@ -84,10 +84,14 @@ export default function PartnerDetailScreen() {
             <FormAction
               primary
               label="Save"
-              onPress={() => {
+              onPress={async () => {
                 if (!partnerName.trim()) return;
-                updatePartner({ id: partner.id, name: partnerName });
-                setEditingPartner(false);
+                try {
+                  await updatePartner({ id: partner.id, name: partnerName });
+                  setEditingPartner(false);
+                } catch {
+                  setEditingPartner(false);
+                }
               }}
             />
           </View>

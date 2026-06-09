@@ -1,0 +1,58 @@
+{
+  "cli": {
+    "version": ">= 20.1.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "development-simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "environment": "production",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "team@nine4.co",
+        "appleTeamId": "5VHL56HV63",
+        "ascAppId": "6778319382",
+        "ascApiKeyId": "X5SX4S7NW5",
+        "ascApiKeyIssuerId": "4827880b-e626-4e8e-a16b-c66db4355e12",
+        "ascApiKeyPath": "/Users/benjaminmackenzie/.appstoreconnect/private_keys/AuthKey_X5SX4S7NW5.p8",
+        "appName": "HitList",
+        "bundleIdentifier": "com.benjaminmackenzie.hitlist",
+        "language": "en-US",
+        "sku": "hitlist-ios"
+      }
+    }
+  }
+}

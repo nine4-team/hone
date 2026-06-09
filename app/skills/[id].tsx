@@ -5,6 +5,7 @@ import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, TextInp
 import type { Media, TrainingLogType } from '../../lib/types';
 import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
+import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { QuickAddEntrySheet } from '../../components/EntrySheets';
 import { FloatingNavigation } from '../../components/FloatingNavigation';
@@ -29,7 +30,9 @@ export default function SkillDetailScreen() {
     addQuickNote,
     addMedia,
     addStandaloneHit,
+    error,
     hits,
+    loading,
     media,
     notes,
     partners,
@@ -37,6 +40,7 @@ export default function SkillDetailScreen() {
     toggleActive,
     trainingLogs,
     removeMedia,
+    reload,
     updateMedia,
     updateNote,
   } = useHitList();
@@ -116,8 +120,22 @@ export default function SkillDetailScreen() {
 
   const hitsByPartner = useMemo(() => hitRowsByPartner(skillHits, partners), [partners, skillHits]);
 
+  if (loading || error) {
+    return (
+      <Screen title="Skill Detail" onBack={router.back}>
+        <View style={styles.stateStack}>
+          <EmptyState
+            title={loading ? 'Loading skill' : 'Could not load skill'}
+            body={error ?? 'Syncing this skill record.'}
+          />
+          {error ? <Button label="Retry" onPress={reload} variant="secondary" /> : null}
+        </View>
+      </Screen>
+    );
+  }
+
   if (!skill) {
-    return <Screen title="Skill not found" subtitle="This skill is not in the local data set." onBack={router.back} />;
+    return <Screen title="Skill not found" subtitle="This skill is not in your account." onBack={router.back} />;
   }
 
   const scrollToTrainingLogs = () => {
@@ -144,9 +162,13 @@ export default function SkillDetailScreen() {
       action={
         <ActivationSwitch
           value={skill.active}
-          onValueChange={(nextActive) => {
-            showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
-            toggleActive(skill.id);
+          onValueChange={async (nextActive) => {
+            try {
+              await toggleActive(skill.id);
+              showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
+            } catch {
+              showToast('Could not update skill');
+            }
           }}
         />
       }
@@ -195,19 +217,27 @@ export default function SkillDetailScreen() {
               setQuickAddMode(null);
             }}
             onTrainingLog={() => router.push(`/log/${skill.id}`)}
-            onSaveHit={({ partnerName, count }) => {
-              addStandaloneHit({ skillId: skill.id, partnerName, count });
-              setHitsOpen(true);
+            onSaveHit={async ({ partnerName, count }) => {
+              try {
+                await addStandaloneHit({ skillId: skill.id, partnerName, count });
+                setHitsOpen(true);
+              } catch {
+                showToast('Could not log hit');
+              }
             }}
             onSaveMedia={async ({ url, notes }) => {
               setEditingMediaId(null);
               await addMedia({ skillId: skill.id, url, notes });
               setMediaOpen(true);
             }}
-            onSaveNote={(body) => {
+            onSaveNote={async (body) => {
               setEditingNoteId(null);
-              addQuickNote(skill.id, body);
-              setNotesOpen(true);
+              try {
+                await addQuickNote(skill.id, body);
+                setNotesOpen(true);
+              } catch {
+                showToast('Could not add note');
+              }
             }}
           />
         </>
@@ -380,23 +410,27 @@ export default function SkillDetailScreen() {
                     accessibilityRole="button"
                     onPress={async () => {
                       if (!mediaUrl.trim()) return;
-                      if (editingMediaId) {
-                        await updateMedia({
-                          id: editingMediaId,
-                          url: mediaUrl,
-                          notes: mediaNotes,
-                        });
-                      } else {
-                        await addMedia({
-                          skillId: skill.id,
-                          url: mediaUrl,
-                          notes: mediaNotes,
-                        });
+                      try {
+                        if (editingMediaId) {
+                          await updateMedia({
+                            id: editingMediaId,
+                            url: mediaUrl,
+                            notes: mediaNotes,
+                          });
+                        } else {
+                          await addMedia({
+                            skillId: skill.id,
+                            url: mediaUrl,
+                            notes: mediaNotes,
+                          });
+                        }
+                        setAddingMedia(false);
+                        setEditingMediaId(null);
+                        setMediaUrl('');
+                        setMediaNotes('');
+                      } catch {
+                        showToast('Could not save media');
                       }
-                      setAddingMedia(false);
-                      setEditingMediaId(null);
-                      setMediaUrl('');
-                      setMediaNotes('');
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
@@ -453,7 +487,13 @@ export default function SkillDetailScreen() {
                         </IconButton>
                         <IconButton
                           accessibilityLabel="Remove media"
-                          onPress={() => removeMedia(item.id)}
+                          onPress={async () => {
+                            try {
+                              await removeMedia(item.id);
+                            } catch {
+                              showToast('Could not remove media');
+                            }
+                          }}
                         >
                           <MaterialIcons name="delete-outline" size={18} color={colors.muted} />
                         </IconButton>
@@ -519,16 +559,20 @@ export default function SkillDetailScreen() {
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    onPress={() => {
+                    onPress={async () => {
                       if (!noteBody.trim()) return;
-                      if (editingNoteId) {
-                        updateNote({ id: editingNoteId, body: noteBody });
-                      } else {
-                        addQuickNote(skill.id, noteBody);
+                      try {
+                        if (editingNoteId) {
+                          await updateNote({ id: editingNoteId, body: noteBody });
+                        } else {
+                          await addQuickNote(skill.id, noteBody);
+                        }
+                        setNoteBody('');
+                        setAddingNote(false);
+                        setEditingNoteId(null);
+                      } catch {
+                        showToast('Could not save note');
                       }
-                      setNoteBody('');
-                      setAddingNote(false);
-                      setEditingNoteId(null);
                     }}
                     style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
                   >
@@ -623,7 +667,7 @@ export default function SkillDetailScreen() {
                       </View>
                       <IconButton
                         accessibilityLabel="Edit training log"
-                        onPress={() => Alert.alert('Edit Training Log', 'Training log editing is planned but not wired yet.')}
+                        onPress={() => router.push(`/log/${skill.id}?logId=${log.id}`)}
                       >
                         <MaterialIcons name="edit" size={18} color={colors.sage} />
                       </IconButton>
@@ -1160,6 +1204,9 @@ const styles = StyleSheet.create({
   },
   stack: {
     gap: spacing.sm,
+  },
+  stateStack: {
+    gap: spacing.md,
   },
   headerLifetimeHits: {
     fontSize: 12,

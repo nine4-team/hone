@@ -8,6 +8,8 @@ This is not a design-polish review. The question is whether the app behaves corr
 
 Use computer/device control to click, tap, type, scroll, dismiss sheets, use back gestures, and restart the app.
 
+Run `npm run check` before device QA so TypeScript and focused unit tests pass before the click-through pass begins.
+
 Run the suite on:
 
 - iOS simulator for fast iteration.
@@ -121,6 +123,13 @@ A functional visual QA failure is any case where:
   - Training log entry.
   - Hit rows.
   - Note linked to the log.
+- Edit the saved training log.
+- Change type.
+- Change duration.
+- Change hit rows/counts.
+- Change note.
+- Save changes.
+- Confirm Skill Detail reflects the corrected log, hits, note, and stats.
 - Restart app and confirm log persists.
 
 ## Journey 6: Skill Detail Management
@@ -139,6 +148,7 @@ A functional visual QA failure is any case where:
 - Edit media.
 - Remove media.
 - Open media URL.
+- Edit a training log from its Training Logs card.
 - Tap bottom navigation from Skill Detail.
 - Return to Skill Detail and confirm state/data are sane.
 

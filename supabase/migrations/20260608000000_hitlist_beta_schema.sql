@@ -1,5 +1,5 @@
 -- HitList beta schema.
--- Apply through the Supabase SQL editor, MCP execute_sql, or a Supabase migration.
+-- Apply this migration to the beta Supabase project.
 
 create type public.training_log_type as enum ('study', 'dialogue_drilling', 'constraint_game', 'rolling');
 create type public.media_type as enum ('youtube', 'instagram', 'link');
