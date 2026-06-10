@@ -98,7 +98,10 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 - [x] App Store Connect app record exists.
 - [x] TestFlight build uploaded.
 - [x] Internal TestFlight group configured.
-- [ ] External TestFlight beta review submitted.
+- [ ] Uploaded TestFlight build attached to external testing group.
+  - Uploading a build to App Store Connect does not make it available to external testers.
+  - After Apple finishes processing the uploaded build, attach it to the external group with:
+    `npm run testflight:distribute:ios -- <build-number> --groups "External Testing"`
 - [ ] TestFlight public link enabled.
 - [ ] Google Play app record exists.
 - [ ] Google Play internal testing track configured.

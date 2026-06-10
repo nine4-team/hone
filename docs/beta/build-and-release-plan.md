@@ -94,7 +94,9 @@ iOS:
 - Build production iOS binary.
 - Submit to App Store Connect.
 - Enable TestFlight internal testers.
-- Add external testers later if needed.
+- After the uploaded build finishes Apple processing, attach it to external testers if needed:
+  `npm run testflight:distribute:ios -- <build-number> --groups "External Testing"`.
+- This external step attaches an already-uploaded build to the external group. It is separate from the upload step.
 
 Android:
 

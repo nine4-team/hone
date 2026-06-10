@@ -6,10 +6,6 @@ APP_IDENTIFIER = "com.benjaminmackenzie.hitlist"
 APPLE_ID = "6778319382"
 DEFAULT_EXTERNAL_GROUPS = ["External Testing"]
 DEFAULT_VERSION = "1.0.0"
-DEFAULT_BETA_DESCRIPTION = "HitList helps coaches, athletes, and teams track training hits, partners, and skill work during beta testing."
-DEFAULT_FEEDBACK_EMAIL = "team@nine4.co"
-DEFAULT_REVIEW_FIRST_NAME = "Ben"
-DEFAULT_REVIEW_LAST_NAME = "Mackenzie"
 
 def app_store_api_key
   key_id = ENV.fetch("APP_STORE_CONNECT_KEY_ID", "X5SX4S7NW5")
@@ -46,88 +42,23 @@ def version_from(options)
   (options[:version] || ENV["APP_VERSION"] || DEFAULT_VERSION).to_s
 end
 
-def beta_description_from(options)
-  options[:beta_description] || ENV["TESTFLIGHT_BETA_DESCRIPTION"] || DEFAULT_BETA_DESCRIPTION
-end
-
-def feedback_email_from(options)
-  options[:feedback_email] || ENV["TESTFLIGHT_FEEDBACK_EMAIL"] || DEFAULT_FEEDBACK_EMAIL
-end
-
-def review_phone_from(options)
-  phone = options[:review_phone] || ENV["TESTFLIGHT_REVIEW_PHONE"]
-  UI.user_error!("Set TESTFLIGHT_REVIEW_PHONE or pass review_phone: for Apple beta review contact info") if phone.to_s.empty?
-
-  phone
-end
-
-def beta_app_review_info_from(options)
-  info = {
-    contact_email: feedback_email_from(options),
-    contact_first_name: options[:review_first_name] || ENV["TESTFLIGHT_REVIEW_FIRST_NAME"] || DEFAULT_REVIEW_FIRST_NAME,
-    contact_last_name: options[:review_last_name] || ENV["TESTFLIGHT_REVIEW_LAST_NAME"] || DEFAULT_REVIEW_LAST_NAME,
-    contact_phone: review_phone_from(options),
-    notes: options[:review_notes] || ENV["TESTFLIGHT_REVIEW_NOTES"] || "Please review the HitList beta. Testers can create an account from the sign-in screen."
-  }
-
-  demo_account_name = options[:demo_account_name] || ENV["TESTFLIGHT_DEMO_ACCOUNT_NAME"]
-  demo_account_password = options[:demo_account_password] || ENV["TESTFLIGHT_DEMO_ACCOUNT_PASSWORD"]
-
-  if demo_account_name.to_s.empty? || demo_account_password.to_s.empty?
-    info[:demo_account_required] = false
-  else
-    info[:demo_account_required] = true
-    info[:demo_account_name] = demo_account_name
-    info[:demo_account_password] = demo_account_password
-  end
-
-  info
-end
-
-def localized_app_info_from(options)
-  info = {
-    feedback_email: feedback_email_from(options),
-    description: beta_description_from(options)
-  }
-
-  {
-    "default": info,
-    "en-US": info
-  }
-end
-
-def localized_build_info_from(options)
-  info = {
-    whats_new: release_notes_from(options)
-  }
-
-  {
-    "default": info,
-    "en-US": info
-  }
-end
-
 platform :ios do
   desc "Attach an already-uploaded HitList build to external TestFlight groups"
   lane :distribute_existing_external do |options|
     build_number = options[:build_number] || ENV["BUILD_NUMBER"]
     UI.user_error!("Pass build_number: or set BUILD_NUMBER") if build_number.to_s.empty?
 
+    api_key = app_store_api_key
     groups = external_groups_from(options)
 
     upload_to_testflight(
-      api_key: app_store_api_key,
+      api_key: api_key,
       app_identifier: APP_IDENTIFIER,
       apple_id: APPLE_ID,
       app_platform: "ios",
       app_version: version_from(options),
       build_number: build_number.to_s,
       changelog: release_notes_from(options),
-      beta_app_review_info: beta_app_review_info_from(options),
-      beta_app_description: beta_description_from(options),
-      beta_app_feedback_email: feedback_email_from(options),
-      localized_app_info: localized_app_info_from(options),
-      localized_build_info: localized_build_info_from(options),
       distribute_external: true,
       distribute_only: true,
       groups: groups,
