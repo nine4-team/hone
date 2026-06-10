@@ -90,6 +90,8 @@ Add `eas.json` with at least:
 
 iOS:
 
+Follow the dedicated HitList TestFlight procedure in `docs/beta/testflight-release.md`.
+
 - Create or confirm App Store Connect app record.
 - Build production iOS binary.
 - Submit to App Store Connect.

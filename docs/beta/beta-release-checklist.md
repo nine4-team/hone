@@ -95,6 +95,8 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 
 ## Store Beta
 
+Release procedure: `docs/beta/testflight-release.md`.
+
 - [x] App Store Connect app record exists.
 - [x] TestFlight build uploaded.
 - [x] Internal TestFlight group configured.
