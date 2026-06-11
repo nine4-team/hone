@@ -9,6 +9,8 @@ import {
   createTrainingLog,
   deleteMedia,
   deleteSkillById,
+  completeSkillPackOnboarding,
+  importSkillPacks,
   loadHitListData,
   saveMedia,
   saveNote,
@@ -28,6 +30,7 @@ import type {
   Note,
   Partner,
   Skill,
+  SkillPackImportMode,
   SkillStage,
   TrainingLog,
   UpdateMediaInput,
@@ -54,6 +57,8 @@ type HitListState = HitListData & {
   updateMedia: (input: UpdateMediaInput) => Promise<void>;
   removeMedia: (mediaId: string) => Promise<void>;
   deleteSkill: (skillId: string) => Promise<void>;
+  finishSkillPackOnboarding: () => Promise<void>;
+  importPacks: (selections: Array<{ packSlug: string; importMode: SkillPackImportMode }>) => Promise<void>;
 };
 
 const emptyData: HitListData = {
@@ -61,6 +66,8 @@ const emptyData: HitListData = {
   media: [],
   notes: [],
   partners: [],
+  skillPackImports: [],
+  skillPackOnboardingCompleted: false,
   skills: [],
   trainingLogs: [],
 };
@@ -164,6 +171,12 @@ export function HitListProvider({ children }: PropsWithChildren) {
       },
       async deleteSkill(skillId) {
         await runAndReload(() => deleteSkillById(skillId));
+      },
+      async finishSkillPackOnboarding() {
+        await runAndReload(() => completeSkillPackOnboarding());
+      },
+      async importPacks(selections) {
+        await runAndReload(() => importSkillPacks(selections));
       },
     }),
     [data, error, loading, reload, runAndReload],

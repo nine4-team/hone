@@ -1,4 +1,6 @@
 import { inferMediaType, resolveMediaMetadata } from '../mediaMetadata';
+import { SKILL_PACK_VERSION, skillPacks, type SkillPackImportMode } from '../starterSkills';
+import type { SkillPackSkill } from '../starterSkills';
 import type {
   Hit,
   Media,
@@ -10,6 +12,7 @@ import type {
   Note,
   Partner,
   Skill,
+  SkillPackImport,
   TrainingLog,
   UpdateMediaInput,
   UpdateNoteInput,
@@ -76,23 +79,49 @@ type MediaRow = {
   updated_at: string;
 };
 
+type StarterSeedRow = {
+  starter_skill_version: number;
+  seeded_at: string;
+};
+
+type SkillPackImportRow = {
+  pack_slug: string;
+  import_mode: SkillPackImportMode;
+  imported_at: string;
+};
+
+type SkillPackOnboardingStateRow = {
+  completed_at: string;
+};
+
+type SkillPackImportItemRow = {
+  skill_id: string;
+  template_key: string;
+};
+
 export type HitListData = {
   skills: Skill[];
   notes: Note[];
   trainingLogs: TrainingLog[];
   hits: Hit[];
+  skillPackImports: SkillPackImport[];
+  skillPackOnboardingCompleted: boolean;
   partners: Partner[];
   media: Media[];
 };
 
 export async function loadHitListData(): Promise<HitListData> {
-  const [skills, notes, trainingLogs, hits, partners, media] = await Promise.all([
+  await reconcileImportedSkillPackContent();
+
+  const [skills, notes, trainingLogs, hits, partners, media, skillPackImports, skillPackOnboardingCompleted] = await Promise.all([
     selectRows<SkillRow>('skills', 'last_touched_at', false),
     selectRows<NoteRow>('notes', 'created_at', false),
     selectRows<TrainingLogRow>('training_logs', 'occurred_at', false),
     selectRows<HitRow>('hits', 'created_at', false),
     selectRows<PartnerRow>('partners', 'name', true),
     selectRows<MediaRow>('media', 'created_at', false),
+    loadSkillPackImports(),
+    loadSkillPackOnboardingCompleted(),
   ]);
 
   return {
@@ -100,9 +129,247 @@ export async function loadHitListData(): Promise<HitListData> {
     media: media.map(mapMedia),
     notes: notes.map(mapNote),
     partners: partners.map(mapPartner),
+    skillPackImports,
+    skillPackOnboardingCompleted,
     skills: skills.map(mapSkill),
     trainingLogs: trainingLogs.map(mapTrainingLog),
   };
+}
+
+async function loadSkillPackImports(): Promise<SkillPackImport[]> {
+  const { data, error } = await supabase
+    .from('skill_pack_imports')
+    .select('pack_slug, import_mode, imported_at')
+    .order('imported_at', { ascending: false });
+
+  if (isMissingRelationError(error)) return [];
+  if (error) throw error;
+
+  return ((data ?? []) as SkillPackImportRow[]).map(mapSkillPackImport);
+}
+
+async function loadSkillPackOnboardingCompleted(): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('skill_pack_onboarding_state')
+    .select('completed_at')
+    .maybeSingle<SkillPackOnboardingStateRow>();
+
+  if (isMissingRelationError(error)) {
+    const starterSeed = await loadStarterSeedState();
+    return Boolean(starterSeed);
+  }
+  if (error) throw error;
+  return Boolean(data);
+}
+
+async function loadStarterSeedState(): Promise<StarterSeedRow | null> {
+  const { data, error } = await supabase
+    .from('starter_seed_state')
+    .select('starter_skill_version, seeded_at')
+    .maybeSingle<StarterSeedRow>();
+
+  if (isMissingRelationError(error)) return null;
+  if (error) throw error;
+  return data;
+}
+
+export async function completeSkillPackOnboarding() {
+  await mutate(
+    supabase
+      .from('skill_pack_onboarding_state')
+      .upsert({ completed_at: new Date().toISOString() }, { onConflict: 'user_id' }),
+  );
+}
+
+export async function importSkillPacks(
+  selections: Array<{ packSlug: string; importMode: SkillPackImportMode }>,
+) {
+  for (const selection of selections) {
+    await importSkillPack(selection.packSlug, selection.importMode);
+  }
+
+  await completeSkillPackOnboarding();
+}
+
+async function importSkillPack(packSlug: string, importMode: SkillPackImportMode) {
+  const pack = skillPacks.find((item) => item.slug === packSlug);
+  if (!pack) throw new Error(`Unknown skill pack: ${packSlug}`);
+
+  const { data: importRow, error: importError } = await supabase
+    .from('skill_pack_imports')
+    .upsert(
+      {
+        import_mode: importMode,
+        pack_slug: pack.slug,
+        pack_version: SKILL_PACK_VERSION,
+      },
+      { onConflict: 'user_id,pack_slug' },
+    )
+    .select('id')
+    .single<{ id: string }>();
+
+  if (importError) throw importError;
+
+  const { data: existingItems, error: existingItemsError } = await supabase
+    .from('skill_pack_import_items')
+    .select('skill_id, template_key')
+    .in(
+      'template_key',
+      pack.skills.map((skill) => skill.key),
+    );
+
+  if (existingItemsError) throw existingItemsError;
+
+  const existingSkillsByKey = new Map(
+    ((existingItems ?? []) as Array<{ skill_id: string; template_key: string }>).map((item) => [
+      item.template_key,
+      item.skill_id,
+    ]),
+  );
+
+  for (const packSkill of pack.skills) {
+    const existingSkillId = existingSkillsByKey.get(packSkill.key);
+
+    if (existingSkillId) {
+      await ensurePackSkillContent(existingSkillId, packSkill);
+      continue;
+    }
+
+    const { data: skillRow, error: skillError } = await supabase
+      .from('skills')
+      .insert({
+        active: importMode === 'active',
+        name: packSkill.name,
+      })
+      .select()
+      .single<SkillRow>();
+
+    if (skillError) throw skillError;
+
+    await mutate(
+      supabase
+        .from('skill_pack_import_items')
+        .insert({
+          import_id: importRow.id,
+          skill_id: skillRow.id,
+          template_key: packSkill.key,
+        }),
+    );
+
+    const mediaRows = packSkill.media.map((item) => ({
+      notes: item.notes,
+      skill_id: skillRow.id,
+      thumbnail_url: item.thumbnailUrl,
+      title: item.title,
+      type: inferMediaType(item.url),
+      url: item.url,
+    }));
+
+    await mutate(supabase.from('media').insert(mediaRows));
+  }
+}
+
+async function ensurePackSkillContent(skillId: string, packSkill: SkillPackSkill) {
+  const [{ data: existingNotes, error: notesError }, { data: existingMedia, error: mediaError }] = await Promise.all([
+    supabase.from('notes').select('id, body, training_log_id').eq('skill_id', skillId),
+    supabase.from('media').select('id, url, notes').eq('skill_id', skillId),
+  ]);
+
+  if (notesError) throw notesError;
+  if (mediaError) throw mediaError;
+
+  const existingMediaByUrl = new Map(
+    ((existingMedia ?? []) as Array<{ id: string; notes: string | null; url: string }>).map((item) => [
+      item.url,
+      item,
+    ]),
+  );
+  const generatedNoteIds = ((existingNotes ?? []) as Array<{
+    body: string;
+    id: string;
+    training_log_id: string | null;
+  }>)
+    .filter(
+      (note) =>
+        note.training_log_id === null &&
+        (isGeneratedSkillPackNote(note.body) || packSkill.media.some((media) => media.notes === note.body)),
+    )
+    .map((note) => note.id);
+
+  const mediaMutations = packSkill.media.map((item) => {
+    const existing = existingMediaByUrl.get(item.url);
+    if (!existing) {
+      return mutate(
+        supabase.from('media').insert({
+          notes: item.notes,
+          skill_id: skillId,
+          thumbnail_url: item.thumbnailUrl,
+          title: item.title,
+          type: inferMediaType(item.url),
+          url: item.url,
+        }),
+      );
+    }
+
+    if (existing.notes === item.notes || !shouldReplacePackMediaNotes(existing.notes)) {
+      return Promise.resolve();
+    }
+
+    return mutate(
+      supabase
+        .from('media')
+        .update({
+          notes: item.notes,
+          thumbnail_url: item.thumbnailUrl,
+          title: item.title,
+          type: inferMediaType(item.url),
+        })
+        .eq('id', existing.id),
+    );
+  });
+
+  await Promise.all([
+    generatedNoteIds.length > 0 ? mutate(supabase.from('notes').delete().in('id', generatedNoteIds)) : Promise.resolve(),
+    ...mediaMutations,
+  ]);
+}
+
+async function reconcileImportedSkillPackContent() {
+  const { data, error } = await supabase
+    .from('skill_pack_import_items')
+    .select('skill_id, template_key');
+
+  if (isMissingRelationError(error)) return;
+  if (error) throw error;
+
+  const packSkillsByKey = new Map(skillPacks.flatMap((pack) => pack.skills.map((skill) => [skill.key, skill])));
+
+  for (const item of (data ?? []) as SkillPackImportItemRow[]) {
+    const packSkill = packSkillsByKey.get(item.template_key);
+    if (packSkill) await ensurePackSkillContent(item.skill_id, packSkill);
+  }
+}
+
+function isGeneratedSkillPackNote(body: string) {
+  return (
+    body.startsWith('Video notes:') ||
+    body.startsWith('This skill has ') ||
+    body.startsWith('Starter-pack video:') ||
+    body.includes('system video') ||
+    body.includes('reference videos') ||
+    body.includes('See the matching video note')
+  );
+}
+
+function shouldReplacePackMediaNotes(notes: string | null) {
+  if (!notes) return true;
+  return (
+    notes.startsWith('Starter-pack video:') ||
+    notes.startsWith('Video notes:') ||
+    notes.startsWith('Context: ') ||
+    notes.includes('system video') ||
+    notes.includes('See the matching video note')
+  );
 }
 
 export async function createSkill(input: NewSkillInput) {
@@ -356,6 +623,15 @@ async function mutate(query: PromiseLike<{ error: unknown }>) {
   if (error) throw error;
 }
 
+function isMissingRelationError(error: unknown) {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: string }).code === 'PGRST205'
+  );
+}
+
 function mapSkill(row: SkillRow): Skill {
   return {
     active: row.active,
@@ -423,5 +699,13 @@ function mapMedia(row: MediaRow): Media {
     type: row.type,
     updatedAt: row.updated_at,
     url: row.url,
+  };
+}
+
+function mapSkillPackImport(row: SkillPackImportRow): SkillPackImport {
+  return {
+    importedAt: row.imported_at,
+    importMode: row.import_mode,
+    packSlug: row.pack_slug,
   };
 }

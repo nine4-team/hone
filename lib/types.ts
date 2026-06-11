@@ -12,6 +12,14 @@ export type Skill = {
   updatedAt: string;
 };
 
+export type SkillPackImportMode = 'active' | 'arsenal';
+
+export type SkillPackImport = {
+  packSlug: string;
+  importMode: SkillPackImportMode;
+  importedAt: string;
+};
+
 export type TrainingLog = {
   id: string;
   skillId: string;

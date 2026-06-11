@@ -81,6 +81,52 @@ create table public.media (
   updated_at timestamptz not null default now()
 );
 
+create table public.starter_seed_state (
+  user_id uuid primary key default auth.uid() references auth.users (id) on delete cascade,
+  starter_skill_version integer not null,
+  seeded_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.starter_seed_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  skill_id uuid not null references public.skills (id) on delete cascade,
+  starter_key text not null,
+  starter_skill_version integer not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, starter_key),
+  unique (user_id, skill_id)
+);
+
+create table public.skill_pack_onboarding_state (
+  user_id uuid primary key default auth.uid() references auth.users (id) on delete cascade,
+  completed_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.skill_pack_imports (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  pack_slug text not null,
+  pack_version integer not null,
+  import_mode text not null check (import_mode in ('active', 'arsenal')),
+  imported_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (user_id, pack_slug)
+);
+
+create table public.skill_pack_import_items (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  import_id uuid not null references public.skill_pack_imports (id) on delete cascade,
+  skill_id uuid not null references public.skills (id) on delete cascade,
+  template_key text not null,
+  created_at timestamptz not null default now(),
+  unique (user_id, template_key),
+  unique (user_id, skill_id)
+);
+
 create index skills_user_active_idx on public.skills (user_id, active);
 create index skills_user_touched_idx on public.skills (user_id, last_touched_at desc);
 create index training_logs_skill_occurred_idx on public.training_logs (skill_id, occurred_at desc);
@@ -94,6 +140,9 @@ create index hits_partner_idx on public.hits (partner_id);
 create index hits_user_idx on public.hits (user_id);
 create index media_skill_idx on public.media (skill_id);
 create index media_user_idx on public.media (user_id);
+create index skill_pack_imports_user_idx on public.skill_pack_imports (user_id);
+create index skill_pack_import_items_user_idx on public.skill_pack_import_items (user_id);
+create index skill_pack_import_items_import_idx on public.skill_pack_import_items (import_id);
 
 create trigger skills_set_updated_at
   before update on public.skills
@@ -119,12 +168,29 @@ create trigger media_set_updated_at
   before update on public.media
   for each row execute function public.set_updated_at();
 
+create trigger starter_seed_state_set_updated_at
+  before update on public.starter_seed_state
+  for each row execute function public.set_updated_at();
+
+create trigger skill_pack_onboarding_state_set_updated_at
+  before update on public.skill_pack_onboarding_state
+  for each row execute function public.set_updated_at();
+
+create trigger skill_pack_imports_set_updated_at
+  before update on public.skill_pack_imports
+  for each row execute function public.set_updated_at();
+
 alter table public.skills enable row level security;
 alter table public.partners enable row level security;
 alter table public.training_logs enable row level security;
 alter table public.notes enable row level security;
 alter table public.hits enable row level security;
 alter table public.media enable row level security;
+alter table public.starter_seed_state enable row level security;
+alter table public.starter_seed_items enable row level security;
+alter table public.skill_pack_onboarding_state enable row level security;
+alter table public.skill_pack_imports enable row level security;
+alter table public.skill_pack_import_items enable row level security;
 
 create policy "Users can manage own skills"
   on public.skills for all
@@ -156,6 +222,31 @@ create policy "Users can manage own media"
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
 
+create policy "Users can manage own starter seed state"
+  on public.starter_seed_state for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
+create policy "Users can manage own starter seed items"
+  on public.starter_seed_items for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
+create policy "Users can manage own skill pack onboarding state"
+  on public.skill_pack_onboarding_state for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
+create policy "Users can manage own skill pack imports"
+  on public.skill_pack_imports for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
+create policy "Users can manage own skill pack import items"
+  on public.skill_pack_import_items for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+
 grant usage on schema public to authenticated;
 grant usage on type public.training_log_type to authenticated;
 grant usage on type public.media_type to authenticated;
@@ -166,3 +257,8 @@ grant select, insert, update, delete on public.training_logs to authenticated;
 grant select, insert, update, delete on public.notes to authenticated;
 grant select, insert, update, delete on public.hits to authenticated;
 grant select, insert, update, delete on public.media to authenticated;
+grant select, insert, update, delete on public.starter_seed_state to authenticated;
+grant select, insert, update, delete on public.starter_seed_items to authenticated;
+grant select, insert, update, delete on public.skill_pack_onboarding_state to authenticated;
+grant select, insert, update, delete on public.skill_pack_imports to authenticated;
+grant select, insert, update, delete on public.skill_pack_import_items to authenticated;
