@@ -52,7 +52,7 @@
     "testflight:public-link:ios": "ruby scripts/testflight-public-link.rb",
     "submit:testflight:ios": "npx eas-cli@latest submit -p ios --profile production --latest --wait",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test lib/trainingLogEditing.test.ts",
+    "test": "tsx --test lib/trainingLogEditing.test.ts lib/starterSkills.test.ts",
     "check": "npm run typecheck && npm test"
   },
   "private": true
