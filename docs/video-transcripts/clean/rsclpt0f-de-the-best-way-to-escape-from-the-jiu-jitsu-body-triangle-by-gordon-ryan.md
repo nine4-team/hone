@@ -2,7 +2,7 @@
 
 - Source: https://www.youtube.com/watch?v=RscLPT0F-DE
 - Video ID: RscLPT0F-DE
-- Pack: Escape Basics
+- Pack: Positional Escape Basics
 - Skill: Back Escape
 - Transcript source: YouTube automatic captions (docs/video-transcripts/raw/RscLPT0F-DE.en-orig.json3)
 - Approximate transcript end: 09:51

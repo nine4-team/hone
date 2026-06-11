@@ -2,7 +2,7 @@
 
 - Source: https://www.youtube.com/watch?v=by85KB6wf8A
 - Video ID: by85KB6wf8A
-- Pack: Escape Basics
+- Pack: Positional Escape Basics
 - Skill: Side Control Escape
 - Transcript source: YouTube automatic captions (docs/video-transcripts/raw/by85KB6wf8A.en-orig.json3)
 - Approximate transcript end: 09:33

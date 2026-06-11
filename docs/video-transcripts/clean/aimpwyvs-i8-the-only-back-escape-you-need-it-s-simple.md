@@ -2,7 +2,7 @@
 
 - Source: https://www.youtube.com/watch?v=AIMpwyvs_I8
 - Video ID: AIMpwyvs_I8
-- Pack: Escape Basics
+- Pack: Positional Escape Basics
 - Skill: Back Escape
 - Transcript source: YouTube automatic captions (docs/video-transcripts/raw/AIMpwyvs_I8.en-orig.json3)
 - Approximate transcript end: 15:56

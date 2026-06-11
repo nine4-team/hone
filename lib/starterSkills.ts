@@ -288,7 +288,7 @@ const rearNakedStrangle: SkillPackSkill = {
 export const skillPacks: SkillPack[] = [
   {
     slug: 'escape-basics',
-    title: 'Escape Basics',
+    title: 'Positional Escape Basics',
     description: 'Core escapes for the three positions beginners get stuck in most: side control, mount, and the back.',
     level: 'Beginner',
     skills: [sideControlEscape, mountEscape, backEscape],

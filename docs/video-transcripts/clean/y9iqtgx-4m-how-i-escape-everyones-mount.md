@@ -2,7 +2,7 @@
 
 - Source: https://www.youtube.com/watch?v=Y9IQTgX_-4M
 - Video ID: Y9IQTgX_-4M
-- Pack: Escape Basics
+- Pack: Positional Escape Basics
 - Skill: Mount Escape
 - Transcript source: YouTube automatic captions (docs/video-transcripts/raw/Y9IQTgX_-4M.en-orig.json3)
 - Approximate transcript end: 05:55
