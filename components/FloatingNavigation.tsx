@@ -20,12 +20,14 @@ type FloatingNavigationProps = {
   items: FloatingNavigationItem[];
   createLabel?: string;
   onCreatePress?: () => void;
+  showFade?: boolean;
 };
 
 export function FloatingNavigation({
   createLabel = 'Create skill',
   items,
   onCreatePress,
+  showFade = true,
 }: FloatingNavigationProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -33,11 +35,13 @@ export function FloatingNavigation({
 
   return (
     <View pointerEvents="box-none" style={styles.tabBarWrap}>
-      <View pointerEvents="none" style={styles.fade}>
-        {[0, 0.08, 0.2, 0.4, 0.65, 0.85, 1].map((opacity, index) => (
-          <View key={index} style={[styles.fadeStep, { backgroundColor: colors.bg, opacity }]} />
-        ))}
-      </View>
+      {showFade ? (
+        <View pointerEvents="none" style={styles.fade}>
+          {[0, 0.08, 0.2, 0.4, 0.65, 0.85, 1].map((opacity, index) => (
+            <View key={index} style={[styles.fadeStep, { backgroundColor: colors.bg, opacity }]} />
+          ))}
+        </View>
+      ) : null}
       <View
         style={[
           styles.tabBarRow,

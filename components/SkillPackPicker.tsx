@@ -219,11 +219,13 @@ function ModeButton({
 const styles = StyleSheet.create({
   actions: {
     borderTopWidth: StyleSheet.hairlineWidth,
+    elevation: 16,
     flexDirection: 'row',
     gap: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
     paddingTop: spacing.md,
+    zIndex: 16,
   },
   actionButton: {
     flex: 1,

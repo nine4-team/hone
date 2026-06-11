@@ -2,6 +2,7 @@ import { Tabs, usePathname } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
+import { useHitList } from '../../lib/store';
 import { useTheme } from '../../lib/theme';
 
 const visibleRoutes = ['index', 'library', 'partners', 'settings'];
@@ -22,8 +23,12 @@ const routeLabels: Record<string, string> = {
 
 function FloatingTabBar({ state, navigation }: any) {
   const pathname = usePathname();
+  const { loading, skillPackOnboardingCompleted, skills } = useHitList();
   const visiblePathnames = new Set(['/', '/settings', '/library', '/partners']);
   if (!visiblePathnames.has(pathname)) return null;
+
+  const showingSkillPackOnboarding =
+    pathname === '/' && !loading && skills.length === 0 && !skillPackOnboardingCompleted;
 
   const routes = visibleRoutes
     .map((routeName) => state.routes.find((route: any) => route.name === routeName))
@@ -53,6 +58,7 @@ function FloatingTabBar({ state, navigation }: any) {
           },
         };
       })}
+      showFade={!showingSkillPackOnboarding}
     />
   );
 }
