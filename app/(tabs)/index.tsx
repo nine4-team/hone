@@ -7,6 +7,7 @@ import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
 import { QuickAddEntrySheet } from '../../components/EntrySheets';
 import { Screen } from '../../components/Screen';
+import { SkillPackPicker } from '../../components/SkillPackPicker';
 import { useHitList } from '../../lib/store';
 import { spacing } from '../../lib/theme';
 import type { Skill } from '../../lib/types';
@@ -28,10 +29,14 @@ export default function HitListScreen() {
     addQuickNote,
     addStandaloneHit,
     error,
+    finishSkillPackOnboarding,
     hits,
+    importPacks,
     loading,
     partners,
     reload,
+    skillPackImports,
+    skillPackOnboardingCompleted,
     skills,
     toggleActive,
   } = useHitList();
@@ -56,6 +61,38 @@ export default function HitListScreen() {
           />
           {error ? <Button label="Retry" onPress={reload} variant="secondary" /> : null}
         </View>
+      </Screen>
+    );
+  }
+
+  if (skills.length === 0 && !skillPackOnboardingCompleted) {
+    return (
+      <Screen
+        title="Skill Packs"
+        titleIcon="inventory"
+        subtitle="Choose curated skills to add now. Active skills appear on your Hit List; Arsenal skills are saved for later."
+        toastMessage={toastMessage}
+      >
+        <SkillPackPicker
+          importedPackSlugs={skillPackImports.map((item) => item.packSlug)}
+          showSkip
+          onImport={async (selections) => {
+            try {
+              await importPacks(selections);
+              showToast('Skill pack added');
+            } catch {
+              showToast('Could not add skill pack');
+            }
+          }}
+          onSkip={async () => {
+            try {
+              await finishSkillPackOnboarding();
+              showToast('Starting empty');
+            } catch {
+              showToast('Could not save preference');
+            }
+          }}
+        />
       </Screen>
     );
   }

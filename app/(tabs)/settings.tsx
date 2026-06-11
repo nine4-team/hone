@@ -52,6 +52,13 @@ export default function SettingsScreen() {
           </View>
         </View>
         <ListRow
+          chevron
+          href="/skill-packs"
+          icon="inventory"
+          meta="Add curated skills to your Hit List or Arsenal"
+          title="Skill Packs"
+        />
+        <ListRow
           icon="logout"
           onPress={async () => {
             try {
