@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Media, TrainingLogType } from '../../lib/types';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
@@ -39,10 +39,15 @@ export default function SkillDetailScreen() {
     trainingLogs,
     removeMedia,
     reload,
+    updateSkillDetails,
     updateMedia,
     updateNote,
   } = useHitList();
   const skill = skills.find((item) => item.id === id);
+  const [description, setDescription] = useState('');
+  const [hitCondition, setHitCondition] = useState('');
+  const [editingSkillDetails, setEditingSkillDetails] = useState(false);
+  const [savingSkillDetails, setSavingSkillDetails] = useState(false);
   const [noteBody, setNoteBody] = useState('');
   const [notesOpen, setNotesOpen] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
@@ -61,6 +66,12 @@ export default function SkillDetailScreen() {
   const scrollRef = useRef<ScrollView | null>(null);
   const trainingLogsY = useRef(0);
   const { toastMessage, showToast } = useToast();
+
+  useEffect(() => {
+    setDescription(skill?.description ?? '');
+    setHitCondition(skill?.hitCondition ?? '');
+    setEditingSkillDetails(false);
+  }, [skill?.description, skill?.hitCondition, skill?.id]);
 
   const skillNotes = notes
     .filter((note) => note.skillId === id)
@@ -281,6 +292,122 @@ export default function SkillDetailScreen() {
               )}
             </View>
           ) : null}
+        </Card>
+      </View>
+
+      <View style={styles.section}>
+        <Card style={styles.aboutCard}>
+          <View style={styles.aboutHeader}>
+            <View style={styles.sectionTitleRow}>
+              <MaterialIcons name="notes" size={19} color={colors.sage} />
+              <Text style={[styles.sectionTitle, { color: colors.ink }]}>About</Text>
+            </View>
+            <IconButton
+              accessibilityLabel={editingSkillDetails ? 'Cancel editing skill details' : 'Edit skill details'}
+              onPress={() => {
+                if (editingSkillDetails) {
+                  setDescription(skill.description ?? '');
+                  setHitCondition(skill.hitCondition ?? '');
+                }
+                setEditingSkillDetails((current) => !current);
+              }}
+            >
+              <MaterialIcons
+                name={editingSkillDetails ? 'close' : 'edit'}
+                size={18}
+                color={editingSkillDetails ? colors.muted : colors.sage}
+              />
+            </IconButton>
+          </View>
+
+          {editingSkillDetails ? (
+            <View style={styles.aboutContent}>
+              <View style={styles.aboutField}>
+                <Text style={[styles.aboutLabel, { color: colors.ink }]}>Description</Text>
+                <TextInput
+                  multiline
+                  onChangeText={setDescription}
+                  placeholder="What are you trying to get better at?"
+                  placeholderTextColor={colors.quiet}
+                  style={[styles.skillDetailInput, { borderColor: colors.line, color: colors.ink }]}
+                  value={description}
+                />
+              </View>
+
+              <View style={styles.aboutField}>
+                <Text style={[styles.aboutLabel, { color: colors.ink }]}>Hit Condition</Text>
+                <Text style={[styles.aboutHelp, { color: colors.muted }]}>What counts as a hit?</Text>
+                <TextInput
+                  multiline
+                  onChangeText={setHitCondition}
+                  placeholder="I establish the position or finish the move against live resistance."
+                  placeholderTextColor={colors.quiet}
+                  style={[styles.skillDetailInput, { borderColor: colors.line, color: colors.ink }]}
+                  value={hitCondition}
+                />
+              </View>
+
+              <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    setDescription(skill.description ?? '');
+                    setHitCondition(skill.hitCondition ?? '');
+                    setEditingSkillDetails(false);
+                  }}
+                  style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
+                >
+                  <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={savingSkillDetails}
+                  onPress={async () => {
+                    if (savingSkillDetails) return;
+                    setSavingSkillDetails(true);
+                    try {
+                      await updateSkillDetails({
+                        description,
+                        hitCondition,
+                        id: skill.id,
+                      });
+                      setEditingSkillDetails(false);
+                    } catch {
+                      showToast('Could not save skill details');
+                    } finally {
+                      setSavingSkillDetails(false);
+                    }
+                  }}
+                  style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
+                >
+                  <Text style={[styles.composerSave, { color: colors.sage }]}>
+                    {savingSkillDetails ? 'Saving...' : 'Save'}
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.aboutContent}>
+              {skill.description ? (
+                <View style={styles.aboutField}>
+                  <Text style={[styles.aboutLabel, { color: colors.ink }]}>Description</Text>
+                  <Text style={[styles.aboutBody, { color: colors.ink }]}>{skill.description}</Text>
+                </View>
+              ) : null}
+              {skill.hitCondition ? (
+                <View style={styles.aboutField}>
+                  <Text style={[styles.aboutLabel, { color: colors.ink }]}>Hit Condition</Text>
+                  <Text style={[styles.aboutHelp, { color: colors.muted }]}>What counts as a hit?</Text>
+                  <Text style={[styles.aboutBody, { color: colors.ink }]}>{skill.hitCondition}</Text>
+                </View>
+              ) : null}
+              {!skill.description && !skill.hitCondition ? (
+                <Text style={[styles.emptyTrainingStats, { color: colors.muted }]}>
+                  Add a description and define what counts as a hit.
+                </Text>
+              ) : null}
+            </View>
+          )}
         </Card>
       </View>
 
@@ -948,6 +1075,34 @@ function CollapsibleSectionHeader({
 }
 
 const styles = StyleSheet.create({
+  aboutBody: {
+    ...textStyles.detailRecordBody,
+  },
+  aboutCard: {
+    gap: spacing.sm,
+    paddingTop: spacing.sm,
+  },
+  aboutContent: {
+    gap: spacing.md,
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  aboutField: {
+    gap: spacing.xs,
+  },
+  aboutHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    minHeight: 32,
+    paddingHorizontal: spacing.md,
+  },
+  aboutHelp: {
+    ...textStyles.formHelp,
+  },
+  aboutLabel: {
+    ...textStyles.formLabel,
+  },
   cardBody: {
     ...textStyles.detailRecordBody,
     marginTop: 6,
@@ -1219,6 +1374,15 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.lg,
+  },
+  skillDetailInput: {
+    ...textStyles.formInput,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    minHeight: 84,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    textAlignVertical: 'top',
   },
   secondaryStats: {
     borderTopWidth: StyleSheet.hairlineWidth,

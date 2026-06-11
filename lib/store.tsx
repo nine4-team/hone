@@ -15,6 +15,7 @@ import {
   saveMedia,
   saveNote,
   savePartner,
+  saveSkillDetails,
   saveTrainingLog,
   setSkillActive,
   type HitListData,
@@ -36,6 +37,7 @@ import type {
   UpdateMediaInput,
   UpdateNoteInput,
   UpdatePartnerInput,
+  UpdateSkillDetailsInput,
   UpdateTrainingLogInput,
 } from './types';
 
@@ -47,6 +49,7 @@ type HitListState = HitListData & {
   addSkillWithMedia: (input: NewSkillWithMediaInput) => Promise<Skill>;
   toggleActive: (skillId: string) => Promise<void>;
   updateStage: (skillId: string, stage: SkillStage) => Promise<void>;
+  updateSkillDetails: (input: UpdateSkillDetailsInput) => Promise<void>;
   addQuickNote: (skillId: string, body: string) => Promise<void>;
   updateNote: (input: UpdateNoteInput) => Promise<void>;
   updatePartner: (input: UpdatePartnerInput) => Promise<void>;
@@ -137,6 +140,9 @@ export function HitListProvider({ children }: PropsWithChildren) {
       },
       async updateStage() {
         await Promise.resolve();
+      },
+      async updateSkillDetails(input) {
+        await runAndReload(() => saveSkillDetails(input));
       },
       async addQuickNote(skillId, body) {
         await runAndReload(() => createQuickNote(skillId, body));

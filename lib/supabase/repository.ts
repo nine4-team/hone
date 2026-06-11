@@ -17,6 +17,7 @@ import type {
   UpdateMediaInput,
   UpdateNoteInput,
   UpdatePartnerInput,
+  UpdateSkillDetailsInput,
   UpdateTrainingLogInput,
 } from '../types';
 import { supabase } from './client';
@@ -24,6 +25,8 @@ import { supabase } from './client';
 type SkillRow = {
   id: string;
   name: string;
+  description: string | null;
+  hit_condition: string | null;
   active: boolean;
   current_focus: string | null;
   last_touched_at: string;
@@ -377,6 +380,8 @@ export async function createSkill(input: NewSkillInput) {
     .from('skills')
     .insert({
       active: input.active,
+      description: input.description?.trim() || undefined,
+      hit_condition: input.hitCondition?.trim() || undefined,
       name: input.name.trim(),
     })
     .select()
@@ -403,6 +408,19 @@ export async function setSkillActive(skillId: string, active: boolean) {
       .from('skills')
       .update({ active, last_touched_at: now })
       .eq('id', skillId),
+  );
+}
+
+export async function saveSkillDetails(input: UpdateSkillDetailsInput) {
+  await mutate(
+    supabase
+      .from('skills')
+      .update({
+        description: input.description?.trim() || null,
+        hit_condition: input.hitCondition?.trim() || null,
+        last_touched_at: new Date().toISOString(),
+      })
+      .eq('id', input.id),
   );
 }
 
@@ -636,6 +654,8 @@ function mapSkill(row: SkillRow): Skill {
   return {
     active: row.active,
     createdAt: row.created_at,
+    description: row.description ?? undefined,
+    hitCondition: row.hit_condition ?? undefined,
     id: row.id,
     lastTouchedAt: row.last_touched_at,
     name: row.name,

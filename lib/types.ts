@@ -5,6 +5,8 @@ export type TrainingLogType = 'study' | 'dialogue_drilling' | 'constraint_game' 
 export type Skill = {
   id: string;
   name: string;
+  description?: string;
+  hitCondition?: string;
   stage: SkillStage;
   active: boolean;
   lastTouchedAt: string;
@@ -70,6 +72,8 @@ export type Media = {
 
 export type NewSkillInput = {
   name: string;
+  description?: string;
+  hitCondition?: string;
   stage: SkillStage;
   active: boolean;
 };
@@ -120,4 +124,10 @@ export type UpdateNoteInput = {
 export type UpdatePartnerInput = {
   id: string;
   name: string;
+};
+
+export type UpdateSkillDetailsInput = {
+  id: string;
+  description?: string;
+  hitCondition?: string;
 };

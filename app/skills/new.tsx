@@ -13,6 +13,8 @@ export default function NewSkillScreen() {
   const router = useRouter();
   const { addSkill } = useHitList();
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [hitCondition, setHitCondition] = useState('');
   const [active, setActive] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -25,6 +27,25 @@ export default function NewSkillScreen() {
           onChangeText={setName}
           placeholder="K guard entry"
           value={name}
+        />
+
+        <FormLabel>Description</FormLabel>
+        <FormInput
+          multiline
+          onChangeText={setDescription}
+          placeholder="What are you trying to get better at?"
+          style={styles.textArea}
+          value={description}
+        />
+
+        <FormLabel>Hit Condition</FormLabel>
+        <FormHelp>What counts as a hit?</FormHelp>
+        <FormInput
+          multiline
+          onChangeText={setHitCondition}
+          placeholder="I establish the position or finish the move against live resistance."
+          style={styles.textArea}
+          value={hitCondition}
         />
 
         <Card style={styles.switchRow}>
@@ -41,7 +62,7 @@ export default function NewSkillScreen() {
             if (!name.trim() || saving) return;
             setSaving(true);
             try {
-              const skill = await addSkill({ name, stage: 'saved', active });
+              const skill = await addSkill({ active, description, hitCondition, name, stage: 'saved' });
               router.replace(`/skills/${skill.id}`);
             } finally {
               setSaving(false);
@@ -59,5 +80,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: spacing.lg,
+  },
+  textArea: {
+    minHeight: 84,
+    textAlignVertical: 'top',
   },
 });

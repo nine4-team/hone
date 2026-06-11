@@ -19,6 +19,8 @@ create table public.skills (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
   name text not null,
+  description text,
+  hit_condition text,
   active boolean not null default true,
   current_focus text,
   last_touched_at timestamptz not null default now(),
