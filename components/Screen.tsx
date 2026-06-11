@@ -32,6 +32,7 @@ type ScreenProps = PropsWithChildren<{
   scroll?: boolean;
   toastMessage?: string | null;
   onBack?: () => void;
+  titleNumberOfLines?: number;
 }>;
 
 export function Screen({
@@ -48,12 +49,19 @@ export function Screen({
   stickyHeader,
   toastMessage,
   titleIcon,
+  titleNumberOfLines = 1,
 }: ScreenProps) {
   const colors = useTheme();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg }]}>
-      <View style={[styles.header, { backgroundColor: colors.bg, borderBottomColor: colors.line }]}>
+      <View
+        style={[
+          styles.header,
+          titleNumberOfLines > 1 && styles.headerMultilineTitle,
+          { backgroundColor: colors.bg, borderBottomColor: colors.line },
+        ]}
+      >
         <View style={styles.headerSide}>
           {onBack ? (
             <Pressable
@@ -75,6 +83,7 @@ export function Screen({
                 label={title}
                 body={subtitle}
                 labelStyle={[styles.headerTitle, { color: colors.ink }]}
+                numberOfLines={titleNumberOfLines}
               />
             </View>
             {status ? <View style={styles.statusLine}>{status}</View> : null}
@@ -135,6 +144,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     minHeight: 58,
     paddingHorizontal: spacing.lg,
+  },
+  headerMultilineTitle: {
+    minHeight: 74,
   },
   headerSide: {
     justifyContent: 'center',

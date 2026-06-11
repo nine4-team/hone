@@ -3,7 +3,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { Media, TrainingLogType } from '../../lib/types';
-import { ActivationSwitch } from '../../components/ActivationSwitch';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
 import { Button } from '../../components/Button';
 import { EmptyState } from '../../components/EmptyState';
@@ -37,7 +36,6 @@ export default function SkillDetailScreen() {
     notes,
     partners,
     skills,
-    toggleActive,
     trainingLogs,
     removeMedia,
     reload,
@@ -151,27 +149,9 @@ export default function SkillDetailScreen() {
   return (
     <Screen
       title={skill.name}
-      status={
-        <Text style={[styles.headerLifetimeHits, { color: colors.sage }]}>
-          <Text style={styles.headerLifetimeHitCount}>{totalHits}</Text>
-          {` Lifetime ${totalHits === 1 ? 'Hit' : 'Hits'}`}
-        </Text>
-      }
+      titleNumberOfLines={2}
       scrollRef={scrollRef}
       onBack={router.back}
-      action={
-        <ActivationSwitch
-          value={skill.active}
-          onValueChange={async (nextActive) => {
-            try {
-              await toggleActive(skill.id);
-              showToast(nextActive ? 'Skill activated' : 'Skill deactivated');
-            } catch {
-              showToast('Could not update skill');
-            }
-          }}
-        />
-      }
       toastMessage={toastMessage}
       bottomOverlay={
         <>
@@ -258,8 +238,14 @@ export default function SkillDetailScreen() {
               progress={levelProgress.progressToNextLevel}
               value={`${levelProgress.hitsIntoLevel}/${HITS_PER_LEVEL}`}
             />
-          </View>
+            <ProgressBarStat
+              colors={colors}
+              label="lifetime hits"
+              progress={totalHits / 100}
+              value={`${totalHits}/100`}
+            />
 
+          </View>
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: statsOpen }}
@@ -748,7 +734,7 @@ function ProgressBarStat({
   progress: number;
   value: string;
 }) {
-  const percent = Math.round(progress * 100);
+  const percent = Math.round(Math.max(0, Math.min(progress, 1)) * 100);
 
   return (
     <View style={styles.progressBarStat}>
@@ -1207,14 +1193,6 @@ const styles = StyleSheet.create({
   },
   stateStack: {
     gap: spacing.md,
-  },
-  headerLifetimeHits: {
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-  },
-  headerLifetimeHitCount: {
-    fontWeight: '800',
   },
   statsToggle: {
     alignItems: 'center',

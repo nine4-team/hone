@@ -7,12 +7,13 @@ type InfoLabelProps = {
   infoSize?: number;
   label: string;
   labelStyle: StyleProp<TextStyle>;
+  numberOfLines?: number;
 };
 
-export function InfoLabel({ body, infoSize = 18, label, labelStyle }: InfoLabelProps) {
+export function InfoLabel({ body, infoSize = 18, label, labelStyle, numberOfLines = 1 }: InfoLabelProps) {
   return (
     <View style={styles.row}>
-      <Text style={labelStyle} numberOfLines={1}>
+      <Text style={[styles.label, labelStyle]} numberOfLines={numberOfLines}>
         {label}
       </Text>
       {body ? <InfoTooltip title={label} body={body} size={infoSize} /> : null}
@@ -27,5 +28,8 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     justifyContent: 'center',
     maxWidth: '100%',
+  },
+  label: {
+    flexShrink: 1,
   },
 });
