@@ -129,7 +129,7 @@ export function ActiveSkillTile({
           </View>
         </View>
 
-        <Text style={[styles.name, { color: colors.ink }]} numberOfLines={1}>
+        <Text style={[styles.name, { color: colors.ink }]} numberOfLines={2}>
           {skill.name.toUpperCase()}
         </Text>
         <View style={styles.metaStack}>
@@ -245,6 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     lineHeight: 17,
+    minHeight: 34,
     textAlign: 'center',
   },
   pressed: {

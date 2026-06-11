@@ -52,6 +52,7 @@ export default function SkillDetailScreen() {
   const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
   const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
+  const [expandedMediaNotes, setExpandedMediaNotes] = useState<Record<string, boolean>>({});
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaNotes, setMediaNotes] = useState('');
   const [quickAddMode, setQuickAddMode] = useState<QuickAddMode | null>(null);
@@ -244,8 +245,8 @@ export default function SkillDetailScreen() {
               progress={totalHits / 100}
               value={`${totalHits}/100`}
             />
-
           </View>
+
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: statsOpen }}
@@ -428,36 +429,39 @@ export default function SkillDetailScreen() {
             {skillMedia.length === 0 ? (
               <EmptyState title="No media yet" />
             ) : (
-              skillMedia.filter((item) => item.id !== editingMediaId).map((item) => (
-                <Card key={item.id} style={styles.mediaCard}>
-                  <Pressable
-                    accessibilityRole="link"
-                    accessibilityLabel={`Open ${getMediaLinkLabel(item)}`}
-                    onPress={() => openMediaUrl(item.url)}
-                    style={({ pressed }) => [styles.mediaLinkArea, pressed && styles.pressed]}
-                  >
-                    <MediaThumbnail
-                      colors={colors}
-                      thumbnailUrl={item.thumbnailUrl}
-                      url={item.url}
-                      type={item.type}
-                    />
-                  </Pressable>
-                  <View style={styles.mediaContent}>
-                    <View style={styles.mediaHeader}>
+              skillMedia.filter((item) => item.id !== editingMediaId).map((item) => {
+                const canExpandNote = shouldOfferMediaNoteExpansion(item.notes);
+                return (
+                  <Card key={item.id} style={styles.mediaCard}>
+                    <View style={styles.mediaTopRow}>
                       <Pressable
                         accessibilityRole="link"
                         accessibilityLabel={`Open ${getMediaLinkLabel(item)}`}
                         onPress={() => openMediaUrl(item.url)}
-                        style={({ pressed }) => [styles.mediaTitleBlock, pressed && styles.pressed]}
+                        style={({ pressed }) => [styles.mediaLinkArea, pressed && styles.pressed]}
                       >
-                        <Text style={[styles.cardTitle, { color: colors.ink }]} numberOfLines={2}>
-                          {getMediaPrimaryText(item)}
-                        </Text>
-                        <Text style={[styles.cardMeta, { color: colors.quiet }]} numberOfLines={1}>
-                          {getMediaSourceLabel(item.url)}
-                        </Text>
+                        <MediaThumbnail
+                          colors={colors}
+                          thumbnailUrl={item.thumbnailUrl}
+                          url={item.url}
+                          type={item.type}
+                        />
                       </Pressable>
+                      <View style={styles.mediaContent}>
+                        <Pressable
+                          accessibilityRole="link"
+                          accessibilityLabel={`Open ${getMediaLinkLabel(item)}`}
+                          onPress={() => openMediaUrl(item.url)}
+                          style={({ pressed }) => [styles.mediaTitleBlock, pressed && styles.pressed]}
+                        >
+                          <Text style={[styles.cardTitle, { color: colors.ink }]} numberOfLines={2}>
+                            {getMediaPrimaryText(item)}
+                          </Text>
+                          <Text style={[styles.cardMeta, { color: colors.quiet }]} numberOfLines={1}>
+                            {getMediaSourceLabel(item.url)}
+                          </Text>
+                        </Pressable>
+                      </View>
                       <View style={styles.mediaActions}>
                         <IconButton
                           accessibilityLabel="Edit media"
@@ -486,13 +490,42 @@ export default function SkillDetailScreen() {
                       </View>
                     </View>
                     {item.notes ? (
-                      <Text style={[styles.cardBody, { color: colors.ink }]} numberOfLines={2}>
-                        {item.notes}
-                      </Text>
+                      <View style={[styles.mediaNotesBlock, { borderTopColor: colors.line }]}>
+                        {expandedMediaNotes[item.id] || !canExpandNote ? (
+                          <View style={styles.mediaNoteParagraphs}>
+                            {getMediaNoteParagraphs(item.notes).map((paragraph, index) => (
+                              <Text key={`${item.id}-note-${index}`} style={[styles.cardBody, { color: colors.ink }]}>
+                                {paragraph}
+                              </Text>
+                            ))}
+                          </View>
+                        ) : (
+                          <Text style={[styles.cardBody, { color: colors.ink }]} numberOfLines={3}>
+                            {item.notes}
+                          </Text>
+                        )}
+                        {canExpandNote ? (
+                          <Pressable
+                            accessibilityRole="button"
+                            accessibilityLabel={`${expandedMediaNotes[item.id] ? 'Collapse' : 'Expand'} media note`}
+                            onPress={() =>
+                              setExpandedMediaNotes((current) => ({
+                                ...current,
+                                [item.id]: !current[item.id],
+                              }))
+                            }
+                            style={({ pressed }) => [styles.mediaNoteToggle, pressed && styles.pressed]}
+                          >
+                            <Text style={[styles.mediaNoteToggleText, { color: colors.sage }]}>
+                              {expandedMediaNotes[item.id] ? 'Show less' : 'Show more'}
+                            </Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
                     ) : null}
-                  </View>
-                </Card>
-              ))
+                  </Card>
+                );
+              })
             )}
           </View>
         ) : null}
@@ -836,6 +869,18 @@ function getMediaSourceLabel(url: string) {
   }
 }
 
+function shouldOfferMediaNoteExpansion(notes?: string) {
+  if (!notes) return false;
+  return notes.includes('\n') || notes.length > 120;
+}
+
+function getMediaNoteParagraphs(notes: string) {
+  return notes
+    .split('\n')
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}
+
 function getYoutubeVideoId(url: string) {
   try {
     const parsed = new URL(url);
@@ -1017,7 +1062,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   mediaCard: {
-    flexDirection: 'row',
     gap: spacing.md,
     padding: spacing.sm,
   },
@@ -1029,7 +1073,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 0,
   },
-  mediaHeader: {
+  mediaTopRow: {
     alignItems: 'flex-start',
     flexDirection: 'row',
     gap: spacing.sm,
@@ -1048,6 +1092,22 @@ const styles = StyleSheet.create({
   },
   mediaLinkArea: {
     alignSelf: 'flex-start',
+  },
+  mediaNotesBlock: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: spacing.xs,
+    paddingTop: spacing.sm,
+  },
+  mediaNoteParagraphs: {
+    gap: spacing.sm,
+  },
+  mediaNoteToggle: {
+    alignSelf: 'flex-start',
+    minHeight: 24,
+    justifyContent: 'center',
+  },
+  mediaNoteToggleText: {
+    ...textStyles.buttonLabelCompact,
   },
   mediaPlayBadge: {
     alignItems: 'center',
