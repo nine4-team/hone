@@ -294,18 +294,18 @@ export const skillPacks: SkillPack[] = [
     skills: [sideControlEscape, mountEscape, backEscape],
   },
   {
-    slug: 'scrambler',
-    title: 'Scrambler',
-    description: 'Turtle and back-exposure reversals for turning defensive scrambles into top position.',
-    level: 'Intermediate',
-    skills: [turtleReversal],
-  },
-  {
     slug: 'back-attack-basics',
     title: 'Back Attack Basics',
     description: 'Snapdowns, go-behinds, turtle-top back takes, and rear naked strangle mechanics for building a basic back-attack pathway.',
     level: 'Beginner',
     skills: [snapdown, goBehind, backTakeFromTurtleTop, rearNakedStrangle],
+  },
+  {
+    slug: 'scrambler',
+    title: 'Scrambler',
+    description: 'Turtle and back-exposure reversals for turning defensive scrambles into top position.',
+    level: 'Intermediate',
+    skills: [turtleReversal],
   },
 ];
 
