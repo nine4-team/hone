@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
@@ -6,10 +6,11 @@ type ButtonProps = {
   label: string;
   onPress: () => void;
   size?: 'default' | 'compact';
+  style?: StyleProp<ViewStyle>;
   variant?: 'primary' | 'secondary' | 'ghost';
 };
 
-export function Button({ label, onPress, size = 'default', variant = 'primary' }: ButtonProps) {
+export function Button({ label, onPress, size = 'default', style, variant = 'primary' }: ButtonProps) {
   const colors = useTheme();
 
   return (
@@ -27,6 +28,7 @@ export function Button({ label, onPress, size = 'default', variant = 'primary' }
         },
         variant === 'ghost' && styles.ghost,
         pressed && styles.pressed,
+        style,
       ]}
     >
       <Text style={[

@@ -12,7 +12,8 @@ test('starter pack video notes live on media, not standalone skill notes', () =>
       );
 
       for (const media of skill.media) {
-        assert.match(media.notes, /^Video notes: .+/);
+        assert.match(media.notes, /^Context: .+/);
+        assert.doesNotMatch(media.notes, /^Video notes: .+/);
       }
     }
   }

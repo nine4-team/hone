@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
   },
   staticContent: {
     flex: 1,
+    paddingBottom: 72,
   },
   header: {
     alignItems: 'center',

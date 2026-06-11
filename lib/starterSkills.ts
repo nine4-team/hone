@@ -1,4 +1,4 @@
-export const SKILL_PACK_VERSION = 2;
+export const SKILL_PACK_VERSION = 3;
 
 export type SkillPackImportMode = 'active' | 'arsenal';
 
@@ -23,7 +23,7 @@ export type SkillPack = {
 };
 
 function videoNote(title: string, lines: string[]) {
-  return [`Video notes: ${title}`, '', ...lines].join('\n');
+  return lines.join('\n');
 }
 
 const sideControlVideoNote = videoNote('3 MUST-KNOW Side Control Escapes (Lachlan Giles)', [
@@ -36,7 +36,7 @@ const sideControlVideoNote = videoNote('3 MUST-KNOW Side Control Escapes (Lachla
 ]);
 
 const mountVideoNote = videoNote('How I Escape EVERYONES Mount', [
-  'Context: this video is a sequence, not a single move. It is organized around the order of operations: win inside position, displace their base, then kip only after the mount is already unstable.',
+  'Context: this video teaches a kipping mount escape sequence. The main point is that the kip only works after you win inside position and displace their base.',
   '- Run the escape in order: inside position first, base displacement second, kip last.',
   '- Inside position has three parts: inside elbows, inside feet or knees, and inside forehead.',
   '- Control the hips with hands or frames, move your forehead inside, separate their feet, and avoid reaching your arms out where they can isolate you.',
@@ -97,6 +97,50 @@ const rauBackEscapesVideoNote = videoNote('3 back escapes I tested over years of
   '- If you reach turtle with no hooks, roll over the same-side shoulder while overwrapping the leg and keeping knees to chest, then monitor the hook and come on top or recover guard.',
   '- Against the back-triangle entry, slide down, get your shoulder below the knee, keep weight on the locking leg, turn thumb down/elbow up, and swim through to escape.',
   '- The shared theme is hip/shoulder misalignment plus hook denial, not forcing a single reversal from every back-exposure position.',
+]);
+
+const snapdownVideoNote = videoNote('Snap down for BJJ (Lachlan Giles)', [
+  'Context: Lachlan teaches the snapdown as a way to break posture and create go-behind/back-attack opportunities, especially by forcing posture instead of just yanking on the head.',
+  '- Start from head/shoulder contact and use hand fighting, head position, and leg threat reactions to make the opponent bring their posture forward.',
+  '- Useful snapdown grips include one hand behind the head and the other on the shoulder/triceps area, but inside hand position matters so they cannot hang off your head or shoulders.',
+  '- Do not go straight to the snap every time. Push, threaten the legs, or make them push back so the snap has a reaction to work with.',
+  '- The movement comes heavily from the legs: step/retract the lead leg and drop weight so the hands guide the head rather than doing all the work.',
+  '- After the snap, keep a chin strap, put your shoulder in front of their shoulder, shake them down if needed, block the near arm, step the knee outside, and spin to a seatbelt/back position.',
+]);
+
+const goBehindVideoNote = videoNote('#1 Takedown In Wrestling With David Taylor', [
+  'Context: David Taylor presents the go-behind as the highest-percentage wrestling score from front headlock/front head trap situations.',
+  '- Treat front headlock as a scoring position, not a stalemate.',
+  '- First priority: put their head to their hand to create the angle.',
+  '- Second priority: block or drag the arm so they cannot square back up while you circle.',
+  '- Keep your chest high on their back; if your chest comes off, they can circle and force a neutral/no-score position.',
+  '- Be decisive about which side you go behind on, then circle to the corner, finish to the hip, and keep moving through the score.',
+]);
+
+const turtleTopBackTakeVideoNote = videoNote('The best way to take the back from turtle #bjj #jiujitsu', [
+  'Context: this short teaches the two-on-one leg method for taking the back from top turtle.',
+  '- Drive in and secure a two-on-one grip on the leg.',
+  '- Push their knee down to the mat so it becomes easy to insert the first hook.',
+  '- If they put the shoulder to the ground and their hips leave the space between your knees, accelerate with your knee so you roll through.',
+  '- Treat this as a simple recurring sequence to drill: two-on-one leg control, knee down, first hook, roll-through follow if their shoulder drops.',
+]);
+
+const straightjacketStrangleVideoNote = videoNote('Back Attack Secrets with Gordon Ryan', [
+  'Context: Gordon shows a straightjacket-style hand-trapping path from back control, especially from the underhook side where hand trapping is easier but feeding the strangle is harder.',
+  '- On the underhook side, go ear-to-ear to close the space their head and shoulders would escape into.',
+  '- Strip the primary defensive hand, then switch to cross-wrist control when the secondary hand comes up to pull your choking hand down.',
+  '- Split the hands and glue them to the opponent\'s torso so the one-on-one grips are reinforced by their body instead of floating in space.',
+  '- Use the leg to trap the wrist, cross the ankles, then return to one-on-one control to create a one-attacking-hand-versus-zero-defensive-hands scenario.',
+  '- To feed the strangle from the underhook side, do not pull your elbow backward and lose ear-to-ear control. Bring your shoulder line toward your elbow, then use gravity to feed the hand behind the head.',
+]);
+
+const rearNakedStrangleFinishVideoNote = videoNote('The One Submission Every Grappler Must Know - Gordon Ryan', [
+  'Context: Gordon focuses on finishing mechanics for the rear naked strangle once the choking hand is already in position.',
+  '- The main problem is not just squeezing harder; poor hand setting can make you burn out with a locked-looking strangle.',
+  '- Concave the shoulders and hollow the body to create space for the support arm to shoot through.',
+  '- Get the back of the support hand to the partner\'s head and connect fingertips to bicep before finishing.',
+  '- Before squeezing, bring both elbows together to strengthen the fingertip-to-bicep connection.',
+  '- The goal is a stable figure-four connection that holds even when the opponent pushes the elbow or starts common escape reactions.',
 ]);
 
 const sideControlEscape: SkillPackSkill = {
@@ -179,6 +223,68 @@ const turtleReversal: SkillPackSkill = {
   ],
 };
 
+const snapdown: SkillPackSkill = {
+  key: 'snapdown',
+  name: 'Snapdown',
+  notes: [],
+  media: [
+    {
+      url: 'https://www.youtube.com/watch?v=BjvWqnaC5AI',
+      title: 'Snap down for BJJ (Lachlan Giles)',
+      thumbnailUrl: 'https://i.ytimg.com/vi/BjvWqnaC5AI/maxresdefault.jpg',
+      notes: snapdownVideoNote,
+    },
+  ],
+};
+
+const goBehind: SkillPackSkill = {
+  key: 'go-behind',
+  name: 'Go-behind',
+  notes: [],
+  media: [
+    {
+      url: 'https://www.youtube.com/watch?v=Jnpz53nt4Ec',
+      title: '#1 Takedown In Wrestling With David Taylor',
+      thumbnailUrl: 'https://i.ytimg.com/vi/Jnpz53nt4Ec/maxresdefault.jpg',
+      notes: goBehindVideoNote,
+    },
+  ],
+};
+
+const backTakeFromTurtleTop: SkillPackSkill = {
+  key: 'back-take-from-turtle-top',
+  name: 'Back Take from Turtle Top',
+  notes: [],
+  media: [
+    {
+      url: 'https://www.youtube.com/shorts/XxxgO5o7KU4',
+      title: 'The best way to take the back from turtle #bjj #jiujitsu',
+      thumbnailUrl: 'https://i.ytimg.com/vi/XxxgO5o7KU4/maxresdefault.jpg',
+      notes: turtleTopBackTakeVideoNote,
+    },
+  ],
+};
+
+const rearNakedStrangle: SkillPackSkill = {
+  key: 'rear-naked-strangle',
+  name: 'Rear Naked Strangle',
+  notes: [],
+  media: [
+    {
+      url: 'https://www.youtube.com/watch?v=zcJe8NnWtfk',
+      title: 'Back Attack Secrets with Gordon Ryan',
+      thumbnailUrl: 'https://i.ytimg.com/vi/zcJe8NnWtfk/maxresdefault.jpg',
+      notes: straightjacketStrangleVideoNote,
+    },
+    {
+      url: 'https://www.youtube.com/watch?v=3HD-82xrBJU',
+      title: 'The One Submission Every Grappler Must Know - Gordon Ryan',
+      thumbnailUrl: 'https://i.ytimg.com/vi/3HD-82xrBJU/maxresdefault.jpg',
+      notes: rearNakedStrangleFinishVideoNote,
+    },
+  ],
+};
+
 export const skillPacks: SkillPack[] = [
   {
     slug: 'escape-basics',
@@ -193,6 +299,13 @@ export const skillPacks: SkillPack[] = [
     description: 'Turtle and back-exposure reversals for turning defensive scrambles into top position.',
     level: 'Intermediate',
     skills: [turtleReversal],
+  },
+  {
+    slug: 'back-attack-basics',
+    title: 'Back Attack Basics',
+    description: 'Snapdowns, go-behinds, turtle-top back takes, and rear naked strangle mechanics for building a basic back-attack pathway.',
+    level: 'Beginner',
+    skills: [snapdown, goBehind, backTakeFromTurtleTop, rearNakedStrangle],
   },
 ];
 

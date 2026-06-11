@@ -72,6 +72,7 @@ export default function HitListScreen() {
         titleIcon="inventory"
         subtitle="Choose curated skills to add now. Active skills appear on your Hit List; Arsenal skills are saved for later."
         toastMessage={toastMessage}
+        scroll={false}
       >
         <SkillPackPicker
           importedPackSlugs={skillPackImports.map((item) => item.packSlug)}

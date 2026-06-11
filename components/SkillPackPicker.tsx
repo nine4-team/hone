@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { skillPacks, type SkillPackImportMode } from '../lib/starterSkills';
 import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
@@ -78,7 +78,11 @@ export function SkillPackPicker({
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.packList}>
+      <ScrollView
+        contentContainerStyle={styles.packList}
+        showsVerticalScrollIndicator={false}
+        style={styles.packScroller}
+      >
         {skillPacks.map((pack) => {
           const isImported = imported.has(pack.slug);
           const selection = selections[pack.slug] ?? { importMode: 'active', selected: false };
@@ -161,14 +165,15 @@ export function SkillPackPicker({
             </Card>
           );
         })}
-      </View>
-      <View style={styles.actions}>
+      </ScrollView>
+      <View style={[styles.actions, { backgroundColor: colors.bg, borderTopColor: colors.line }]}>
         <Button
           label={submitting ? 'Adding Packs...' : `Add ${selectedImports.length} Pack${selectedImports.length === 1 ? '' : 's'}`}
           onPress={submitImport}
+          style={styles.actionButton}
         />
         {showSkip && onSkip ? (
-          <Button label="Start Empty" onPress={skip} variant="secondary" />
+          <Button label="Start Empty" onPress={skip} style={styles.actionButton} variant="secondary" />
         ) : null}
       </View>
     </View>
@@ -213,7 +218,15 @@ function ModeButton({
 
 const styles = StyleSheet.create({
   actions: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
     gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+    paddingTop: spacing.md,
+  },
+  actionButton: {
+    flex: 1,
   },
   cardHeader: {
     alignItems: 'flex-start',
@@ -262,6 +275,11 @@ const styles = StyleSheet.create({
   },
   packList: {
     gap: spacing.md,
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.lg,
+  },
+  packScroller: {
+    flex: 1,
   },
   packMeta: {
     ...textStyles.listRowMeta,
@@ -274,6 +292,7 @@ const styles = StyleSheet.create({
     opacity: 0.72,
   },
   wrap: {
-    gap: spacing.lg,
+    flex: 1,
+    marginHorizontal: -spacing.lg,
   },
 });
