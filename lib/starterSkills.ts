@@ -300,14 +300,16 @@ export const skillPacks: SkillPack[] = [
     level: 'Beginner',
     skills: [snapdown, goBehind, backTakeFromTurtleTop, rearNakedStrangle],
   },
-  {
-    slug: 'scrambler',
-    title: 'Scrambler',
-    description: 'Turtle and back-exposure reversals for turning defensive scrambles into top position.',
-    level: 'Intermediate',
-    skills: [turtleReversal],
-  },
 ];
+
+// Not shown in the app. Add back to skillPacks to re-enable.
+export const scramblerPack: SkillPack = {
+  slug: 'scrambler',
+  title: 'Scrambler',
+  description: 'Turtle and back-exposure reversals for turning defensive scrambles into top position.',
+  level: 'Intermediate',
+  skills: [turtleReversal],
+};
 
 export const starterSkills = skillPacks.flatMap((pack) => pack.skills);
 export const STARTER_SKILL_VERSION = SKILL_PACK_VERSION;
