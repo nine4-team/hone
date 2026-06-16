@@ -24,11 +24,12 @@ Beta readiness is therefore not a ground-up UI build. The remaining work is to m
 4. Share extension validation
 5. Automated safety checks
 6. Functional visual QA
-7. TestFlight and Google Play internal beta
+7. TestFlight and Google Play beta distribution
 
 ## Key Beta Docs
 
 - [Build and Release Plan](./build-and-release-plan.md)
+- [Android Google Play Beta Release Procedure](./android-play-release.md)
 - [Auth and Persistence Plan](./auth-and-persistence-plan.md)
 - [Share Extension Test Plan](./share-extension-test-plan.md)
 - [Functional Visual QA](./functional-visual-qa.md)

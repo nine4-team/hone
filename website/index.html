@@ -62,10 +62,128 @@
       border-radius: 980px;
       text-decoration: none;
       transition: background 0.25s;
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .cta:hover {
       background: var(--gold-dark);
+    }
+
+    .cta.secondary {
+      color: var(--gold);
+      background: transparent;
+      border: 1px solid rgba(152, 126, 85, 0.42);
+    }
+
+    .cta.secondary:hover {
+      color: #ffffff;
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .hero .cta {
+      margin-top: 40px;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .beta-modal[hidden] {
+      display: none;
+    }
+
+    .beta-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .beta-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(25, 25, 25, 0.48);
+      backdrop-filter: blur(6px);
+    }
+
+    .beta-dialog {
+      position: relative;
+      width: min(100%, 420px);
+      padding: 28px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 24px 80px rgba(25, 25, 25, 0.22);
+      text-align: left;
+    }
+
+    .beta-dialog h2 {
+      margin: 0 0 22px;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .beta-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .beta-close:hover {
+      background: var(--cream);
+    }
+
+    .platform-links {
+      display: grid;
+      gap: 12px;
+    }
+
+    .platform-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .platform-link:hover {
+      background: var(--cream);
+      border-color: rgba(152, 126, 85, 0.42);
+    }
+
+    .platform-link strong {
+      display: block;
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    .platform-link::after {
+      content: "→";
+      color: var(--gold);
+      font-size: 22px;
+      line-height: 1;
     }
 
     /* Hero */
@@ -115,10 +233,6 @@
     .hero p b {
       color: var(--gold);
       font-weight: 600;
-    }
-
-    .hero .cta {
-      margin-top: 40px;
     }
 
     /* Argument */
@@ -586,6 +700,10 @@
       color: rgba(255, 255, 255, 0.6);
     }
 
+    .footer a {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
     @media (max-width: 640px) {
       .hero img {
         width: 104px;
@@ -615,6 +733,10 @@
       .price-grid {
         grid-template-columns: 1fr;
       }
+
+      .beta-dialog {
+        padding: 26px 20px 22px;
+      }
     }
   </style>
   <link rel="icon" type="image/png" href="images/hitlist-logo-body.png">
@@ -629,7 +751,7 @@
     <h1>Mat time only gets you so far.</h1>
     <p><b>The rest takes intention.</b> HitList helps you pick a few skills to focus on — your Hit List — and level them
       up faster so you can break through plateaus and elevate your game.</p>
-    <a href="https://testflight.apple.com/join/qBgW2Vtg" class="cta" target="_blank" rel="noopener">Join the Free <b>HitList</b> App Beta</a>
+    <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> App Beta</button>
   </header>
 
   <main class="argument">
@@ -864,15 +986,67 @@
   <section id="start" class="close">
     <h2>Join the Closed Beta</h2>
     <p>Limited to 10 people.</p>
-    <a href="https://testflight.apple.com/join/qBgW2Vtg" class="cta" target="_blank" rel="noopener">Join the Free <b>HitList</b> App Beta</a>
+    <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> App Beta</button>
   </section>
 
   <footer class="footer">
-    <p>© 2026 HitList.</p>
+    <p>© 2026 HitList. <a href="/privacy.html">Privacy</a></p>
   </footer>
+
+  <div class="beta-modal" id="beta-modal" role="dialog" aria-modal="true" aria-labelledby="beta-modal-title" hidden>
+    <div class="beta-backdrop" data-beta-close></div>
+    <div class="beta-dialog">
+      <button class="beta-close" type="button" aria-label="Close beta platform chooser" data-beta-close>&times;</button>
+      <h2 id="beta-modal-title">Join the beta</h2>
+      <div class="platform-links">
+        <a class="platform-link" href="https://testflight.apple.com/join/qBgW2Vtg" target="_blank" rel="noopener">
+          <div>
+            <strong>iPhone</strong>
+          </div>
+        </a>
+        <a class="platform-link" href="/android-beta">
+          <div>
+            <strong>Android</strong>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('beta-modal');
+      const triggers = document.querySelectorAll('.beta-trigger');
+      const closeTargets = document.querySelectorAll('[data-beta-close]');
+      let lastFocus = null;
+
+      function openBetaModal() {
+        lastFocus = document.activeElement;
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        const firstLink = modal.querySelector('.platform-link');
+        if (firstLink) firstLink.focus();
+      }
+
+      function closeBetaModal() {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+        if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+      }
+
+      triggers.forEach(function (trigger) {
+        trigger.addEventListener('click', openBetaModal);
+      });
+
+      closeTargets.forEach(function (target) {
+        target.addEventListener('click', closeBetaModal);
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (modal.hidden || event.key !== 'Escape') return;
+        closeBetaModal();
+      });
+
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       document.querySelectorAll('[data-carousel]').forEach(function (car) {
         const slides = car.querySelectorAll('.phone img');

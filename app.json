@@ -21,7 +21,7 @@
       }
     },
     "android": {
-      "package": "com.benjaminmackenzie.hitlist",
+      "package": "com.nine4.hitlist",
       "adaptiveIcon": {
         "backgroundColor": "#1A1A1A",
         "foregroundImage": "./assets/android-icon-foreground.png",

@@ -51,6 +51,8 @@
     "testflight:distribute:ios": "scripts/distribute-testflight-ios.sh",
     "testflight:public-link:ios": "ruby scripts/testflight-public-link.rb",
     "submit:testflight:ios": "npx eas-cli@latest submit -p ios --profile production --latest --wait",
+    "submit:play:android": "npx eas-cli@latest submit -p android --profile android-beta --latest --wait --non-interactive",
+    "submit:play:android:internal": "npx eas-cli@latest submit -p android --profile android-internal --latest --wait --non-interactive",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test lib/trainingLogEditing.test.ts lib/starterSkills.test.ts",
     "check": "npm run typecheck && npm test"

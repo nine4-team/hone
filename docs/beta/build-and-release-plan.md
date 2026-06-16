@@ -8,14 +8,15 @@ Expo SDK 56 docs should be checked before implementation work that touches Expo/
 
 - Produce reliable iOS and Android builds.
 - Support fast internal smoke builds.
-- Support real beta distribution through TestFlight and Google Play internal testing.
+- Support real beta distribution through TestFlight and Google Play testing.
+- Support website beta signup links for both iOS and Android testers.
 - Make build steps repeatable enough that QA can happen on known build numbers.
 
 ## Current State
 
 - `app.json` defines:
   - iOS bundle identifier: `com.benjaminmackenzie.hitlist`
-  - Android package: `com.benjaminmackenzie.hitlist`
+  - Android package: `com.nine4.hitlist`
   - URL scheme: `hitlist`
   - `expo-sharing` config for both platforms
 - `package.json` includes Expo SDK 56 dependencies.
@@ -38,7 +39,7 @@ EAS internal distribution means Expo creates installable app binaries and provid
 For the real beta:
 
 - iOS should ship through TestFlight.
-- Android should ship through Google Play internal testing.
+- Android should ship through Google Play closed testing for the current beta, using a public Google Group for self-serve tester signup.
 
 ## Build Profiles
 
@@ -102,10 +103,13 @@ Follow the dedicated HitList TestFlight procedure in `docs/beta/testflight-relea
 
 Android:
 
+- Follow the dedicated HitList Android Google Play procedure in `docs/beta/android-play-release.md`.
 - Create or confirm Play Console app record.
 - Build production Android artifact.
-- Upload to internal testing.
-- Add tester group.
+- For the current closed beta, use the self-serve Android signup page:
+  `https://hitlist.nine4.co/android-beta`.
+- Keep `hitlist-android-beta@googlegroups.com` attached to the closed testing track so website users can join without manual email allowlisting.
+- After production access is granted, enable open testing and simplify the website CTA to the public Play opt-in flow.
 - Confirm install/update path.
 
 ## Required Build Checks

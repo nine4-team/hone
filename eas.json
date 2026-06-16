@@ -53,6 +53,20 @@
         "language": "en-US",
         "sku": "hitlist-ios"
       }
+    },
+    "android-beta": {
+      "android": {
+        "serviceAccountKeyPath": "/Users/benjaminmackenzie/.config/hitlist/google-play-service-account.json",
+        "track": "beta",
+        "releaseStatus": "draft"
+      }
+    },
+    "android-internal": {
+      "android": {
+        "serviceAccountKeyPath": "/Users/benjaminmackenzie/.config/hitlist/google-play-service-account.json",
+        "track": "internal",
+        "releaseStatus": "completed"
+      }
     }
   }
 }

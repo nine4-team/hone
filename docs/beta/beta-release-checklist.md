@@ -95,7 +95,8 @@ Use this as the final go/no-go checklist before sending HitList to beta testers.
 
 ## Store Beta
 
-Release procedure: `docs/beta/testflight-release.md`.
+iOS release procedure: `docs/beta/testflight-release.md`.
+Android release procedure: `docs/beta/android-play-release.md`.
 
 - [x] App Store Connect app record exists.
 - [x] TestFlight build uploaded.
@@ -105,10 +106,16 @@ Release procedure: `docs/beta/testflight-release.md`.
   - After Apple finishes processing the uploaded build, attach it to the external group with:
     `npm run testflight:distribute:ios -- <build-number> --groups "External Testing"`
 - [ ] TestFlight public link enabled.
-- [ ] Google Play app record exists.
-- [ ] Google Play internal testing track configured.
-- [ ] Android beta artifact uploaded.
-- [ ] Tester install instructions prepared.
+- [x] Google Play app record exists.
+- [x] Google Play internal testing track configured.
+- [x] Android beta artifact uploaded to internal testing.
+- [x] Google Play closed testing track active.
+- [x] Android self-serve tester group created.
+- [x] Android tester group attached to closed testing.
+- [ ] Android self-serve signup page verified live.
+- [ ] Google Play open testing track configured after production access is granted.
+- [ ] Android open testing link verified after open testing is available.
+- [x] Tester install instructions prepared.
 
 ## Go/No-Go
 

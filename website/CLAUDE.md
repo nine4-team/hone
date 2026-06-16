@@ -3,6 +3,8 @@
 ## Files
 
 - `index.html` — the live landing page. Single file, inline `<style>`, no build step.
+- `android-beta.html` — Android tester self-serve signup flow.
+- `privacy.html` — privacy policy used by Google Play.
 - `images/` — screenshots and logos referenced by the page.
 - `brand/` — logo source (`reticle-logo.svg`). Not used directly by the page.
 
@@ -20,9 +22,9 @@ The Workers custom-domain flow creates the DNS record itself during `wrangler de
 
 ### How to deploy
 
-Workers serves every file in the assets directory, so don't point it at this dir directly (it would publish `CLAUDE.md` and `brand/`). Stage a clean publish dir with just `index.html` + `images/`:
+Workers serves every file in the assets directory, so don't point it at this dir directly (it would publish `CLAUDE.md` and `brand/`). Stage a clean publish dir with just the public HTML files + `images/`:
 
-1. Copy `index.html` and `images/` into a staging dir.
+1. Copy `index.html`, `android-beta.html`, `privacy.html`, and `images/` into a staging dir.
 2. Add a `wrangler.jsonc` in that staging dir:
    ```jsonc
    {
