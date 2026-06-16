@@ -16,7 +16,7 @@
   <meta name="twitter:description"
     content="Improve your jiu-jitsu faster. The first evidence-based training app for grapplers.">
   <meta name="twitter:image" content="images/hitlist-logo.png">
-  <title>HitList — Improve your jiu-jitsu faster</title>
+  <title>HitList — Train like a Pro</title>
   <style>
     * {
       margin: 0;
@@ -235,61 +235,6 @@
       font-weight: 600;
     }
 
-    /* Argument */
-    .argument {
-      max-width: var(--measure);
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    .arg-heading {
-      padding-top: 96px;
-      font-size: clamp(34px, 4.6vw, 52px);
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      line-height: 1.05;
-      color: var(--ink);
-    }
-
-    .arg-lede {
-      margin: 14px 0 72px;
-      font-size: var(--fs-lead);
-      line-height: 1.5;
-      color: var(--body);
-    }
-
-    .beat {
-      padding: 72px 0;
-      border-top: 1px solid #f0ede6;
-    }
-
-    .beat:first-child {
-      border-top: none;
-    }
-
-    .beat h3 {
-      font-size: clamp(26px, 3.4vw, 38px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.12;
-      color: var(--ink);
-      margin-bottom: 22px;
-    }
-
-    .beat p {
-      font-size: var(--fs-body);
-      line-height: 1.62;
-    }
-
-    .beat p+p {
-      margin-top: 18px;
-    }
-
-    .beat b {
-      color: var(--ink);
-      font-weight: 600;
-    }
-
     .hl {
       color: var(--gold);
       font-weight: 600;
@@ -300,47 +245,186 @@
       font-size: 0.9em;
     }
 
-    .beat h3 .op {
-      color: var(--gold);
+    /* Section head — shared by principles + intention */
+    .section-head {
+      margin: 0 auto 64px;
+      text-align: center;
     }
 
-    .beat h3 .num {
-      color: var(--gold);
-      margin-right: 16px;
-      font-variant-numeric: tabular-nums;
+    .section-head h2 {
+      font-size: clamp(34px, 4.6vw, 52px);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      color: var(--ink);
     }
 
-    .methods {
-      list-style: none;
-      margin-top: 30px;
+    .section-sub {
+      max-width: 52ch;
+      margin: 18px auto 0;
+      font-size: var(--fs-lead);
+      line-height: 1.45;
+      color: var(--body);
     }
 
-    .methods li {
-      font-size: var(--fs-body);
-      line-height: 1.5;
-      padding: 18px 0;
-      border-top: 1px solid #f0ede6;
-    }
-
-    .methods li:first-child {
-      border-top: none;
-      padding-top: 0;
-    }
-
-    .methods .name {
+    .section-sub b {
       color: var(--ink);
       font-weight: 600;
     }
 
-    .methods.grouped {
-      border-left: 3px solid var(--gold);
-      padding-left: 24px;
+    /* Numbered-card grid — shared by principles + intention */
+    .card-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 44px;
     }
 
-    .beat p.rolling {
-      margin-top: 26px;
+    .card .c-num {
+      display: block;
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .card p {
       font-size: var(--fs-body);
-      line-height: 1.5;
+      line-height: 1.55;
+      color: var(--body);
+    }
+
+    .card b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .card .op {
+      color: var(--gold);
+    }
+
+    @media (min-width: 760px) {
+      .card-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 56px;
+      }
+    }
+
+    /* Principles — stacked numbered list */
+    .principles {
+      padding: 120px 24px;
+    }
+
+    .principle-list {
+      max-width: var(--measure);
+      margin: 0 auto;
+    }
+
+    .principle-item {
+      padding: 30px 0;
+    }
+
+    .principle-item:first-child {
+      padding-top: 0;
+    }
+
+    .principle-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .principle-item h3 {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .principle-item h3 .num {
+      color: var(--gold);
+      margin-right: 18px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .principle-item h3 .op {
+      color: var(--gold);
+    }
+
+    .principle-item p {
+      font-size: var(--fs-body);
+      line-height: 1.6;
+      color: var(--body);
+    }
+
+    .principle-item b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Intention — dark band, same structure */
+    .intention {
+      background: var(--ink);
+      padding: 120px 24px;
+    }
+
+    .intention .section-head h2 {
+      color: #ffffff;
+    }
+
+    .intention .hl {
+      color: #c7a96b;
+    }
+
+    .intention .section-sub {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .intention .section-sub b {
+      color: #ffffff;
+    }
+
+    .intention .card .c-num {
+      color: #c7a96b;
+    }
+
+    .intention .card h3 {
+      color: #ffffff;
+    }
+
+    .intention .card p {
+      color: rgba(255, 255, 255, 0.74);
+    }
+
+    .intention .card b {
+      color: #ffffff;
+    }
+
+    .intention .rolling {
+      max-width: 860px;
+      margin: 56px auto 0;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: var(--fs-body);
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.72);
+      text-align: center;
+    }
+
+    .intention .rolling b {
+      color: #c7a96b;
     }
 
     /* The App */
@@ -367,7 +451,7 @@
       font-size: var(--fs-lead);
       line-height: 1.5;
       color: var(--body);
-      max-width: 40ch;
+      max-width: 60ch;
       margin: 18px auto 0;
     }
 
@@ -747,70 +831,74 @@
 
   <header class="hero">
     <img src="images/hitlist-logo-body.png" alt="HitList">
-    <p class="hero-eyebrow">Jiu-jitsu Athletes and Hobbyists:</p>
-    <h1>Mat time only gets you so far.</h1>
-    <p><b>The rest takes intention.</b> HitList helps you pick a few skills to focus on — your Hit List — and level them
-      up faster so you can break through plateaus and elevate your game.</p>
+    <p class="hero-eyebrow">Jiu-jitsu Athletes & Hobbyists:</p>
+    <h1>Train Like a Pro</h1>
+    <p><b>Improve your jiu-jitsu faster </b> with proven training strategies used by the best grapplers in the world.
+    </p>
     <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> App Beta</button>
   </header>
 
-  <main class="argument">
-
-    <h2 class="arg-heading">Philosophy</h2>
-    <p class="arg-lede">HitList is built on a specific training philosophy:</p>
-
-    <section class="beat">
-      <h3><span class="num">01</span>You train out of love.</h3>
-      <p>Belts, medals, and titles are by-products.</p>
-      <p>You train for the love of the game — <span class="hl">of developing <em>your</em> game.</span></p>
-    </section>
-
-    <section class="beat">
-      <h3><span class="num">02</span>Your game is the sum of your skills.</h3>
-      <p><b>You get better one skill at a time</b> — finishing the RNC, heisting to front head, getting chest-to-chest
-        in top
-        half
-        guard — whatever your game needs.</p>
-      <p>And <span class="hl">you can't reliably improve what you can't measure</span>.</p>
-    </section>
-
-    <section class="beat">
-      <h3><span class="num">03</span>The true measure of a skill is the hit.</h3>
-      <p>A hit is landing the skill live, <b>on someone resisting.</b></p>
-      <p><span class="hl">More hits, on better people, and the skill is improving.</span></p>
-    </section>
-
-    <section class="beat">
-      <h3><span class="num">04</span>Improvement <span class="op">=</span> volume <span class="op">&times;</span>
-        quality</h3>
-      <p>Two things improve a skill: how much you train it, and how well.</p>
-      <p>Volume is straightforward. <span class="hl">Practice quality is what most people overlook.</span></p>
-    </section>
-
-    <section class="beat">
-      <h3><span class="num">05</span>Quality requires intention.</h3>
-      <p>The grapplers who improve fastest train intentionally by supplementing rolling with 3 activities:</p>
-      <ul class="methods grouped">
-        <li><span class="name">Study</span> — Classes, seminars, instructionals, and footage help you understand how a
-          skill works conceptually.</li>
-        <li><span class="name">Dialogue drilling</span> — interactively workshopping a skill with a partner refines your
-          understanding and helps you solve specific problems you encounter.</li>
-        <li><span class="name">Constraint games</span> — live games with constraints let you quickly build mat
-          time with a skill against resistance so you can accumulate hits and get clear feedback on what you need to
-          work on.</li>
-      </ul>
-      <p class="rolling"><b>Rolling</b> tests your ability to use skills without contraints and land hits "in the wild"
-        so you know what to focus on in your study, dialogue drilling, and constraint games.
-      </p>
-    </section>
-
+  <!-- Principles -->
+  <main class="principles">
+    <div class="section-head">
+      <h2>Pros Understand 3 Training Principles</h2>
+    </div>
+    <div class="principle-list">
+      <div class="principle-item">
+        <h3><span class="num">01</span>Faster progress comes from focus</h3>
+        <p><b>Your game is the sum of your skills.</b> Focus on a few, not all of them at once.</p>
+      </div>
+      <div class="principle-item">
+        <h3><span class="num">02</span>You can't sharpen what you can't see</h3>
+        <p>You need feedback to steer your training. The clearest signal is landing a
+          skill on a resisting opponent — <b>a hit.</b></p>
+      </div>
+      <div class="principle-item">
+        <h3><span class="num">03</span>Improvement <span class="op">=</span> volume <span class="op">&times;</span>
+          quality</h3>
+        <p>Your training time is limited, so <b>training quality is key.</b></p>
+      </div>
+    </div>
   </main>
+
+  <!-- Quality -->
+  <section class="intention">
+    <div class="section-head">
+      <h2>How Pros Apply These <span class="hl">Principles</span></h2>
+      <p class="section-sub">Volume is the easy part — just show up. Quality is what separates pros: they build each
+        skill with <b>3 activities</b> that supplement rolling.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="c-num">01</span>
+        <h3>Study</h3>
+        <p>Seminars, instructionals, and footage let you learn what took someone else years in a fraction of the
+          time.</p>
+      </div>
+      <div class="card">
+        <span class="c-num">02</span>
+        <h3>Dialogue drilling</h3>
+        <p>Workshopping a skill with a partner refines your understanding and helps you solve the specific problems you
+          run into during live training.</p>
+      </div>
+      <div class="card">
+        <span class="c-num">03</span>
+        <h3>Constraint games</h3>
+        <p>Live games with limits let you build mat time with a skill against resistance — accumulating hits and clear
+          feedback on what to work on.</p>
+      </div>
+    </div>
+    <p class="rolling"><b>Rolling</b> tests your skills without constraints and lets you land hits "in the wild" — so
+      you
+      know what to focus on in your study, dialogue drilling, and constraint games.</p>
+  </section>
 
   <!-- The App -->
   <section class="app-intro">
     <div class="app-intro-inner">
-      <h2>How It Works</h2>
-      <p>HitList turns this into a system you actually use: pick your skills, log the work, watch the hits add up.</p>
+      <h2>The App</h2>
+      <p>HitList turns this approach into a system you actually use: <b>pick your skills, log the work, watch the hits
+          add up.</b></p>
     </div>
   </section>
 
