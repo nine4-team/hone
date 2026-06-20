@@ -29,6 +29,7 @@ export function SkillPackPicker({
   const colors = useTheme();
   const imported = useMemo(() => new Set(importedPackSlugs), [importedPackSlugs]);
   const [submitting, setSubmitting] = useState(false);
+  const [expandedPacks, setExpandedPacks] = useState<Record<string, boolean>>({});
   const [selections, setSelections] = useState<Record<string, Selection>>(() =>
     Object.fromEntries(
       skillPacks.map((pack) => [
@@ -86,24 +87,12 @@ export function SkillPackPicker({
         {skillPacks.map((pack) => {
           const isImported = imported.has(pack.slug);
           const selection = selections[pack.slug] ?? { importMode: 'active', selected: false };
+          const isExpanded = expandedPacks[pack.slug] ?? false;
 
           return (
             <Card
               key={pack.slug}
               accessibilityLabel={`${pack.title}, ${pack.skills.length} skills`}
-              accessibilityRole="button"
-              onPress={
-                isImported
-                  ? undefined
-                  : () =>
-                      setSelections((current) => ({
-                        ...current,
-                        [pack.slug]: {
-                          ...selection,
-                          selected: !selection.selected,
-                        },
-                      }))
-              }
               style={[
                 styles.packCard,
                 selection.selected && !isImported && { borderColor: colors.sage },
@@ -111,23 +100,79 @@ export function SkillPackPicker({
               ]}
             >
               <View style={styles.cardHeader}>
-                <View style={styles.cardTitleBlock}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${selection.selected ? 'Deselect' : 'Select'} ${pack.title}`}
+                  accessibilityState={{ selected: selection.selected }}
+                  onPress={
+                    isImported
+                      ? undefined
+                      : () =>
+                          setSelections((current) => ({
+                            ...current,
+                            [pack.slug]: {
+                              ...selection,
+                              selected: !selection.selected,
+                            },
+                          }))
+                  }
+                  style={({ pressed }) => [
+                    styles.cardTitleBlock,
+                    pressed && styles.pressed,
+                  ]}
+                >
                   <Text style={[styles.packTitle, { color: colors.ink }]}>{pack.title}</Text>
                   <Text style={[styles.packMeta, { color: colors.muted }]}>
                     {formatSkillCount(pack.skills.length)} - {pack.level}
                   </Text>
+                </Pressable>
+                <View style={styles.headerActions}>
+                  <MaterialIcons
+                    name={
+                      isImported || selection.selected ? 'check-circle' : 'radio-button-unchecked'
+                    }
+                    size={24}
+                    color={isImported || selection.selected ? colors.sage : colors.quiet}
+                  />
                 </View>
-                <MaterialIcons
-                  name={
-                    isImported || selection.selected ? 'check-circle' : 'radio-button-unchecked'
-                  }
-                  size={24}
-                  color={isImported || selection.selected ? colors.sage : colors.quiet}
-                />
               </View>
               <Text style={[styles.description, { color: colors.muted }]}>
                 {pack.description}
               </Text>
+              <Pressable
+                accessibilityLabel={`${isExpanded ? 'Hide' : 'Show'} skills in ${pack.title}`}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: isExpanded }}
+                hitSlop={8}
+                onPress={() =>
+                  setExpandedPacks((current) => ({
+                    ...current,
+                    [pack.slug]: !isExpanded,
+                  }))
+                }
+                style={({ pressed }) => [styles.skillsHeader, pressed && styles.pressed]}
+              >
+                <Text style={[styles.skillsHeaderLabel, { color: colors.muted }]}>
+                  Skills in pack
+                </Text>
+                <MaterialIcons
+                  name={isExpanded ? 'expand-less' : 'expand-more'}
+                  size={22}
+                  color={colors.muted}
+                />
+              </Pressable>
+              {isExpanded ? (
+                <View style={[styles.skillList, { backgroundColor: colors.bg }]}>
+                  {pack.skills.map((skill) => (
+                    <View key={skill.key} style={styles.skillRow}>
+                      <Text style={[styles.skillName, { color: colors.ink }]}>{skill.name}</Text>
+                      <Text style={[styles.skillMeta, { color: colors.muted }]}>
+                        {formatMediaCount(skill.media.length)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
               {isImported ? (
                 <Text style={[styles.importedLabel, { color: colors.sage }]}>Imported</Text>
               ) : selection.selected ? (
@@ -240,6 +285,12 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
+  expandButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 28,
+    minWidth: 28,
+  },
   description: {
     ...textStyles.detailRecordBody,
   },
@@ -254,6 +305,38 @@ const styles = StyleSheet.create({
   },
   importedLabel: {
     ...textStyles.formLabel,
+  },
+  headerActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.xs,
+  },
+  skillList: {
+    borderRadius: radius.sm,
+    gap: spacing.xs,
+    padding: spacing.md,
+  },
+  skillMeta: {
+    ...textStyles.listRowMeta,
+  },
+  skillName: {
+    ...textStyles.menuItem,
+    flex: 1,
+    minWidth: 0,
+  },
+  skillRow: {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'space-between',
+  },
+  skillsHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  skillsHeaderLabel: {
+    ...textStyles.rowLabel,
   },
   modeButton: {
     alignItems: 'center',
@@ -298,3 +381,7 @@ const styles = StyleSheet.create({
     marginHorizontal: -spacing.lg,
   },
 });
+
+function formatMediaCount(count: number) {
+  return `${count} media item${count === 1 ? '' : 's'}`;
+}
