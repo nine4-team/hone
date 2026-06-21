@@ -922,6 +922,76 @@
     }
 
     /* Final CTA */
+    /* FAQ */
+    .faq {
+      background: var(--cream);
+      padding: 120px 24px;
+    }
+
+    .faq .section-head {
+      max-width: var(--measure);
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .faq-list {
+      max-width: var(--measure);
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-top: 1px solid var(--line);
+    }
+
+    .faq-item:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 0;
+      font-size: clamp(18px, 2.1vw, 21px);
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary::after {
+      content: "+";
+      flex-shrink: 0;
+      color: var(--gold);
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .faq-item[open] summary::after {
+      content: "\2013";
+    }
+
+    .faq-item p {
+      margin: 0;
+      padding: 0 0 26px;
+      max-width: 60ch;
+      font-size: var(--fs-body);
+      line-height: 1.6;
+      color: var(--body);
+    }
+
+    .faq-item b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
     .close {
       text-align: center;
       padding: 110px 24px 120px;
@@ -1012,11 +1082,11 @@
 
   <header class="hero">
     <img src="images/hitlist-logo-body.png" alt="HitList">
-    <p class="hero-eyebrow">Jiu-jitsu, Wrestling, & MMA Athletes:</p>
+    <p class="hero-eyebrow">Jiu-jitsu Athletes & Hobbyists:</p>
     <h1>Grappling is a Game.</h1>
     <p><b>Improve faster </b> by treating it like one.
     </p>
-    <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> App Beta</button>
+    <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> Beta</button>
   </header>
 
   <!-- Game overview -->
@@ -1292,15 +1362,54 @@
       <div class="principle-item">
         <h3><span class="num">03</span>Improvement <span class="op">=</span> volume <span class="op">&times;</span>
           quality</h3>
-        <p>Your mat time is capped by your schedule. <b>Quality is where the bigger gains are.</b></p>
+        <p>Your mat time is capped by your schedule. <b>Quality is where the big gains are.</b></p>
       </div>
       <div class="principle-item">
         <h3><span class="num">04</span>Quality comes from deliberate practice</h3>
-        <p>Elite grapplers don't just roll — <b>they build each skill with study, dialogue drilling, and constraint
+        <p>Elite grapplers don't just roll — they build each skill with <b>study, dialogue drilling, and constraint
             games.</b></p>
       </div>
     </div>
   </main>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <div class="section-head">
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>What counts as a hit?</summary>
+        <p>Landing a skill on a fully resisting partner — in rolling or a constraint game. It's the honest test that a
+          skill works, and the only thing that earns <b>XP</b>.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What's a constraint game?</summary>
+        <p>A live round with set rules: fixed start and end positions, and limits on what each side can do. The
+          constraints let you pressure-test one skill against real resistance without the chaos of open rolling.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What's dialogue drilling?</summary>
+        <p>Working a skill back and forth with a partner who gives real, graded resistance and honest feedback — not
+          mindless rep-counting. You use it to solve the specific problems you run into live.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How do XP and levels work?</summary>
+        <p>Every hit earns XP, and XP levels each skill from 1 to 100. Hits on higher belts are worth more, so tougher
+          opposition levels you faster.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What's the difference between my arsenal and my hit list?</summary>
+        <p>Your arsenal is every skill you've added. Your hit list is the few you're focused on right now. Move skills
+          between them anytime — levels and history are always saved.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does this work for wrestling, judo, and mma?</summary>
+        <p>Yes. The loop — focus a few skills, land them on resisting partners, level up — is the same for any grappling
+          art and generalizes to all combat sports. The belt multipliers shown are jiu-jitsu's.</p>
+      </details>
+    </div>
+  </section>
 
   <!-- Pricing (full, hidden until launch) -->
   <section class="pricing" hidden>
@@ -1339,9 +1448,9 @@
 
   <!-- Final CTA -->
   <section id="start" class="close">
-    <h2>Join the Closed Beta</h2>
+    <h2>Join the Closed HitList Beta</h2>
     <p>Limited to 10 people.</p>
-    <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> App Beta</button>
+    <button class="cta beta-trigger" type="button">Join the Beta</button>
   </section>
 
   <footer class="footer">
