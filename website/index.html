@@ -272,6 +272,21 @@
       font-weight: 600;
     }
 
+    .principles .section-sub b {
+      color: var(--gold);
+    }
+
+    .principles .section-head {
+      max-width: var(--measure);
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .principles .section-sub {
+      margin-left: 0;
+    }
+
     /* Numbered-card grid — shared by principles + intention */
     .card-grid {
       max-width: 1100px;
@@ -322,8 +337,174 @@
       }
     }
 
+    /* Game overview — three-step row (dark band, matches Intention) */
+    .game {
+      background: var(--ink);
+      padding: 110px 24px;
+    }
+
+    .game .section-head h2 {
+      color: #ffffff;
+    }
+
+    .game-steps {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 24px;
+    }
+
+    .game-step {
+      flex: 1;
+      text-align: center;
+    }
+
+    .game-step .step-icon {
+      display: block;
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 18px;
+      color: #c7a96b;
+    }
+
+    .game-step .step-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .game-step h3 {
+      font-size: clamp(28px, 3.2vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .game-step p {
+      font-size: var(--fs-body);
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 34ch;
+      margin: 0 auto;
+    }
+
+    .step-arrow {
+      align-self: center;
+      color: #c7a96b;
+      font-size: 26px;
+      line-height: 1;
+      transform: rotate(90deg);
+    }
+
+    @media (min-width: 760px) {
+      .game-steps {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .step-arrow {
+        align-self: flex-start;
+        margin-top: 12px;
+        padding: 0 6px;
+        transform: none;
+      }
+    }
+
+    /* Belt → XP scale (Level section) */
+    .belt-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 18px;
+      max-width: 360px;
+    }
+
+    .belt-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .belt-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .belt-tier {
+      text-align: center;
+    }
+
+    .belt-xp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 42px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+    }
+
+    .belt-xp.white {
+      background: #ffffff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .belt-xp.blue {
+      background: #2f5d99;
+    }
+
+    .belt-xp.purple {
+      background: #5e4b9c;
+    }
+
+    .belt-xp.brown {
+      background: #6e4a2c;
+    }
+
+    .belt-xp.black {
+      background: var(--ink);
+    }
+
+    .belt-xp.grey {
+      background: #9a9aa0;
+    }
+
+    .belt-xp.yellow {
+      background: #d8a200;
+      color: var(--ink);
+    }
+
+    .belt-xp.orange {
+      background: #cf6a1a;
+    }
+
+    .belt-xp.green {
+      background: #2f7d4f;
+    }
+
+    .belt-name {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
     /* Principles — stacked numbered list */
     .principles {
+      background: #ffffff;
       padding: 120px 24px;
     }
 
@@ -831,97 +1012,189 @@
 
   <header class="hero">
     <img src="images/hitlist-logo-body.png" alt="HitList">
-    <p class="hero-eyebrow">Jiu-jitsu Athletes & Hobbyists:</p>
-    <h1>Train Like a Pro</h1>
-    <p><b>Improve your jiu-jitsu faster </b> with proven training strategies used by the best grapplers in the world.
+    <p class="hero-eyebrow">Jiu-jitsu, Wrestling, & MMA Athletes:</p>
+    <h1>Grappling is a Game.</h1>
+    <p><b>Improve faster </b> by treating it like one.
     </p>
     <button class="cta beta-trigger" type="button">Join the Free <b>HitList</b> App Beta</button>
   </header>
 
-  <!-- Principles -->
-  <main class="principles">
+  <!-- Game overview -->
+  <section class="game">
     <div class="section-head">
-      <h2>Pros Understand 3 Training Principles</h2>
+      <h2>Game Mechanics</h2>
     </div>
-    <div class="principle-list">
-      <div class="principle-item">
-        <h3><span class="num">01</span>Faster progress comes from focus</h3>
-        <p>A skill only improves when you stay on it over time. <b>Most people train at random,</b> so nothing gets the
-          focus it needs.</p>
+    <div class="game-steps">
+      <div class="game-step">
+        <span class="step-icon"><svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4s-1.79-4-4-4m8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7s7 3.13 7 7s-3.13 7-7 7" />
+          </svg></span>
+        <h3>Equip</h3>
+        <p>Pick a few skills to focus on and add them to your Hit List. The rest wait in your Arsenal.</p>
       </div>
-      <div class="principle-item">
-        <h3><span class="num">02</span>You can't sharpen what you can't see</h3>
-        <p>You need feedback to steer your training. The clearest signal is landing a
-          skill on a resisting opponent — <b>a hit.</b></p>
+      <span class="step-arrow" aria-hidden="true">&rarr;</span>
+      <div class="game-step">
+        <span class="step-icon"><svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="16.5" cy="2.38" r="2" />
+            <path
+              d="M24 11.88v-4.7l-5.05-2.14c-.97-.41-2.09-.06-2.65.84l-1 1.6c-.67 1.18-1.91 2.06-3.41 2.32l.06.06c.69.69 1.52 1.07 2.46 1.17c.8-.42 1.52-.98 2.09-1.64l.6 3l-1.16 1.1l-.94.89v7.5h2v-6l2.1-2l1.8 8H23l-2.18-11l-.62-3.1l1.8.7v3.4zM10.29 8.09c.22.15.47.24.72.29c.13.02.25.04.38.04s.26-.01.38-.04c.13-.02.25-.06.37-.11c.24-.1.47-.24.66-.44c.49-.49.67-1.17.55-1.8c-.07-.37-.25-.74-.55-1.03c-.19-.19-.42-.34-.66-.44c-.12-.05-.24-.09-.37-.11s-.25-.04-.38-.04c-.12 0-.23.01-.35.03c-.14.02-.28.06-.41.11c-.23.11-.46.26-.65.45c-.3.29-.48.66-.55 1.03c-.12.63.06 1.31.55 1.8c.09.1.2.18.31.26" />
+            <path
+              d="m11.24 10.56l-2-2c-.1-.1-.2-.18-.31-.26a1.9 1.9 0 0 0-.72-.28c-.13-.03-.25-.04-.38-.04c-.51 0-1.02.2-1.41.59l-3.34 3.34c-.41.41-.62.98-.58 1.54c0 .18.04.37.11.55l1.07 2.95l-3.63 3.63L1.46 22l4.24-4.24v-2.22L7 16.75v5.13h2v-6l-2.12-2.12l2.36-2.36l.71.71c1.29 1.26 2.97 2.04 5.03 2.04l-.14-2.07c-1.5-.02-2.7-.62-3.6-1.52" />
+          </svg></span>
+        <h3>Level</h3>
+        <p>Land those skills on resisting partners. Every hit earns XP and climbs the skill from level 1 to 100.</p>
       </div>
-      <div class="principle-item">
-        <h3><span class="num">03</span>Improvement <span class="op">=</span> volume <span class="op">&times;</span>
-          quality</h3>
-        <p>Your mat time is capped by your schedule. <b>Quality is where the bigger gains are.</b></p>
+      <span class="step-arrow" aria-hidden="true">&rarr;</span>
+      <div class="game-step">
+        <span class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
+            <line x1="13" y1="19" x2="19" y2="13" />
+            <line x1="16" y1="16" x2="20" y2="20" />
+            <line x1="19" y1="21" x2="21" y2="19" />
+            <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" />
+            <line x1="5" y1="14" x2="9" y2="18" />
+            <line x1="7" y1="17" x2="4" y2="20" />
+            <line x1="3" y1="19" x2="5" y2="21" />
+          </svg></span>
+        <h3>Sharpen</h3>
+        <p>Sharpen your skills with study, dialogue drilling, and constraint games. Land them more, level faster.</p>
       </div>
-    </div>
-  </main>
-
-  <!-- Quality -->
-  <section class="intention">
-    <div class="section-head">
-      <h2>How Pros Apply These <span class="hl">Principles</span></h2>
-      <p class="section-sub">Volume is the easy part — just show up. Quality is what separates pros: they build each
-        skill with <b>3 activities</b> that supplement rolling.</p>
-    </div>
-    <div class="card-grid">
-      <div class="card">
-        <span class="c-num">01</span>
-        <h3>Study</h3>
-        <p>Seminars, instructionals, and footage let you learn what took someone else years in a fraction of the
-          time.</p>
-      </div>
-      <div class="card">
-        <span class="c-num">02</span>
-        <h3>Dialogue drilling</h3>
-        <p>Workshopping a skill with a partner refines your understanding and helps you solve the specific problems you
-          run into during live training.</p>
-      </div>
-      <div class="card">
-        <span class="c-num">03</span>
-        <h3>Constraint games</h3>
-        <p>Live games with limits let you build mat time with a skill against resistance — accumulating hits and clear
-          feedback on what to work on.</p>
-      </div>
-    </div>
-    <p class="rolling"><b>Rolling</b> tests your skills without constraints and lets you land hits "in the wild" — so
-      you
-      know what to focus on in your study, dialogue drilling, and constraint games.</p>
-  </section>
-
-  <!-- The App -->
-  <section class="app-intro">
-    <div class="app-intro-inner">
-      <h2>The App</h2>
-      <p>HitList turns this approach into a system you actually use: <b>pick your skills, log the work, watch the hits
-          add up.</b></p>
     </div>
   </section>
 
-  <div class="feature-wrap">
+  <!-- Arsenal -->
+  <div class="feature-wrap alt">
     <section class="feature">
       <div class="feature-text">
-        <div class="feature-eyebrow">The Skill Loop</div>
-        <h3>Level up your skills.</h3>
-        <p class="loop">Land hits <span class="arrow">&rarr;</span> level up <span class="arrow">&rarr;</span>
-          raise hit rate <span class="arrow">&rarr;</span> land more</p>
+        <div class="feature-eyebrow">Curate</div>
+        <h3>Build your arsenal.</h3>
+        <p>All the skills that represent your game, in one place.</p>
+        <div class="subsec">
+          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6m-3 3l4 4m-1 1l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4m-2-1l-3 3m-1-1l2 2" />
+            </svg>Arsenal</h4>
+          <p>The library of skills you draw from when curating your Hit List, with levels, hits, and history.</p>
+        </div>
         <div class="subsec">
           <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10" />
-              <circle cx="12" cy="12" r="6" />
-              <circle cx="12" cy="12" r="2" />
-            </svg>Hit List</h4>
-          <p>Pick the skills you're hunting. Each sits on the dashboard with a two-ring dial — hits toward the next
-            level,
-            levels toward 10.
-            Ten hits level up a skill.</p>
+              <path d="M8 12h8" />
+              <path d="M12 8v8" />
+            </svg>Easy Add</h4>
+          <p>Spot a move on Instagram or YouTube? Add it in seconds so it becomes part of your game instead of being
+            forgotten.</p>
         </div>
+      </div>
+      <div class="carousel" data-carousel data-interval="4000">
+        <div class="phone">
+          <img class="is-active" src="images/arsenal.png"
+            alt="Arsenal screen listing all skills with levels, hit counts, and active toggles">
+          <img src="images/new-skill.png" alt="New Skill screen with a name field and a Create Skill button">
+        </div>
+        <div class="dots">
+          <button class="dot is-active" type="button" aria-label="Show the Arsenal"></button>
+          <button class="dot" type="button" aria-label="Show the new skill screen"></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Equip -->
+  <div class="feature-wrap">
+    <section class="feature reverse">
+      <div class="feature-text">
+        <div class="feature-eyebrow">Curate</div>
+        <h3>Equip your skills.</h3>
+        <p>Pick a few skills as your hit list — the moves you're hunting right now — and level them up with hits.</p>
+        <div class="subsec">
+          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="m17 2 4 4-4 4" />
+              <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+              <path d="m7 22-4-4 4-4" />
+              <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+            </svg>Rotate your focus</h4>
+          <p>Done chasing a skill? Swap it off your hit list and bring in the next one — its level and hits stay saved
+            in your arsenal.</p>
+        </div>
+      </div>
+      <div class="carousel">
+        <div class="phone">
+          <img class="is-active" src="images/active-skills.png"
+            alt="Hit List board showing the few skills you're focused on, each with a level dial">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Level -->
+  <div class="feature-wrap alt">
+    <section class="feature">
+      <div class="feature-text">
+        <div class="feature-eyebrow">Level</div>
+        <h3>Land hits. Level up.</h3>
+        <p>Every hit earns <b>XP</b>, and XP is what levels your skills.</p>
+        <div class="subsec">
+          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4s-1.79-4-4-4m8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7s7 3.13 7 7s-3.13 7-7 7" />
+            </svg>Log a hit</h4>
+          <p>Tag the skill, the partner, and how many — logged in seconds.</p>
+        </div>
+        <div class="subsec">
+          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6" />
+              <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+            </svg>Higher belts, more XP</h4>
+          <p>A hit's value scales with who you land it on.</p>
+          <div class="belt-scale">
+            <div class="belt-group">
+              <span class="belt-label">Adults</span>
+              <div class="belt-row">
+                <div class="belt-tier"><span class="belt-xp white">1</span><span class="belt-name">White</span></div>
+                <div class="belt-tier"><span class="belt-xp blue">2</span><span class="belt-name">Blue</span></div>
+                <div class="belt-tier"><span class="belt-xp purple">3</span><span class="belt-name">Purple</span></div>
+                <div class="belt-tier"><span class="belt-xp brown">4</span><span class="belt-name">Brown</span></div>
+                <div class="belt-tier"><span class="belt-xp black">5</span><span class="belt-name">Black</span></div>
+              </div>
+            </div>
+            <div class="belt-group">
+              <span class="belt-label">Kids</span>
+              <div class="belt-row">
+                <div class="belt-tier"><span class="belt-xp grey">1.2</span><span class="belt-name">Grey</span></div>
+                <div class="belt-tier"><span class="belt-xp yellow">1.4</span><span class="belt-name">Yellow</span>
+                </div>
+                <div class="belt-tier"><span class="belt-xp orange">1.6</span><span class="belt-name">Orange</span>
+                </div>
+                <div class="belt-tier"><span class="belt-xp green">1.8</span><span class="belt-name">Green</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel">
+        <div class="phone">
+          <img class="is-active" src="images/log-training.png"
+            alt="Log Training screen for recording the activity type and the hits you landed">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Sharpen -->
+  <div class="feature-wrap">
+    <section class="feature reverse">
+      <div class="feature-text">
+        <div class="feature-eyebrow">Sharpen</div>
+        <h3>Raise your hit rate.</h3>
+        <p>You raise your hit rate by sharpening the skill itself with tools like study, dialogue drilling, and
+          constraint games.</p>
         <div class="subsec">
           <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -930,35 +1203,39 @@
               <path d="M16 13H8" />
               <path d="M16 17H8" />
               <path d="M10 9H8" />
-            </svg>Skill Details</h4>
-          <p>Open any skill for your <b>notes on it</b>, the <b>media</b> you use to study, and <b>logs</b> of every
-            session so
-            you have all the tools you need to understand the skill better, structure your training, and increase your
-            hit rate.</p>
+            </svg>Notes &amp; media</h4>
+          <p>Keep your <b>notes</b> and the <b>videos</b> you study on each skill.</p>
+        </div>
+        <div class="subsec">
+          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 6h13" />
+              <path d="M8 12h13" />
+              <path d="M8 18h13" />
+              <path d="M3 6h.01" />
+              <path d="M3 12h.01" />
+              <path d="M3 18h.01" />
+            </svg>Training logs</h4>
+          <p>Log study, dialogue drilling, constraint games, and rolling so you can see what's moving your hit rate.</p>
         </div>
       </div>
-      <div class="carousel" data-carousel data-interval="4000">
+      <div class="carousel">
         <div class="phone">
-          <img class="is-active" src="images/active-skills.png"
-            alt="Hit List board with two-ring level dials showing hit progress and level for each skill">
-          <img src="images/skill-detail.png"
+          <img class="is-active" src="images/skill-detail.png"
             alt="Skill page showing notes, media, and a log of past training sessions for a skill">
-        </div>
-        <div class="dots">
-          <button class="dot is-active" type="button" aria-label="Show the Hit List board"></button>
-          <button class="dot" type="button" aria-label="Show the skill page"></button>
         </div>
       </div>
     </section>
   </div>
 
+  <!-- Partners -->
   <div class="feature-wrap alt">
-    <section class="feature reverse">
+    <section class="feature">
       <div class="feature-text">
         <div class="feature-eyebrow">Partners</div>
-        <h3>Track who you're hitting them on.</h3>
-        <p>If you're anything like me, half the reason you train is to embarrass your friends and one-up
-          your rivals.</p>
+        <h3>Keep score on your partners.</h3>
+        <p>Half the fun is one-upping the people you train with. Every hit is tied to who you landed it on — so the
+          rivalry has a scoreboard.</p>
         <div class="subsec">
           <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -994,47 +1271,36 @@
     </section>
   </div>
 
-  <div class="feature-wrap">
-    <section class="feature">
-      <div class="feature-text">
-        <div class="feature-eyebrow">Arsenal</div>
-        <h3>Build your arsenal.</h3>
-        <p>Curate a library of skills that represents your game.</p>
-        <div class="subsec">
-          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-              <path d="M3 12h18" />
-              <path d="M12 3v18" />
-            </svg>Your Arsenal</h4>
-          <p>All your skills in one place. Put a few on your hit list to focus on. The rest wait in the wings, with
-            their
-            levels, hits, and history saved so you can pick them back up anytime.</p>
-        </div>
-        <div class="subsec">
-          <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 12h8" />
-              <path d="M12 8v8" />
-            </svg>Adding Skills</h4>
-          <p>Spot a move on Instagram or YouTube you want to add to your arsenal? Create the skill in seconds so it
-            actually becomes a part of your game instead of being forgotten.</p>
-        </div>
+  <!-- Principles -->
+  <main class="principles">
+    <div class="section-head">
+      <h2>Guiding Principles</h2>
+      <p class="section-sub"><b>We reverse engineered 4 principles of rapid progress</b> based on how elite grapplers
+        train.</p>
+    </div>
+    <div class="principle-list">
+      <div class="principle-item">
+        <h3><span class="num">01</span>Faster progress comes from focus</h3>
+        <p>A skill only improves when you work on it over time. <b>Most people train at random,</b> so nothing gets the
+          focus it needs.</p>
       </div>
-      <div class="carousel" data-carousel data-interval="4000">
-        <div class="phone">
-          <img class="is-active" src="images/arsenal.png"
-            alt="Arsenal screen listing all skills with levels, hit counts, and active toggles">
-          <img src="images/new-skill.png" alt="New Skill screen with a name field and a Create Skill button">
-        </div>
-        <div class="dots">
-          <button class="dot is-active" type="button" aria-label="Show the Arsenal"></button>
-          <button class="dot" type="button" aria-label="Show the new skill screen"></button>
-        </div>
+      <div class="principle-item">
+        <h3><span class="num">02</span>You need feedback to steer your training.</h3>
+        <p> The clearest signal is executing a
+          skill on a resisting opponent — <b>a hit.</b></p>
       </div>
-    </section>
-  </div>
+      <div class="principle-item">
+        <h3><span class="num">03</span>Improvement <span class="op">=</span> volume <span class="op">&times;</span>
+          quality</h3>
+        <p>Your mat time is capped by your schedule. <b>Quality is where the bigger gains are.</b></p>
+      </div>
+      <div class="principle-item">
+        <h3><span class="num">04</span>Quality comes from deliberate practice</h3>
+        <p>Elite grapplers don't just roll — <b>they build each skill with study, dialogue drilling, and constraint
+            games.</b></p>
+      </div>
+    </div>
+  </main>
 
   <!-- Pricing (full, hidden until launch) -->
   <section class="pricing" hidden>
