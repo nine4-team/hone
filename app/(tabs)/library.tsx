@@ -8,8 +8,9 @@ import { FormInput } from '../../components/FormControls';
 import { Screen } from '../../components/Screen';
 import { SkillCard } from '../../components/SkillCard';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
-import { getSkillLevelProgress } from '../../lib/hits';
+import { getSkillLevelProgress, skillXpFifths } from '../../lib/hits';
 import { useHitList } from '../../lib/store';
+import type { Hit } from '../../lib/types';
 import { radius, spacing, useTheme } from '../../lib/theme';
 import { useToast } from '../../lib/useToast';
 
@@ -30,7 +31,7 @@ const sortLabels: Record<ArsenalSort, string> = {
 };
 
 export default function ArsenalScreen() {
-  const { error, hits, loading, reload, skills, toggleActive } = useHitList();
+  const { error, hits, loading, partners, reload, skills, toggleActive } = useHitList();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ArsenalFilter>('all');
   const [sort, setSort] = useState<ArsenalSort>('level');
@@ -47,6 +48,20 @@ export default function ArsenalScreen() {
     [hits],
   );
 
+  // XP per skill (in fifths) for level/sort. Belt-weighted, so it can outpace
+  // the raw hit count once colored-belt partners are involved.
+  const xpFifthsBySkill = useMemo(() => {
+    const grouped = hits.reduce<Record<string, Hit[]>>((bySkill, hit) => {
+      (bySkill[hit.skillId] ??= []).push(hit);
+      return bySkill;
+    }, {});
+
+    return Object.entries(grouped).reduce<Record<string, number>>((totals, [skillId, skillHits]) => {
+      totals[skillId] = skillXpFifths(skillHits, partners);
+      return totals;
+    }, {});
+  }, [hits, partners]);
+
   const filteredSkills = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
@@ -61,8 +76,8 @@ export default function ArsenalScreen() {
         const aHits = hitsBySkill[a.id] ?? 0;
         const bHits = hitsBySkill[b.id] ?? 0;
 
-        const aLevel = getSkillLevelProgress(aHits).level;
-        const bLevel = getSkillLevelProgress(bHits).level;
+        const aLevel = getSkillLevelProgress(xpFifthsBySkill[a.id] ?? 0).level;
+        const bLevel = getSkillLevelProgress(xpFifthsBySkill[b.id] ?? 0).level;
 
         if (sort === 'name') return a.name.localeCompare(b.name);
         if (sort === 'recent') return Date.parse(b.lastTouchedAt) - Date.parse(a.lastTouchedAt);
@@ -81,7 +96,7 @@ export default function ArsenalScreen() {
           Date.parse(b.lastTouchedAt) - Date.parse(a.lastTouchedAt)
         );
       });
-  }, [filter, hitsBySkill, query, skills, sort]);
+  }, [filter, hitsBySkill, query, skills, sort, xpFifthsBySkill]);
 
   if (loading || error) {
     return (
@@ -138,6 +153,7 @@ export default function ArsenalScreen() {
             <SkillCard
               key={skill.id}
               hitCount={hitsBySkill[skill.id] ?? 0}
+              xpFifths={xpFifthsBySkill[skill.id] ?? 0}
               skill={skill}
               onToggleActive={async (nextActive) => {
                 try {

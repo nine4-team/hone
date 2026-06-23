@@ -6,11 +6,13 @@ import { EmptyState } from '../../components/EmptyState';
 import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
 import { Card, IconButton } from '../../components/ui';
+import { BELT_OPTIONS, beltLabel } from '../../lib/belts';
 import { formatDate, formatHitCount } from '../../lib/format';
 import { hitRowsBySkill } from '../../lib/hits';
 import { useHitList } from '../../lib/store';
 import { spacing, useTheme } from '../../lib/theme';
 import { textStyles } from '../../lib/typography';
+import type { Belt } from '../../lib/types';
 
 export default function PartnerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,6 +29,7 @@ export default function PartnerDetailScreen() {
   const [timelineOpen, setTimelineOpen] = useState(true);
   const [editingPartner, setEditingPartner] = useState(false);
   const [partnerName, setPartnerName] = useState('');
+  const [partnerBelt, setPartnerBelt] = useState<Belt>('white');
   const partner = partners.find((item) => item.id === id);
 
   if (!partner) {
@@ -47,13 +50,14 @@ export default function PartnerDetailScreen() {
   return (
     <Screen
       title={partner.name}
-      subtitle="Hits by skill and timeline for this person."
+      subtitle={`${beltLabel(partner.belt)} belt · hits by skill and timeline`}
       onBack={router.back}
       action={
         <IconButton
           accessibilityLabel="Edit person"
           onPress={() => {
             setPartnerName(partner.name);
+            setPartnerBelt(partner.belt ?? 'white');
             setEditingPartner(true);
           }}
         >
@@ -73,6 +77,38 @@ export default function PartnerDetailScreen() {
             style={[styles.input, { borderColor: colors.line, color: colors.ink }]}
             value={partnerName}
           />
+          <Text style={[styles.fieldLabel, { color: colors.ink }]}>Belt</Text>
+          <Text style={[styles.fieldHint, { color: colors.quiet }]}>
+            Sets how much XP each hit on this person is worth. Leave on White if unsure.
+          </Text>
+          <View style={styles.beltGrid}>
+            {BELT_OPTIONS.map((option) => {
+              const selected = option.belt === partnerBelt;
+              return (
+                <Pressable
+                  key={option.belt}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  onPress={() => setPartnerBelt(option.belt)}
+                  style={({ pressed }) => [
+                    styles.beltChip,
+                    { borderColor: selected ? colors.sage : colors.line },
+                    selected && { backgroundColor: colors.sage },
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.beltChipText,
+                      { color: selected ? colors.bg : colors.muted },
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
           <View style={styles.formActions}>
             <FormAction
               label="Cancel"
@@ -87,7 +123,7 @@ export default function PartnerDetailScreen() {
               onPress={async () => {
                 if (!partnerName.trim()) return;
                 try {
-                  await updatePartner({ id: partner.id, name: partnerName });
+                  await updatePartner({ id: partner.id, name: partnerName, belt: partnerBelt });
                   setEditingPartner(false);
                 } catch {
                   setEditingPartner(false);
@@ -240,6 +276,24 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     ...textStyles.detailRecordBody,
+  },
+  beltChip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  beltChipText: {
+    ...textStyles.formLabel,
+  },
+  beltGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  fieldHint: {
+    ...textStyles.detailRecordMeta,
+    marginBottom: spacing.xs,
   },
   editCard: {
     gap: spacing.sm,

@@ -54,7 +54,7 @@
     "submit:play:android": "npx eas-cli@latest submit -p android --profile android-beta --latest --wait --non-interactive",
     "submit:play:android:internal": "npx eas-cli@latest submit -p android --profile android-internal --latest --wait --non-interactive",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test lib/trainingLogEditing.test.ts lib/starterSkills.test.ts",
+    "test": "tsx --test lib/hits.test.ts lib/trainingLogEditing.test.ts lib/starterSkills.test.ts",
     "check": "npm run typecheck && npm test"
   },
   "private": true

@@ -33,6 +33,12 @@ create table public.partners (
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
   name text not null,
   normalized_name text generated always as (lower(btrim(name))) stored,
+  belt text check (
+    belt is null or belt in (
+      'white', 'blue', 'purple', 'brown', 'black',
+      'kids_white', 'kids_grey', 'kids_yellow', 'kids_orange', 'kids_green'
+    )
+  ),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (user_id, normalized_name)

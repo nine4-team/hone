@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { ActivationSwitch } from './ActivationSwitch';
 import { formatRelative } from '../lib/format';
-import { getSkillLevelProgress } from '../lib/hits';
+import { formatXp, getSkillLevelProgress } from '../lib/hits';
 import { spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import type { Skill } from '../lib/types';
@@ -10,6 +10,7 @@ import { Card, HeaderActionSlot } from './ui';
 
 type SkillCardProps = {
   hitCount?: number;
+  xpFifths?: number;
   skill: Skill;
   onToggleActive?: (nextActive: boolean) => void;
   onLongPress?: () => void;
@@ -17,16 +18,17 @@ type SkillCardProps = {
 
 export function SkillCard({
   hitCount = 0,
+  xpFifths = 0,
   skill,
   onLongPress,
   onToggleActive,
 }: SkillCardProps) {
   const router = useRouter();
   const colors = useTheme();
-  const levelProgress = getSkillLevelProgress(hitCount);
+  const levelProgress = getSkillLevelProgress(xpFifths);
   const progressLabel = levelProgress.nextLevel
-    ? `${levelProgress.hitsIntoLevel}/10 to Level ${levelProgress.nextLevel}`
-    : `${hitCount} lifetime hits`;
+    ? `${formatXp(levelProgress.totalXp)} XP total · ${formatXp(levelProgress.xpToNextLevel)} XP to Level ${levelProgress.nextLevel}`
+    : `${formatXp(levelProgress.totalXp)} XP total`;
 
   return (
     <Card

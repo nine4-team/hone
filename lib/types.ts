@@ -51,9 +51,25 @@ export type Hit = {
   updatedAt: string;
 };
 
+// Belt rank of a partner (or, soon, the user's own shared profile). Adult ranks
+// white..black plus kids ranks (no stripe variants). Drives how much XP a hit on
+// that partner is worth — see lib/hits.ts. A missing belt is treated as white.
+export type Belt =
+  | 'white'
+  | 'blue'
+  | 'purple'
+  | 'brown'
+  | 'black'
+  | 'kids_white'
+  | 'kids_grey'
+  | 'kids_yellow'
+  | 'kids_orange'
+  | 'kids_green';
+
 export type Partner = {
   id: string;
   name: string;
+  belt?: Belt;
   createdAt: string;
   updatedAt: string;
 };
@@ -124,6 +140,7 @@ export type UpdateNoteInput = {
 export type UpdatePartnerInput = {
   id: string;
   name: string;
+  belt?: Belt;
 };
 
 export type UpdateSkillDetailsInput = {

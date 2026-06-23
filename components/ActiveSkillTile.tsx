@@ -2,12 +2,13 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
-import { getSkillLevelProgress } from '../lib/hits';
+import { LEVEL_RING_REFERENCE_LEVEL, formatXp, getSkillLevelProgress } from '../lib/hits';
 import { spacing, useTheme } from '../lib/theme';
 import type { Skill } from '../lib/types';
 
 type ActiveSkillTileProps = {
   hitCount: number;
+  xpFifths: number;
   onLogPress: () => void;
   onMenuPress: () => void;
   skill: Skill;
@@ -15,22 +16,19 @@ type ActiveSkillTileProps = {
 
 export function ActiveSkillTile({
   hitCount,
+  xpFifths,
   onLogPress,
   onMenuPress,
   skill,
 }: ActiveSkillTileProps) {
   const router = useRouter();
   const colors = useTheme();
-  const levelProgress = getSkillLevelProgress(hitCount);
-  const currentLevelHitLabel = levelProgress.hitsIntoLevel === 1 ? 'HIT' : 'HITS';
+  const levelProgress = getSkillLevelProgress(xpFifths);
   const totalHitLabel = hitCount === 1 ? 'hit' : 'hits';
-  const lifetimeHitLabel = hitCount === 1 ? 'lifetime hit' : 'lifetime hits';
   const hitRing = getRingStroke(HIT_RING_RADIUS, levelProgress.progressToNextLevel);
-  const levelRing = getRingStroke(LEVEL_RING_RADIUS, levelProgress.level / 10);
+  const levelRing = getRingStroke(LEVEL_RING_RADIUS, levelProgress.level / LEVEL_RING_REFERENCE_LEVEL);
   const dialColors = colors.bg === DARK_PAGE_BACKGROUND ? darkDialColors : lightDialColors;
-  const nextLevelHitLabel = `${levelProgress.hitsToNextLevel} ${
-    levelProgress.hitsToNextLevel === 1 ? 'hit' : 'hits'
-  }`;
+  const nextLevelXpLabel = `${formatXp(levelProgress.xpToNextLevel)} XP`;
 
   return (
     <View style={styles.tile}>
@@ -116,15 +114,15 @@ export function ActiveSkillTile({
             </G>
           </Svg>
           <View style={[styles.ringInner, { backgroundColor: dialColors.center }]}>
-            <Text style={[styles.dialMetric, { color: dialColors.hitProgress }]} numberOfLines={1}>
-              {levelProgress.hitsIntoLevel}
-              <Text style={[styles.dialMetricLabel, { color: dialColors.hitProgress }]}>
-                {` ${currentLevelHitLabel}`}
-              </Text>
-            </Text>
             <Text style={[styles.dialMetric, styles.dialMetricLevel, { color: dialColors.levelProgress }]} numberOfLines={1}>
-              <Text style={[styles.dialMetricLabel, styles.dialMetricLevelLabel, { color: dialColors.levelProgress }]}>LEVEL </Text>
+              <Text style={[styles.dialMetricLabel, styles.dialMetricLevelLabel, { color: dialColors.levelProgress }]}>LVL </Text>
               {levelProgress.level}
+            </Text>
+            <Text style={[styles.dialMetric, styles.dialMetricXp, { color: dialColors.hitProgress }]} numberOfLines={1}>
+              {formatXp(levelProgress.totalXp)}
+              <Text style={[styles.dialMetricLabel, { color: dialColors.hitProgress }]}>
+                {' XP'}
+              </Text>
             </Text>
           </View>
         </View>
@@ -132,24 +130,16 @@ export function ActiveSkillTile({
         <Text style={[styles.name, { color: colors.ink }]} numberOfLines={2}>
           {skill.name.toUpperCase()}
         </Text>
-        <View style={styles.metaStack}>
-          <Text style={[styles.meta, { color: colors.muted }]} numberOfLines={1}>
-            {levelProgress.nextLevel ? (
-              <>
-                <Text style={[styles.metaLabel, { color: colors.muted }]}>{nextLevelHitLabel}</Text>
-                {` until Level ${levelProgress.nextLevel}`}
-              </>
-            ) : (
-              <>
-                <Text style={[styles.metaLabel, { color: colors.muted }]}>{hitCount} lifetime hits</Text>
-              </>
-            )}
-          </Text>
-          <Text style={[styles.meta, { color: colors.muted }]} numberOfLines={1}>
-            <Text style={[styles.metaLabel, { color: colors.muted }]}>{hitCount}</Text>
-            {` ${lifetimeHitLabel}`}
-          </Text>
-        </View>
+        <Text style={[styles.meta, { color: colors.muted }]} numberOfLines={1}>
+          {levelProgress.nextLevel ? (
+            <>
+              <Text style={[styles.metaLabel, { color: colors.muted }]}>{nextLevelXpLabel}</Text>
+              {` until Level ${levelProgress.nextLevel}`}
+            </>
+          ) : (
+            'Max level'
+          )}
+        </Text>
       </Pressable>
     </View>
   );
@@ -197,15 +187,20 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   dialMetricLevel: {
-    fontSize: 11,
-    fontWeight: '500',
-    lineHeight: 15,
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 24,
   },
   dialMetricLevelLabel: {
-    fontWeight: '500',
+    fontSize: 10,
+    fontWeight: '700',
   },
   dialMetricLabel: {
     fontWeight: '600',
+  },
+  dialMetricXp: {
+    fontSize: 11,
+    lineHeight: 14,
   },
   logChip: {
     alignItems: 'center',
@@ -230,9 +225,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
   },
-  metaStack: {
-    gap: 0,
-  },
   menuButton: {
     opacity: 0.5,
     padding: spacing.xs,
@@ -245,7 +237,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     lineHeight: 17,
-    minHeight: 34,
     textAlign: 'center',
   },
   pressed: {

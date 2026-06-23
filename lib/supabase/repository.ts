@@ -2,6 +2,7 @@ import { inferMediaType, resolveMediaMetadata } from '../mediaMetadata';
 import { SKILL_PACK_VERSION, skillPacks, type SkillPackImportMode } from '../starterSkills';
 import type { SkillPackSkill } from '../starterSkills';
 import type {
+  Belt,
   Hit,
   Media,
   NewMediaInput,
@@ -37,6 +38,7 @@ type SkillRow = {
 type PartnerRow = {
   id: string;
   name: string;
+  belt: Belt | null;
   created_at: string;
   updated_at: string;
 };
@@ -449,7 +451,7 @@ export async function savePartner(input: UpdatePartnerInput) {
   await mutate(
     supabase
       .from('partners')
-      .update({ name: input.name.trim() })
+      .update({ belt: input.belt ?? null, name: input.name.trim() })
       .eq('id', input.id),
   );
 }
@@ -666,6 +668,7 @@ function mapSkill(row: SkillRow): Skill {
 
 function mapPartner(row: PartnerRow): Partner {
   return {
+    belt: row.belt ?? undefined,
     createdAt: row.created_at,
     id: row.id,
     name: row.name,
