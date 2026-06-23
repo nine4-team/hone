@@ -17,6 +17,8 @@ Project-only source material for skill-pack analysis. These files are generated 
 - [The best way to take the back from turtle #bjj #jiujitsu](./clean/xxxgo5o7ku4-the-best-way-to-take-the-back-from-turtle.md) — Back Attack Basics / Back Take from Turtle Top (19 caption lines)
 - [Back Attack Secrets with Gordon Ryan](./clean/zcje8nnwtfk-back-attack-secrets-with-gordon-ryan.md) — Back Attack Basics / Rear Naked Strangle (172 caption lines)
 - [The One Submission Every Grappler Must Know - Gordon Ryan](./clean/3hd-82xrbju-the-one-submission-every-grappler-must-know-gordon-ryan.md) — Back Attack Basics / Rear Naked Strangle (82 caption lines)
+- [Options from High Ground (Full Instructional) - V.O.W. BJJ](./clean/kttddomj864k-options-from-high-ground-full-instructional-v-o-w-bjj.md) — High Ground / Chest Wrap to Reverse Half; Reverse Half to D'arce; Chest Wrap to Reverse Donkey; Reverse Donkey to Ankle Lock; Reverse Donkey to Triangle (1003 caption lines)
+- [High Ground: New No-Gi Attack System Explained | B-Team Technique](./clean/5hndecexv6e-high-ground-new-no-gi-attack-system-explained-b-team-technique.md) — High Ground / Chest Wrap to Reverse Half; Reverse Half to D'arce; Reverse Half to Seated Kata Gatame (491 caption lines)
 
 ## Raw Caption Files
 

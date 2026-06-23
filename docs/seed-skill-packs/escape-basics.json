@@ -1,0 +1,92 @@
+{
+  "slug": "escape-basics",
+  "title": "Positional Escape Basics",
+  "description": "Core escapes for the three positions beginners get stuck in most: side control, mount, and the back.",
+  "level": "Beginner",
+  "skills": [
+    {
+      "key": "chaining-side-control-escapes",
+      "name": "Side Control Escape",
+      "notes": [],
+      "media": [
+        {
+          "url": "https://www.youtube.com/watch?v=by85KB6wf8A",
+          "title": "3 MUST-KNOW Side Control Escapes (Lachlan Giles)",
+          "thumbnailUrl": "https://i.ytimg.com/vi/by85KB6wf8A/maxresdefault.jpg",
+          "notes": [
+            "Context: Lachlan presents three major side-control escape paths and explains when each becomes appropriate based on distance, frames, and the opponent's base.",
+            "- [00:00-00:32] Main branches: frame to guard recovery, underhook to wrestle up, or sit-up escape to outside control.",
+            "- [01:23-03:20] Build distance with forearm frames, stiff-arm frames, shin/knee frames, and by turning onto your side.",
+            "- [01:23-02:24] Forearm frames redirect head/shoulder pressure; shin frames stretch the hips away and create space for the top leg.",
+            "- [05:26-07:19] If frames stall, swim for your own underhook, use pillow defense to beat the crossface, hip away, and reach for a leg.",
+            "- [07:19-09:29] If they switch their base to stop your knee coming through, block the bottom hip, clear the crossface, stiff-arm, and build up."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chaining-mount-escapes",
+      "name": "Mount Escape",
+      "notes": [],
+      "media": [
+        {
+          "url": "https://www.youtube.com/watch?v=Y9IQTgX_-4M",
+          "title": "How I Escape EVERYONES Mount",
+          "thumbnailUrl": "https://i.ytimg.com/vi_webp/Y9IQTgX_-4M/maxresdefault.webp",
+          "notes": [
+            "Context: this video teaches a kipping mount escape sequence. The main point is that the kip only works after you win inside position and displace their base.",
+            "- [00:06-00:26] Run the escape in order: inside position first, base displacement second, kip last.",
+            "- [00:26-00:51] Inside position has three parts: inside elbows, inside feet or knees, and inside forehead.",
+            "- [00:55-01:51] Control the hips with hands or frames, move your forehead inside, separate their feet, and avoid reaching your arms out where they can isolate you.",
+            "- [02:47-04:02] Before kipping, bridge to displace their base so their hips are no longer parallel to the mat and their weight is loaded over one knee.",
+            "- [04:14-05:43] Keep knees and feet together during the kip. The kip is extra disruption after their mount is already displaced, not the main force."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "back-escape",
+      "name": "Back Escape",
+      "notes": [],
+      "media": [
+        {
+          "url": "https://www.youtube.com/watch?v=AIMpwyvs_I8",
+          "title": "The ONLY Back Escape You Need (It's Simple)",
+          "thumbnailUrl": "https://i.ytimg.com/vi_webp/AIMpwyvs_I8/maxresdefault.webp",
+          "notes": [
+            "Context: this video studies Mason Fowler's back escape, especially escaping toward the choking-arm side in no-gi rather than defaulting to the control side.",
+            "- [02:53-07:17] Get to the choking side, then misalign your hips so your hips face a different direction than the attacker's hips.",
+            "- [10:07-11:13] Keep attention on the seatbelt instead of getting distracted by the hooks first.",
+            "- [11:13-12:52] Use a hook grip under the fingers to break the seatbelt, separate the hands, then quickly go two-on-one and remove the arm over your head.",
+            "- [13:43-15:15] After the shoulders reach the mat and you turn to face, use inside elbow/leg control or the crossed-feet follow-up to avoid simply giving up mount."
+          ]
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=3RvUyWJ726k",
+          "title": "Kenta Iwamoto: How to Escape the Body Triangle in BJJ (Simple Hip Shift & Side Switch Trick!)",
+          "thumbnailUrl": "https://i.ytimg.com/vi_webp/3RvUyWJ726k/maxresdefault.webp",
+          "notes": [
+            "Context: this short body-triangle clip focuses on shifting the pelvis inside the lock, then changing sides without letting the top player mount.",
+            "- [00:00-00:18] Shift your pelvis/hips inside the body triangle to make the lock harder to keep.",
+            "- [00:22-00:38] When switching sides, overwrap and hold the opponent's leg instead of just rolling across.",
+            "- [00:38-00:55] Put weight through their leg and pin the knee to the floor so they cannot easily extract it and mount.",
+            "- [00:49-01:00] Keep your head away, frame if they try to come up, and look to turn once the knee is controlled."
+          ]
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=RscLPT0F-DE",
+          "title": "The Best Way To Escape From The Jiu Jitsu Body Triangle by Gordon Ryan",
+          "thumbnailUrl": "https://i.ytimg.com/vi_webp/RscLPT0F-DE/maxresdefault.webp",
+          "notes": [
+            "Context: Gordon frames body-triangle escapes around upper-body side and leg-lock configuration, then demonstrates an overhook-side, top-side triangle escape.",
+            "- [01:41-02:35] Systematize body-triangle escapes by upper-body side and whether the triangle is locked on the top or bottom hip.",
+            "- [03:24-04:15] Keep the primary defensive hand in place with inside thumb position so the choking hand stays controlled.",
+            "- [04:16-04:56] Use the secondary hand as a hand assist instead of relying on foot-lock counters.",
+            "- [04:58-06:14] Put the secondary elbow under the opponent's knee, rotate/turn down to expose the ankle, then scissor your legs to trap that leg.",
+            "- [06:14-08:18] Once the triangle starts to unravel, control the foot, square your hips up if they try to relock, clear the bottom hook, and then deal with the upper body."
+          ]
+        }
+      ]
+    }
+  ]
+}

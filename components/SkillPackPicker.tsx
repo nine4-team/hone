@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { skillPacks, type SkillPackImportMode } from '../lib/starterSkills';
+import { skillPacks, type SkillPackImportMode, type SkillPackSkill } from '../lib/starterSkills';
 import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 import { Button } from './Button';
@@ -88,6 +88,14 @@ export function SkillPackPicker({
           const isImported = imported.has(pack.slug);
           const selection = selections[pack.slug] ?? { importMode: 'active', selected: false };
           const isExpanded = expandedPacks[pack.slug] ?? false;
+          const toggleSelection = () =>
+            setSelections((current) => ({
+              ...current,
+              [pack.slug]: {
+                ...selection,
+                selected: !selection.selected,
+              },
+            }));
 
           return (
             <Card
@@ -104,18 +112,7 @@ export function SkillPackPicker({
                   accessibilityRole="button"
                   accessibilityLabel={`${selection.selected ? 'Deselect' : 'Select'} ${pack.title}`}
                   accessibilityState={{ selected: selection.selected }}
-                  onPress={
-                    isImported
-                      ? undefined
-                      : () =>
-                          setSelections((current) => ({
-                            ...current,
-                            [pack.slug]: {
-                              ...selection,
-                              selected: !selection.selected,
-                            },
-                          }))
-                  }
+                  onPress={isImported ? undefined : toggleSelection}
                   style={({ pressed }) => [
                     styles.cardTitleBlock,
                     pressed && styles.pressed,
@@ -127,13 +124,22 @@ export function SkillPackPicker({
                   </Text>
                 </Pressable>
                 <View style={styles.headerActions}>
-                  <MaterialIcons
-                    name={
-                      isImported || selection.selected ? 'check-circle' : 'radio-button-unchecked'
-                    }
-                    size={24}
-                    color={isImported || selection.selected ? colors.sage : colors.quiet}
-                  />
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`${selection.selected ? 'Deselect' : 'Select'} ${pack.title}`}
+                    accessibilityState={{ selected: selection.selected }}
+                    hitSlop={8}
+                    onPress={isImported ? undefined : toggleSelection}
+                    style={({ pressed }) => [styles.selectionButton, pressed && styles.pressed]}
+                  >
+                    <MaterialIcons
+                      name={
+                        isImported || selection.selected ? 'check-circle' : 'radio-button-unchecked'
+                      }
+                      size={24}
+                      color={isImported || selection.selected ? colors.sage : colors.quiet}
+                    />
+                  </Pressable>
                 </View>
               </View>
               <Text style={[styles.description, { color: colors.muted }]}>
@@ -162,16 +168,7 @@ export function SkillPackPicker({
                 />
               </Pressable>
               {isExpanded ? (
-                <View style={[styles.skillList, { backgroundColor: colors.bg }]}>
-                  {pack.skills.map((skill) => (
-                    <View key={skill.key} style={styles.skillRow}>
-                      <Text style={[styles.skillName, { color: colors.ink }]}>{skill.name}</Text>
-                      <Text style={[styles.skillMeta, { color: colors.muted }]}>
-                        {formatMediaCount(skill.media.length)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
+                <PackSkillList skills={pack.skills} />
               ) : null}
               {isImported ? (
                 <Text style={[styles.importedLabel, { color: colors.sage }]}>Imported</Text>
@@ -227,6 +224,76 @@ export function SkillPackPicker({
 
 function formatSkillCount(count: number) {
   return `${count} ${count === 1 ? 'skill' : 'skills'}`;
+}
+
+function PackSkillList({ skills }: { skills: SkillPackSkill[] }) {
+  const colors = useTheme();
+  const columns = groupSkillColumns(skills);
+
+  if (columns.length > 1) {
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.skillColumnsScroller}
+        contentContainerStyle={styles.skillColumnsContent}
+      >
+        {columns.map((column) => (
+          <View key={column.name} style={[styles.skillColumn, { backgroundColor: colors.bg }]}>
+            <Text style={[styles.skillColumnTitle, { color: colors.muted }]}>{column.name}</Text>
+            <View style={styles.skillList}>
+              {column.skills.map((skill) => (
+                <SkillPackSkillRow key={skill.key} skill={skill} />
+              ))}
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    );
+  }
+
+  return (
+    <View style={[styles.skillList, { backgroundColor: colors.bg }]}>
+      {skills.map((skill) => (
+        <SkillPackSkillRow key={skill.key} skill={skill} />
+      ))}
+    </View>
+  );
+}
+
+function SkillPackSkillRow({ skill }: { skill: SkillPackSkill }) {
+  const colors = useTheme();
+
+  return (
+    <View style={styles.skillRow}>
+      <Text style={[styles.skillName, { color: colors.ink }]}>{skill.name}</Text>
+      <Text style={[styles.skillMeta, { color: colors.muted }]}>
+        {formatMediaCount(skill.media.length)}
+      </Text>
+    </View>
+  );
+}
+
+function groupSkillColumns(skills: SkillPackSkill[]) {
+  if (!skills.some((skill) => skill.column)) return [];
+
+  const columns: Array<{ name: string; skills: SkillPackSkill[] }> = [];
+  const columnsByName = new Map<string, { name: string; skills: SkillPackSkill[] }>();
+
+  for (const skill of skills) {
+    const columnName = skill.column ?? 'Other';
+    let column = columnsByName.get(columnName);
+
+    if (!column) {
+      column = { name: columnName, skills: [] };
+      columnsByName.set(columnName, column);
+      columns.push(column);
+    }
+
+    column.skills.push(skill);
+  }
+
+  return columns;
 }
 
 function ModeButton({
@@ -316,12 +383,31 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     padding: spacing.md,
   },
+  skillColumn: {
+    borderRadius: radius.sm,
+    gap: spacing.xs,
+    minWidth: 220,
+    paddingTop: spacing.md,
+  },
+  skillColumnsContent: {
+    gap: spacing.sm,
+    paddingRight: spacing.xs,
+  },
+  skillColumnsScroller: {
+    marginRight: -spacing.lg,
+  },
+  skillColumnTitle: {
+    ...textStyles.rowLabel,
+    paddingHorizontal: spacing.md,
+  },
   skillMeta: {
     ...textStyles.listRowMeta,
   },
   skillName: {
     ...textStyles.menuItem,
     flex: 1,
+    fontSize: 14,
+    lineHeight: 19,
     minWidth: 0,
   },
   skillRow: {
@@ -329,6 +415,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
     justifyContent: 'space-between',
+  },
+  selectionButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 32,
+    minWidth: 32,
   },
   skillsHeader: {
     alignItems: 'center',
