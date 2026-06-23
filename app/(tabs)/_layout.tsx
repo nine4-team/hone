@@ -1,6 +1,8 @@
-import { Tabs, usePathname } from 'expo-router';
+import { Tabs, usePathname, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ArsenalIcon } from '../../components/ArsenalIcon';
+import { GlobalHitEntrySheet } from '../../components/EntrySheets';
 import { FloatingNavigation, type FloatingNavigationItem } from '../../components/FloatingNavigation';
 import { useHitList } from '../../lib/store';
 import { useTheme } from '../../lib/theme';
@@ -23,7 +25,15 @@ const routeLabels: Record<string, string> = {
 
 function FloatingTabBar({ state, navigation }: any) {
   const pathname = usePathname();
-  const { loading, skillPackOnboardingCompleted, skills } = useHitList();
+  const router = useRouter();
+  const {
+    addStandaloneHit,
+    loading,
+    partners,
+    skillPackOnboardingCompleted,
+    skills,
+  } = useHitList();
+  const [hitSheetOpen, setHitSheetOpen] = useState(false);
   const visiblePathnames = new Set(['/', '/settings', '/library', '/partners']);
   if (!visiblePathnames.has(pathname)) return null;
 
@@ -36,30 +46,42 @@ function FloatingTabBar({ state, navigation }: any) {
   const activeRouteKey = state.routes[state.index]?.key;
 
   return (
-    <FloatingNavigation
-      items={routes.map((route: any) => {
-        const focused = route.key === activeRouteKey;
+    <>
+      <FloatingNavigation
+        items={routes.map((route: any) => {
+          const focused = route.key === activeRouteKey;
 
-        return {
-          key: route.key,
-          ...(routeIcons[route.name] ?? { icon: 'circle' }),
-          label: `${routeLabels[route.name]} tab`,
-          selected: focused,
-          onPress: () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
+          return {
+            key: route.key,
+            ...(routeIcons[route.name] ?? { icon: 'circle' }),
+            label: `${routeLabels[route.name]} tab`,
+            selected: focused,
+            onPress: () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
 
-            if (!focused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          },
-        };
-      })}
-      showFade={!showingSkillPackOnboarding}
-    />
+              if (!focused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            },
+          };
+        })}
+        createLabel="Add"
+        onCreatePress={() => setHitSheetOpen(true)}
+        showFade={!showingSkillPackOnboarding}
+      />
+      <GlobalHitEntrySheet
+        visible={hitSheetOpen}
+        partners={partners}
+        skills={skills}
+        onClose={() => setHitSheetOpen(false)}
+        onOpenCreateSkill={() => router.push('/skills/new')}
+        onSaveHit={addStandaloneHit}
+      />
+    </>
   );
 }
 

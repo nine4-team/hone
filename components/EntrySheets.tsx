@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import {
   PartnerPickerContent,
   SOLO_PARTNER_KEY,
@@ -11,7 +11,7 @@ import { Stepper } from './Stepper';
 import { inferMediaType } from '../lib/mediaMetadata';
 import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
-import type { Partner } from '../lib/types';
+import type { Partner, Skill } from '../lib/types';
 
 type HitEntrySheetProps = {
   visible: boolean;
@@ -34,6 +34,7 @@ type NoteEntrySheetProps = {
 
 type QuickAddMode = 'hit' | 'media' | 'note';
 type HitEntryStep = 'form' | 'partner';
+type GlobalHitStep = 'menu' | 'skill' | 'hit';
 
 type QuickAddEntrySheetProps = {
   visible: boolean;
@@ -45,6 +46,15 @@ type QuickAddEntrySheetProps = {
   onSaveHit: (input: { partnerName?: string; count: number }) => void;
   onSaveMedia: (input: { url: string; notes?: string }) => Promise<void> | void;
   onSaveNote: (body: string) => void;
+};
+
+type GlobalHitEntrySheetProps = {
+  visible: boolean;
+  partners: Partner[];
+  skills: Skill[];
+  onClose: () => void;
+  onOpenCreateSkill: () => void;
+  onSaveHit: (input: { skillId: string; partnerName?: string; count: number }) => Promise<void>;
 };
 
 export function HitEntrySheet({ visible, partners, onClose, onSave }: HitEntrySheetProps) {
@@ -170,22 +180,161 @@ export function QuickAddEntrySheet({
   );
 }
 
+export function GlobalHitEntrySheet({
+  visible,
+  partners,
+  skills,
+  onClose,
+  onOpenCreateSkill,
+  onSaveHit,
+}: GlobalHitEntrySheetProps) {
+  const colors = useTheme();
+  const [step, setStep] = useState<GlobalHitStep>('menu');
+  const [query, setQuery] = useState('');
+  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!visible) {
+      setStep('menu');
+      setQuery('');
+      setSelectedSkill(null);
+      setSaving(false);
+      setErrorMessage(null);
+    }
+  }, [visible]);
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const matchingSkills = skills
+    .filter((skill) => !normalizedQuery || skill.name.toLowerCase().includes(normalizedQuery))
+    .sort((a, b) => Number(b.active) - Number(a.active) || a.name.localeCompare(b.name));
+  const activeSkills = matchingSkills.filter((skill) => skill.active);
+  const arsenalSkills = matchingSkills.filter((skill) => !skill.active);
+
+  const close = () => {
+    if (!saving) onClose();
+  };
+
+  const saveExistingSkillHit = async (input: { partnerName?: string; count: number }) => {
+    if (!selectedSkill || saving) return;
+    setSaving(true);
+    setErrorMessage(null);
+    try {
+      await onSaveHit({ skillId: selectedSkill.id, ...input });
+      onClose();
+    } catch {
+      setErrorMessage('Could not log hit. Try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Sheet visible={visible} title={step === 'menu' ? 'Add' : 'Log Hit'} onClose={close}>
+      {step === 'menu' ? (
+        <View style={styles.menuList}>
+          <QuickAddRow
+            colors={colors}
+            icon="add"
+            label="Create Skill"
+            onPress={() => {
+              onClose();
+              onOpenCreateSkill();
+            }}
+          />
+          <QuickAddRow
+            colors={colors}
+            disabled={skills.length === 0}
+            helperText={skills.length === 0 ? 'Create a skill to log hits' : undefined}
+            icon="gps-fixed"
+            label="Log Hit"
+            onPress={() => setStep('skill')}
+          />
+        </View>
+      ) : step === 'skill' ? (
+        <>
+          <TextInput
+            autoCapitalize="none"
+            autoFocus
+            clearButtonMode="while-editing"
+            onChangeText={setQuery}
+            placeholder="Search skills"
+            placeholderTextColor={colors.quiet}
+            style={[styles.input, { backgroundColor: colors.surfaceMuted, color: colors.ink }]}
+            value={query}
+          />
+          <ScrollView keyboardShouldPersistTaps="handled" style={styles.skillPickerList}>
+            <SkillChoiceSection
+              label="Hit List"
+              skills={activeSkills}
+              onSelect={(skill) => {
+                setSelectedSkill(skill);
+                setStep('hit');
+              }}
+            />
+            <SkillChoiceSection
+              label="Arsenal"
+              skills={arsenalSkills}
+              onSelect={(skill) => {
+                setSelectedSkill(skill);
+                setStep('hit');
+              }}
+            />
+            {matchingSkills.length === 0 ? (
+              <Text style={[styles.emptySkillText, { color: colors.muted }]}>No matching skills.</Text>
+            ) : null}
+          </ScrollView>
+        </>
+      ) : (
+        <>
+          {errorMessage ? <Text style={[styles.sheetError, { color: colors.clay }]}>{errorMessage}</Text> : null}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setStep('skill')}
+            style={({ pressed }) => [styles.selectedSkillRow, pressed && styles.pressed]}
+          >
+            <View style={styles.selectedSkillText}>
+              <Text style={[styles.selectedSkillLabel, { color: colors.muted }]}>Skill</Text>
+              <Text style={[styles.selectedSkillName, { color: colors.ink }]} numberOfLines={1}>
+                {selectedSkill?.name}
+              </Text>
+            </View>
+            <MaterialIcons name="swap-horiz" size={20} color={colors.sage} />
+          </Pressable>
+          <HitEntryForm
+            canSave={!saving}
+            partners={partners}
+            onCancel={() => setStep('skill')}
+            onSave={saveExistingSkillHit}
+            saveLabel={saving ? 'Saving...' : 'Save Hit'}
+          />
+        </>
+      )}
+    </Sheet>
+  );
+}
+
 function HitEntryForm({
+  canSave = true,
   partners,
   onCancel,
   onSave,
+  saveLabel = 'Save Hit',
 }: {
+  canSave?: boolean;
   partners: Partner[];
   onCancel: () => void;
-  onSave: (input: { partnerName?: string; count: number }) => void;
+  onSave: (input: { partnerName?: string; count: number }) => Promise<void> | void;
+  saveLabel?: string;
 }) {
   const colors = useTheme();
   const [partnerChoice, setPartnerChoice] = useState<PartnerChoice | null>(null);
   const [count, setCount] = useState(1);
   const [step, setStep] = useState<HitEntryStep>('form');
 
-  const save = () => {
-    onSave({
+  const save = async () => {
+    await onSave({
       partnerName: partnerChoice?.key === SOLO_PARTNER_KEY ? undefined : partnerChoice?.name,
       count,
     });
@@ -238,12 +387,49 @@ function HitEntryForm({
         </View>
       </View>
       <SheetActions
-        canSave={count > 0}
+        canSave={canSave && count > 0}
         onCancel={onCancel}
         onSave={save}
-        saveLabel="Save Hit"
+        saveLabel={saveLabel}
       />
     </>
+  );
+}
+
+function SkillChoiceSection({
+  label,
+  onSelect,
+  skills,
+}: {
+  label: string;
+  onSelect: (skill: Skill) => void;
+  skills: Skill[];
+}) {
+  const colors = useTheme();
+
+  if (skills.length === 0) return null;
+
+  return (
+    <View style={styles.skillSection}>
+      <Text style={[styles.skillSectionLabel, { color: colors.muted }]}>{label}</Text>
+      {skills.map((skill) => (
+        <Pressable
+          key={skill.id}
+          accessibilityRole="button"
+          onPress={() => onSelect(skill)}
+          style={({ pressed }) => [
+            styles.skillChoice,
+            { borderTopColor: colors.line },
+            pressed && { backgroundColor: colors.surfaceMuted },
+          ]}
+        >
+          <Text style={[styles.skillChoiceText, { color: colors.ink }]} numberOfLines={1}>
+            {skill.name}
+          </Text>
+          <MaterialIcons name="chevron-right" size={22} color={colors.muted} />
+        </Pressable>
+      ))}
+    </View>
   );
 }
 
@@ -385,7 +571,7 @@ function SheetActions({
 }: {
   canSave: boolean;
   onCancel: () => void;
-  onSave: () => void;
+  onSave: () => Promise<void> | void;
   saveLabel: string;
 }) {
   const colors = useTheme();
@@ -416,11 +602,15 @@ function SheetActions({
 
 function QuickAddRow({
   colors,
+  disabled = false,
+  helperText,
   icon,
   label,
   onPress,
 }: {
   colors: ReturnType<typeof useTheme>;
+  disabled?: boolean;
+  helperText?: string;
   icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
   onPress: () => void;
@@ -428,18 +618,27 @@ function QuickAddRow({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.menuItem,
         { borderTopColor: colors.line },
-        pressed && { backgroundColor: colors.surfaceMuted },
+        pressed && !disabled && { backgroundColor: colors.surfaceMuted },
       ]}
     >
       <View style={styles.menuItemLabelRow}>
-        <MaterialIcons name={icon} size={21} color={colors.sage} />
-        <Text style={[styles.menuItemText, { color: colors.ink }]}>{label}</Text>
+        <MaterialIcons name={icon} size={21} color={disabled ? colors.quiet : colors.sage} />
+        <View style={styles.menuItemTextBlock}>
+          <Text style={[styles.menuItemText, { color: disabled ? colors.quiet : colors.ink }]}>
+            {label}
+          </Text>
+          {helperText ? (
+            <Text style={[styles.menuItemHelp, { color: colors.muted }]}>{helperText}</Text>
+          ) : null}
+        </View>
       </View>
-      <MaterialIcons name="chevron-right" size={22} color={colors.muted} />
+      <MaterialIcons name="chevron-right" size={22} color={disabled ? colors.line : colors.muted} />
     </Pressable>
   );
 }
@@ -485,6 +684,10 @@ const styles = StyleSheet.create({
   },
   fieldStack: {
     gap: spacing.xs,
+  },
+  emptySkillText: {
+    ...textStyles.formHelp,
+    paddingVertical: spacing.md,
   },
   header: {
     borderBottomWidth: 1,
@@ -532,6 +735,13 @@ const styles = StyleSheet.create({
     ...textStyles.menuItem,
     flex: 1,
   },
+  menuItemHelp: {
+    ...textStyles.formHelp,
+  },
+  menuItemTextBlock: {
+    flex: 1,
+    minWidth: 0,
+  },
   menuList: {
     marginTop: -spacing.md,
   },
@@ -557,11 +767,53 @@ const styles = StyleSheet.create({
   saveText: {
     ...textStyles.composerActionPrimary,
   },
+  selectedSkillLabel: {
+    ...textStyles.formHelp,
+  },
+  selectedSkillName: {
+    ...textStyles.formInput,
+  },
+  selectedSkillRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-between',
+  },
+  selectedSkillText: {
+    flex: 1,
+    minWidth: 0,
+  },
   sheet: {
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     overflow: 'hidden',
     paddingBottom: spacing.xl,
+  },
+  sheetError: {
+    ...textStyles.formHelp,
+  },
+  skillChoice: {
+    alignItems: 'center',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: spacing.md,
+    justifyContent: 'space-between',
+    minHeight: 48,
+    paddingVertical: spacing.sm,
+  },
+  skillChoiceText: {
+    ...textStyles.menuItem,
+    flex: 1,
+  },
+  skillPickerList: {
+    maxHeight: 300,
+  },
+  skillSection: {
+    gap: 0,
+  },
+  skillSectionLabel: {
+    ...textStyles.formHelp,
+    paddingTop: spacing.sm,
   },
   stepperRow: {
     alignItems: 'flex-start',
