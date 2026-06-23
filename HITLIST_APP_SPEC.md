@@ -86,10 +86,10 @@ Hit List skill cards should show:
 
 The Hit List skill dial has two concentric rings:
 
-- Outer ring: current-level hit progress toward the next level.
+- Outer ring: current-level XP progress toward the next level.
 - Inner ring: current level progress toward Level 10.
 
-The outer ring is the primary progress ring. It uses the brand color and fills from 12 o'clock based on `hitsIntoLevel / 10`.
+The outer ring is the primary progress ring. It uses the brand color and fills from 12 o'clock based on `xpIntoLevel / 10`.
 
 The inner ring shows level progress. It fills from 12 o'clock based on `currentLevel / 10`.
 
@@ -103,15 +103,14 @@ Ring styling:
 
 Center content:
 
-- The main center number is the number of hits inside the current level, not lifetime hits.
-- Use `X HIT` or `X HITS`.
+- The main center signal is the skill level.
+- Show `LVL X` with total XP underneath.
 - Do not show `/10` text in the center.
-- Show `LEVEL X` below the current-level hit count.
 
 Metadata below the skill name:
 
-- First row: `X hits until Level Y`.
-- Second row: `X lifetime hit` or `X lifetime hits`.
+- First row: `X XP until Level Y`.
+- Do not show total hits on the dashboard tile; total hits belongs on Skill Detail.
 
 Tooltips can explain that the Hit List is the user's focused working set and that skills can be activated or deactivated from the Arsenal.
 
@@ -126,35 +125,37 @@ On Skill Detail, the persistent plus button should open quick actions:
 
 Each skill has visible levels from Level 0 through Level 10.
 
+Level progress is based on a skill's total **XP**, not its raw hit count. Each hit is worth XP equal to `hit.count × belt points of the partner hit on` (white = 1 when there is no partner or no belt). A skill's XP is the sum across all its hits. It takes 10 XP per level:
+
 ```text
-0-9 hits = Level 0
-10 hits = +1 level
-100 hits = Level 10
+0-9 XP = Level 0
+10 XP = +1 level
+100 XP = Level 10
 ```
+
+A white-belt (or unattributed) hit is worth 1 XP, so leveling against white belts matches the old "1 hit = 1 point" behavior exactly. Existing hits have no belt, so this change does not move anyone's current levels. Hits on higher belts are worth proportionally more (a black-belt hit is 5 XP), so the same number of hits levels a skill faster when earned against tougher partners.
 
 The number is not presented as scientific. It is clean, memorable, difficult, and achievable.
 
-Level progress is based on total successful live hits for that skill.
-
 The outer progress ring on Equipped Skill cards shows progress toward the next level, not progress toward Level 10. The inner progress ring shows current level progress toward Level 10.
 
-Example:
+Example (all white-belt/unattributed hits, so XP equals hit count):
 
 ```text
-36 hits = Level 3
-Center = 6 HITS
-Center level text = LEVEL 3
-Outer ring = 6/10 toward Level 4
-Inner ring = 3/10 toward Level 10
-Metadata row 1 = 4 hits until Level 4
-Metadata row 2 = 36 lifetime hits
+36 XP = Level 3
+Center = LVL 3 / 36 XP
+Outer ring = 6/10 XP toward Level 4
+Inner ring = coarse level progress reference
+Metadata row 1 = 4 XP until Level 4
 ```
 
-After Level 10:
+The rings and level fill are driven by XP. The center total and "until next level" row are XP. Total hits remains a raw hit count (people hit, not points) and belongs on Skill Detail. For white belts XP and hits are identical; they diverge only once higher-belt partners are involved.
 
-- Keep official levels capped at 10.
-- Continue counting lifetime hits.
-- Add playful post-Level-10 titles, glows, badge treatments, or achievement names later.
+After high levels:
+
+- Levels are unbounded.
+- Continue counting total hits on Skill Detail.
+- Add playful high-level titles, glows, badge treatments, or achievement names later.
 
 Post-Level-10 naming can wait until the core level experience feels good in the app. Do not use "mastered" language for Level 10.
 
@@ -328,9 +329,29 @@ Use this model:
 Partner
 - id
 - name
+- belt nullable
 - created_at
 - updated_at
 ```
+
+### Partner Belt
+
+A partner's belt sets how much XP each hit on that partner is worth (see Levels). Belt is optional; a missing belt is treated as white.
+
+Belt is a single field on the partner profile. It uses one enum covering adult and kids ranks, each mapped to a point value:
+
+```text
+Adult:  white 1   blue 2   purple 3   brown 4   black 5
+Kids:   white 1.0  grey 1.2  yellow 1.4  orange 1.6  green 1.8
+```
+
+Kids belts have no stripe variants. Kids values sit between adult white and adult blue, so a kids belt is always worth more than a default (white) hit and less than an adult blue.
+
+Belt is editable on the partner detail screen. Partners created inline while logging start at white and can have their belt set later. Editing a partner's belt re-derives that partner's hit XP everywhere, including past hits — belt is never frozen onto a hit at log time, so users are not penalized for setting a belt late or correcting a mistake.
+
+Only saved partners carry a belt. A hit against an unattributed or ad-hoc (typed, unsaved) partner counts as white.
+
+**Coming soon — user belt.** The user's own profile will also carry a belt. It is part of the near-term plan so a user can share their profile and become someone else's partner, bringing their belt and other partner fields with them. The user's own belt does not affect their own XP (XP comes from the partner hit on); it is for display and profile sharing. The `belt` field is deliberately modeled as one field on a shared profile shape so it carries over when a user profile becomes a partner.
 
 The app should support partner-level history:
 

@@ -12,7 +12,13 @@ import { HitSummaryList } from '../../components/HitSummaryList';
 import { Screen } from '../../components/Screen';
 import { Card, IconButton } from '../../components/ui';
 import { formatDate, trainingLogTypeLabels, trainingLogTypes } from '../../lib/format';
-import { HITS_PER_LEVEL, MAX_VISIBLE_LEVEL, getSkillLevelProgress, hitRowsByPartner } from '../../lib/hits';
+import {
+  XP_PER_LEVEL,
+  formatXp,
+  getSkillLevelProgress,
+  hitRowsByPartner,
+  skillXpFifths,
+} from '../../lib/hits';
 import { inferMediaType } from '../../lib/mediaMetadata';
 import { useHitList } from '../../lib/store';
 import { radius, spacing, type ThemeColors, useTheme } from '../../lib/theme';
@@ -82,7 +88,7 @@ export default function SkillDetailScreen() {
   const skillMedia = media.filter((item) => item.skillId === id);
   const skillHits = hits.filter((hit) => hit.skillId === id);
   const totalHits = skillHits.reduce((sum, hit) => sum + hit.count, 0);
-  const levelProgress = getSkillLevelProgress(totalHits);
+  const levelProgress = getSkillLevelProgress(skillXpFifths(skillHits, partners));
   const hitsByTrainingLogId = skillHits.reduce<Record<string, number>>((counts, hit) => {
     if (!hit.trainingLogId) return counts;
     counts[hit.trainingLogId] = (counts[hit.trainingLogId] ?? 0) + hit.count;
@@ -105,6 +111,12 @@ export default function SkillDetailScreen() {
     {},
   );
   const moreStats = [
+    {
+      key: 'total-xp',
+      label: 'Total XP',
+      value: formatXp(levelProgress.totalXp),
+      visible: levelProgress.totalXp > 0,
+    },
     ...trainingLogTypes
       .map((type) => ({
         key: `${type}-time`,
@@ -241,18 +253,18 @@ export default function SkillDetailScreen() {
             <ProgressBarStat
               colors={colors}
               label="level"
-              progress={levelProgress.level / MAX_VISIBLE_LEVEL}
-              value={`${levelProgress.level}/${MAX_VISIBLE_LEVEL}`}
-            />
-            <ProgressBarStat
-              colors={colors}
-              label="hits this level"
               progress={levelProgress.progressToNextLevel}
-              value={`${levelProgress.hitsIntoLevel}/${HITS_PER_LEVEL}`}
+              value={`${levelProgress.level}`}
             />
             <ProgressBarStat
               colors={colors}
-              label="lifetime hits"
+              label="XP this level"
+              progress={levelProgress.progressToNextLevel}
+              value={`${formatXp(levelProgress.xpIntoLevel)}/${XP_PER_LEVEL}`}
+            />
+            <ProgressBarStat
+              colors={colors}
+              label="total hits"
               progress={totalHits / 100}
               value={`${totalHits}/100`}
             />
@@ -296,12 +308,8 @@ export default function SkillDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <Card style={styles.aboutCard}>
-          <View style={styles.aboutHeader}>
-            <View style={styles.sectionTitleRow}>
-              <MaterialIcons name="notes" size={19} color={colors.sage} />
-              <Text style={[styles.sectionTitle, { color: colors.ink }]}>About</Text>
-            </View>
+        <View style={styles.skillDetailsPanel}>
+          <View style={styles.skillDetailsActions}>
             <IconButton
               accessibilityLabel={editingSkillDetails ? 'Cancel editing skill details' : 'Edit skill details'}
               onPress={() => {
@@ -408,7 +416,7 @@ export default function SkillDetailScreen() {
               ) : null}
             </View>
           )}
-        </Card>
+        </View>
       </View>
 
       <View style={styles.section}>
@@ -621,15 +629,16 @@ export default function SkillDetailScreen() {
                         {expandedMediaNotes[item.id] || !canExpandNote ? (
                           <View style={styles.mediaNoteParagraphs}>
                             {getMediaNoteParagraphs(item.notes).map((paragraph, index) => (
-                              <Text key={`${item.id}-note-${index}`} style={[styles.cardBody, { color: colors.ink }]}>
-                                {paragraph}
-                              </Text>
+                              <MediaNoteText
+                                key={`${item.id}-note-${index}`}
+                                colors={colors}
+                                mediaUrl={item.url}
+                                text={paragraph}
+                              />
                             ))}
                           </View>
                         ) : (
-                          <Text style={[styles.cardBody, { color: colors.ink }]} numberOfLines={3}>
-                            {item.notes}
-                          </Text>
+                          <MediaNoteText colors={colors} mediaUrl={item.url} numberOfLines={3} text={item.notes} />
                         )}
                         {canExpandNote ? (
                           <Pressable
@@ -1001,6 +1010,73 @@ function shouldOfferMediaNoteExpansion(notes?: string) {
   return notes.includes('\n') || notes.length > 120;
 }
 
+const mediaNoteTimestampPattern = /\[(\d{1,2}):(\d{2})(?:-(\d{1,2}):(\d{2}))?\]/g;
+
+type MediaNoteTextPart =
+  | { text: string; type: 'text' }
+  | { seconds: number; text: string; type: 'timestamp' };
+
+function MediaNoteText({
+  colors,
+  mediaUrl,
+  numberOfLines,
+  text,
+}: {
+  colors: ThemeColors;
+  mediaUrl: string;
+  numberOfLines?: number;
+  text: string;
+}) {
+  const parts = getMediaNoteTextParts(text);
+
+  return (
+    <Text style={[styles.cardBody, { color: colors.ink }]} numberOfLines={numberOfLines}>
+      {parts.map((part, index) => {
+        if (part.type === 'text') {
+          return <Text key={`text-${index}`}>{part.text}</Text>;
+        }
+
+        return (
+          <Text
+            accessibilityRole="link"
+            key={`timestamp-${index}`}
+            onPress={() => openMediaUrl(getTimestampedMediaUrl(mediaUrl, part.seconds))}
+            style={[styles.mediaNoteTimestamp, { color: colors.sage }]}
+          >
+            {part.text}
+          </Text>
+        );
+      })}
+    </Text>
+  );
+}
+
+function getMediaNoteTextParts(text: string): MediaNoteTextPart[] {
+  const parts: MediaNoteTextPart[] = [];
+  let lastIndex = 0;
+
+  for (const match of text.matchAll(mediaNoteTimestampPattern)) {
+    if (match.index === undefined) continue;
+
+    if (match.index > lastIndex) {
+      parts.push({ text: text.slice(lastIndex, match.index), type: 'text' });
+    }
+
+    parts.push({
+      seconds: Number(match[1]) * 60 + Number(match[2]),
+      text: match[0],
+      type: 'timestamp',
+    });
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push({ text: text.slice(lastIndex), type: 'text' });
+  }
+
+  return parts.length > 0 ? parts : [{ text, type: 'text' }];
+}
+
 function getMediaNoteParagraphs(notes: string) {
   return notes
     .split('\n')
@@ -1028,6 +1104,22 @@ function openMediaUrl(url: string) {
   Linking.openURL(url).catch(() => {
     Alert.alert('Could not open link', url);
   });
+}
+
+function getTimestampedMediaUrl(url: string, seconds: number) {
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname.includes('youtu.be') || parsed.hostname.includes('youtube.com')) {
+      parsed.searchParams.set('t', `${seconds}s`);
+      parsed.searchParams.delete('start');
+      return parsed.toString();
+    }
+  } catch {
+    return url;
+  }
+
+  return url;
 }
 
 function CollapsibleSectionHeader({
@@ -1078,24 +1170,11 @@ const styles = StyleSheet.create({
   aboutBody: {
     ...textStyles.detailRecordBody,
   },
-  aboutCard: {
-    gap: spacing.sm,
-    paddingTop: spacing.sm,
-  },
   aboutContent: {
     gap: spacing.md,
-    paddingBottom: spacing.md,
-    paddingHorizontal: spacing.md,
   },
   aboutField: {
     gap: spacing.xs,
-  },
-  aboutHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 32,
-    paddingHorizontal: spacing.md,
   },
   aboutHelp: {
     ...textStyles.formHelp,
@@ -1264,6 +1343,10 @@ const styles = StyleSheet.create({
   mediaNoteToggleText: {
     ...textStyles.buttonLabelCompact,
   },
+  mediaNoteTimestamp: {
+    ...textStyles.buttonLabelCompact,
+    textDecorationLine: 'underline',
+  },
   mediaPlayBadge: {
     alignItems: 'center',
     borderRadius: 12,
@@ -1374,6 +1457,13 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: spacing.lg,
+  },
+  skillDetailsActions: {
+    alignItems: 'flex-end',
+    minHeight: 32,
+  },
+  skillDetailsPanel: {
+    gap: spacing.sm,
   },
   skillDetailInput: {
     ...textStyles.formInput,

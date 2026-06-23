@@ -125,15 +125,14 @@ Ring styling:
 
 Center display:
 
-- Show current-level hits, not lifetime hits.
-- Use `X HIT` or `X HITS`.
+- Show level as the primary signal.
+- Show total XP under the level.
 - Do not show `/10` text.
-- Show `LEVEL X` below the current-level hit count.
 
 Metadata display:
 
-- First row: `X hits until Level Y`.
-- Second row: `X lifetime hit` or `X lifetime hits`.
+- First row: `X XP until Level Y`.
+- Do not show total hits on the dashboard tile; total hits belongs on Skill Detail.
 
 Example:
 
@@ -144,7 +143,7 @@ Center level text = LEVEL 3
 Outer ring = 6/10 toward Level 4
 Inner ring = 3/10 toward Level 10
 Metadata row 1 = 4 hits until Level 4
-Metadata row 2 = 36 lifetime hits
+Metadata row 2 = 36 total hits
 ```
 
 ### UI Implication
@@ -165,7 +164,7 @@ This makes the Hit List screen the user's current target board, not just a list 
 Potential easter egg territory:
 
 - Keep official levels capped at 10.
-- Continue counting lifetime hits.
+- Continue counting total hits.
 - Add playful post-Level-10 titles, glows, badge treatments, or achievement names later.
 
 Post-Level-10 naming can wait until the core level experience feels good in the app.

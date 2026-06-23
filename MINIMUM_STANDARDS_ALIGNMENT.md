@@ -61,7 +61,7 @@ As of the current pass, the shared primitives and Skill Detail have been moved o
   - Equipped/unequipped switch using the Minimum Standards toggle pattern
 - Equipped Skill dial should follow the Minimum Standards circular progress pattern: square/butt stroke caps, 12 o'clock start, equal stroke widths, and no visible gap between the hit-progress ring and level-progress ring.
 - Outer ring shows current-level hit progress toward the next level. Inner ring shows level progress toward Level 10.
-- Center text shows current-level hits and `LEVEL X`; lifetime hits belong in metadata below the skill name.
+- Center text shows current-level hits and `LEVEL X`; total hits belong in metadata below the skill name.
 - Equip/unequip is core state, so it should be directly visible as a switch, not hidden in a menu.
 - Skill Detail should use the same switch language as cards for equip/unequip; avoid a separate word-labeled `Equip`/`Unequip` button for the same state.
 - Toggle pattern to lift from Minimum Standards:
