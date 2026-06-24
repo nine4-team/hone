@@ -347,6 +347,15 @@
       color: #ffffff;
     }
 
+    .game .section-sub {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .game .section-sub b,
+    .game-step p b {
+      color: #c7a96b;
+    }
+
     .game-steps {
       max-width: 1100px;
       margin: 0 auto;
@@ -1093,6 +1102,8 @@
   <section class="game">
     <div class="section-head">
       <h2>Game Mechanics</h2>
+      <p class="section-sub">Build your game one skill at a time. <b>Level up each skill by hitting it on resisting
+          opponents</b> — every hit earns experience points (XP) toward that skill.</p>
     </div>
     <div class="game-steps">
       <div class="game-step">
@@ -1100,8 +1111,8 @@
             <path
               d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4s-1.79-4-4-4m8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7s7 3.13 7 7s-3.13 7-7 7" />
           </svg></span>
-        <h3>Equip</h3>
-        <p>Pick a few skills to focus on and add them to your Hit List. The rest wait in your Arsenal.</p>
+        <h3>Focus</h3>
+        <p>Pick a few skills to focus on and add them to your <b>Hit List</b>. The rest wait in your <b>Arsenal</b>.</p>
       </div>
       <span class="step-arrow" aria-hidden="true">&rarr;</span>
       <div class="game-step">
@@ -1129,7 +1140,8 @@
             <line x1="3" y1="19" x2="5" y2="21" />
           </svg></span>
         <h3>Sharpen</h3>
-        <p>Sharpen your skills with study, dialogue drilling, and constraint games. Land them more, level faster.</p>
+        <p>Sharpen your skills with study, dialogue drilling, and constraint games. Land them more and level up faster.
+        </p>
       </div>
     </div>
   </section>
@@ -1174,13 +1186,14 @@
     </section>
   </div>
 
-  <!-- Equip -->
+  <!-- Focus -->
   <div class="feature-wrap">
     <section class="feature reverse">
       <div class="feature-text">
-        <div class="feature-eyebrow">Curate</div>
-        <h3>Equip your skills.</h3>
-        <p>Pick a few skills as your hit list — the moves you're hunting right now — and level them up with hits.</p>
+        <div class="feature-eyebrow">Focus</div>
+        <h3>Create your Hit List</h3>
+        <p>Pick a few skills as your hit list — the one you're focused on developing right now — and level them up by
+          landing hits against resisting opponents.</p>
         <div class="subsec">
           <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -1289,10 +1302,25 @@
           <p>Log study, dialogue drilling, constraint games, and rolling so you can see what's moving your hit rate.</p>
         </div>
       </div>
-      <div class="carousel">
+      <div class="carousel" data-carousel data-interval="4000">
         <div class="phone">
-          <img class="is-active" src="images/skill-detail.png"
-            alt="Skill page showing notes, media, and a log of past training sessions for a skill">
+          <img class="is-active" src="images/skill-detail-info.png"
+            alt="Mount Escape skill page with the Info section expanded and other sections collapsed">
+          <img src="images/skill-detail-hits.png"
+            alt="Mount Escape skill page with the Hits section expanded and other sections collapsed">
+          <img src="images/skill-detail-media.png"
+            alt="Mount Escape skill page with the Media section expanded and other sections collapsed">
+          <img src="images/skill-detail-notes.png"
+            alt="Mount Escape skill page with the Notes section expanded and other sections collapsed">
+          <img src="images/skill-detail-training-logs.png"
+            alt="Mount Escape skill page with the Training Logs section expanded and other sections collapsed">
+        </div>
+        <div class="dots">
+          <button class="dot is-active" type="button" aria-label="Show skill info"></button>
+          <button class="dot" type="button" aria-label="Show skill hits"></button>
+          <button class="dot" type="button" aria-label="Show skill media"></button>
+          <button class="dot" type="button" aria-label="Show skill notes"></button>
+          <button class="dot" type="button" aria-label="Show skill training logs"></button>
         </div>
       </div>
     </section>
@@ -1304,8 +1332,8 @@
       <div class="feature-text">
         <div class="feature-eyebrow">Partners</div>
         <h3>Keep score on your partners.</h3>
-        <p>Half the fun is one-upping the people you train with. Every hit is tied to who you landed it on — so the
-          rivalry has a scoreboard.</p>
+        <p>Every hit is tied to the partner you landed it on — so you always
+          know where you stand against everyone you roll with.</p>
         <div class="subsec">
           <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -1316,7 +1344,7 @@
               <path d="M4 10h2" />
               <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
             </svg>Ranked List</h4>
-          <p>Everyone you've scored hits on, ranked by count.</p>
+          <p>Every partner, ranked by how many hits you've landed on them.</p>
         </div>
         <div class="subsec">
           <h4><svg class="subsec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

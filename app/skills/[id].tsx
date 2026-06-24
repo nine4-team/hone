@@ -13,6 +13,7 @@ import { Screen } from '../../components/Screen';
 import { Card, IconButton } from '../../components/ui';
 import { formatDate, trainingLogTypeLabels, trainingLogTypes } from '../../lib/format';
 import {
+  LEVEL_RING_REFERENCE_LEVEL,
   XP_PER_LEVEL,
   formatXp,
   getSkillLevelProgress,
@@ -52,13 +53,14 @@ export default function SkillDetailScreen() {
   const skill = skills.find((item) => item.id === id);
   const [description, setDescription] = useState('');
   const [hitCondition, setHitCondition] = useState('');
-  const [editingSkillDetails, setEditingSkillDetails] = useState(false);
-  const [savingSkillDetails, setSavingSkillDetails] = useState(false);
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [editingHitCondition, setEditingHitCondition] = useState(false);
+  const [savingInfoField, setSavingInfoField] = useState<'description' | 'hitCondition' | null>(null);
   const [noteBody, setNoteBody] = useState('');
   const [notesOpen, setNotesOpen] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
-  const [logsOpen, setLogsOpen] = useState(true);
+  const [logsOpen, setLogsOpen] = useState(false);
   const [hitsOpen, setHitsOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
   const [addingMedia, setAddingMedia] = useState(false);
@@ -69,6 +71,7 @@ export default function SkillDetailScreen() {
   const [quickAddMode, setQuickAddMode] = useState<QuickAddMode | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const scrollRef = useRef<ScrollView | null>(null);
   const trainingLogsY = useRef(0);
   const { toastMessage, showToast } = useToast();
@@ -76,7 +79,8 @@ export default function SkillDetailScreen() {
   useEffect(() => {
     setDescription(skill?.description ?? '');
     setHitCondition(skill?.hitCondition ?? '');
-    setEditingSkillDetails(false);
+    setEditingDescription(false);
+    setEditingHitCondition(false);
   }, [skill?.description, skill?.hitCondition, skill?.id]);
 
   const skillNotes = notes
@@ -136,6 +140,12 @@ export default function SkillDetailScreen() {
       label: 'Rolling hits',
       value: formatHitStat(statsByType.rolling?.hitCount ?? 0),
       visible: (statsByType.rolling?.hitCount ?? 0) > 0,
+    },
+    {
+      key: 'total-hits',
+      label: 'Total hits',
+      value: formatHitStat(totalHits),
+      visible: true,
     },
   ].filter((stat) => stat.visible);
   const hasMoreStats = moreStats.length > 0;
@@ -253,20 +263,14 @@ export default function SkillDetailScreen() {
             <ProgressBarStat
               colors={colors}
               label="level"
-              progress={levelProgress.progressToNextLevel}
-              value={`${levelProgress.level}`}
+              progress={levelProgress.level / LEVEL_RING_REFERENCE_LEVEL}
+              value={`${levelProgress.level}/${LEVEL_RING_REFERENCE_LEVEL}`}
             />
             <ProgressBarStat
               colors={colors}
               label="XP this level"
               progress={levelProgress.progressToNextLevel}
               value={`${formatXp(levelProgress.xpIntoLevel)}/${XP_PER_LEVEL}`}
-            />
-            <ProgressBarStat
-              colors={colors}
-              label="total hits"
-              progress={totalHits / 100}
-              value={`${totalHits}/100`}
             />
           </View>
 
@@ -308,30 +312,40 @@ export default function SkillDetailScreen() {
       </View>
 
       <View style={styles.section}>
-        <View style={styles.skillDetailsPanel}>
-          <View style={styles.skillDetailsActions}>
-            <IconButton
-              accessibilityLabel={editingSkillDetails ? 'Cancel editing skill details' : 'Edit skill details'}
-              onPress={() => {
-                if (editingSkillDetails) {
-                  setDescription(skill.description ?? '');
-                  setHitCondition(skill.hitCondition ?? '');
-                }
-                setEditingSkillDetails((current) => !current);
-              }}
-            >
-              <MaterialIcons
-                name={editingSkillDetails ? 'close' : 'edit'}
-                size={18}
-                color={editingSkillDetails ? colors.muted : colors.sage}
-              />
-            </IconButton>
-          </View>
-
-          {editingSkillDetails ? (
-            <View style={styles.aboutContent}>
-              <View style={styles.aboutField}>
+        <CollapsibleSectionHeader
+          colors={colors}
+          icon="info-outline"
+          title="Info"
+          open={infoOpen}
+          onToggle={() => setInfoOpen((current) => !current)}
+        />
+        {infoOpen ? (
+          <View style={styles.infoStack}>
+            <Card style={styles.infoCard}>
+              <View style={styles.infoHeader}>
                 <Text style={[styles.aboutLabel, { color: colors.ink }]}>Description</Text>
+                <IconButton
+                  accessibilityLabel={editingDescription ? 'Cancel editing description' : 'Edit description'}
+                  onPress={() => {
+                    if (editingDescription) {
+                      setDescription(skill.description ?? '');
+                    } else {
+                      setHitCondition(skill.hitCondition ?? '');
+                      setEditingHitCondition(false);
+                    }
+                    setEditingDescription((current) => !current);
+                  }}
+                >
+                  <MaterialIcons
+                    name={editingDescription ? 'close' : 'edit'}
+                    size={18}
+                    color={editingDescription ? colors.muted : colors.sage}
+                  />
+                </IconButton>
+              </View>
+
+              {editingDescription ? (
+                <>
                 <TextInput
                   multiline
                   onChangeText={setDescription}
@@ -340,83 +354,132 @@ export default function SkillDetailScreen() {
                   style={[styles.skillDetailInput, { borderColor: colors.line, color: colors.ink }]}
                   value={description}
                 />
-              </View>
-
-              <View style={styles.aboutField}>
-                <Text style={[styles.aboutLabel, { color: colors.ink }]}>Hit Condition</Text>
-                <Text style={[styles.aboutHelp, { color: colors.muted }]}>What counts as a hit?</Text>
-                <TextInput
-                  multiline
-                  onChangeText={setHitCondition}
-                  placeholder="I establish the position or finish the move against live resistance."
-                  placeholderTextColor={colors.quiet}
-                  style={[styles.skillDetailInput, { borderColor: colors.line, color: colors.ink }]}
-                  value={hitCondition}
-                />
-              </View>
-
-              <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => {
-                    setDescription(skill.description ?? '');
-                    setHitCondition(skill.hitCondition ?? '');
-                    setEditingSkillDetails(false);
-                  }}
-                  style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
-                >
-                  <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  disabled={savingSkillDetails}
-                  onPress={async () => {
-                    if (savingSkillDetails) return;
-                    setSavingSkillDetails(true);
-                    try {
-                      await updateSkillDetails({
-                        description,
-                        hitCondition,
-                        id: skill.id,
-                      });
-                      setEditingSkillDetails(false);
-                    } catch {
-                      showToast('Could not save skill details');
-                    } finally {
-                      setSavingSkillDetails(false);
-                    }
-                  }}
-                  style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
-                >
-                  <Text style={[styles.composerSave, { color: colors.sage }]}>
-                    {savingSkillDetails ? 'Saving...' : 'Save'}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.aboutContent}>
-              {skill.description ? (
-                <View style={styles.aboutField}>
-                  <Text style={[styles.aboutLabel, { color: colors.ink }]}>Description</Text>
-                  <Text style={[styles.aboutBody, { color: colors.ink }]}>{skill.description}</Text>
-                </View>
-              ) : null}
-              {skill.hitCondition ? (
-                <View style={styles.aboutField}>
-                  <Text style={[styles.aboutLabel, { color: colors.ink }]}>Hit Condition</Text>
-                  <Text style={[styles.aboutHelp, { color: colors.muted }]}>What counts as a hit?</Text>
-                  <Text style={[styles.aboutBody, { color: colors.ink }]}>{skill.hitCondition}</Text>
-                </View>
-              ) : null}
-              {!skill.description && !skill.hitCondition ? (
-                <Text style={[styles.emptyTrainingStats, { color: colors.muted }]}>
-                  Add a description and define what counts as a hit.
+                  <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => {
+                        setDescription(skill.description ?? '');
+                        setEditingDescription(false);
+                      }}
+                      style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
+                    >
+                      <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      disabled={savingInfoField === 'description'}
+                      onPress={async () => {
+                        if (savingInfoField) return;
+                        setSavingInfoField('description');
+                        try {
+                          await updateSkillDetails({
+                            description,
+                            hitCondition: skill.hitCondition ?? '',
+                            id: skill.id,
+                          });
+                          setEditingDescription(false);
+                        } catch {
+                          showToast('Could not save description');
+                        } finally {
+                          setSavingInfoField(null);
+                        }
+                      }}
+                      style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
+                    >
+                      <Text style={[styles.composerSave, { color: colors.sage }]}>
+                        {savingInfoField === 'description' ? 'Saving...' : 'Save'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              ) : (
+                <Text style={[skill.description ? styles.aboutBody : styles.emptyInfoText, { color: colors.ink }]}>
+                  {skill.description || 'Add what you are trying to get better at.'}
                 </Text>
-              ) : null}
-            </View>
-          )}
-        </View>
+              )}
+            </Card>
+
+            <Card style={styles.infoCard}>
+              <View style={styles.infoHeader}>
+                <View style={styles.infoTitleBlock}>
+                  <Text style={[styles.aboutLabel, { color: colors.ink }]}>Hit Condition</Text>
+                </View>
+                <IconButton
+                  accessibilityLabel={editingHitCondition ? 'Cancel editing hit condition' : 'Edit hit condition'}
+                  onPress={() => {
+                    if (editingHitCondition) {
+                      setHitCondition(skill.hitCondition ?? '');
+                    } else {
+                      setDescription(skill.description ?? '');
+                      setEditingDescription(false);
+                    }
+                    setEditingHitCondition((current) => !current);
+                  }}
+                >
+                  <MaterialIcons
+                    name={editingHitCondition ? 'close' : 'edit'}
+                    size={18}
+                    color={editingHitCondition ? colors.muted : colors.sage}
+                  />
+                </IconButton>
+              </View>
+
+              {editingHitCondition ? (
+                <>
+                  <TextInput
+                    multiline
+                    onChangeText={setHitCondition}
+                    placeholder="What counts as a hit?"
+                    placeholderTextColor={colors.quiet}
+                    style={[styles.skillDetailInput, { borderColor: colors.line, color: colors.ink }]}
+                    value={hitCondition}
+                  />
+                  <View style={[styles.composerActions, { borderTopColor: colors.line }]}>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => {
+                        setHitCondition(skill.hitCondition ?? '');
+                        setEditingHitCondition(false);
+                      }}
+                      style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
+                    >
+                      <Text style={[styles.composerCancel, { color: colors.muted }]}>Cancel</Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      disabled={savingInfoField === 'hitCondition'}
+                      onPress={async () => {
+                        if (savingInfoField) return;
+                        setSavingInfoField('hitCondition');
+                        try {
+                          await updateSkillDetails({
+                            description: skill.description ?? '',
+                            hitCondition,
+                            id: skill.id,
+                          });
+                          setEditingHitCondition(false);
+                        } catch {
+                          showToast('Could not save hit condition');
+                        } finally {
+                          setSavingInfoField(null);
+                        }
+                      }}
+                      style={({ pressed }) => [styles.composerButton, pressed && styles.pressed]}
+                    >
+                      <Text style={[styles.composerSave, { color: colors.sage }]}>
+                        {savingInfoField === 'hitCondition' ? 'Saving...' : 'Save'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              ) : (
+                <Text style={[skill.hitCondition ? styles.aboutBody : styles.emptyInfoText, { color: colors.ink }]}>
+                  {skill.hitCondition || 'Define the moment that counts as a successful rep.'}
+                </Text>
+              )}
+            </Card>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.section}>
@@ -1231,6 +1294,29 @@ const styles = StyleSheet.create({
   hitInput: {
     ...textStyles.formInput,
     minHeight: 36,
+  },
+  emptyInfoText: {
+    ...textStyles.detailRecordBody,
+    fontStyle: 'italic',
+  },
+  infoCard: {
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+  },
+  infoHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'space-between',
+    minHeight: 28,
+  },
+  infoStack: {
+    gap: spacing.sm,
+  },
+  infoTitleBlock: {
+    flex: 1,
+    minWidth: 0,
   },
   hitPartnerInput: {
     flex: 1,

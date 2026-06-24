@@ -1,0 +1,293 @@
+{
+  "slug": "foundational-escapes-back-attack",
+  "title": "Foundational Escapes + Back Attack Seed",
+  "status": "draft",
+  "createdFor": "Planning a replacement app seed dataset before wiring it into lib/seed.ts.",
+  "plan": [
+    "Use the three skills from Positional Escape Basics: Side Control Escape, Mount Escape, and Back Escape.",
+    "Use the first three skills from Back Attack Basics: Snapdown, Go-behind, and Back Take vs Turtle.",
+    "Exclude Rear Naked Strangle so the starter data emphasizes position-first back attacks before submissions.",
+    "Create partner belts so XP demonstrates the level system without inflating raw hit counts.",
+    "Spread logs over the last 42 days with a mix of study, dialogue drilling, constraint games, and rolling.",
+    "Keep active skills to the most current working set and leave earlier/basic skills in the arsenal.",
+    "Review this file for realism, then translate the approved records into the app seed module."
+  ],
+  "xpRules": {
+    "xpPerLevel": 10,
+    "partnerBeltPoints": {
+      "white": 1,
+      "blue": 2,
+      "purple": 3,
+      "brown": 4,
+      "black": 5
+    }
+  },
+  "skills": [
+    {
+      "id": "skill-side-control-escape",
+      "packSlug": "escape-basics",
+      "packSkillKey": "chaining-side-control-escapes",
+      "name": "Side Control Escape",
+      "description": "Chain frames, knee recovery, underhook, and sit-up exits so side control becomes a decision tree instead of a stuck position.",
+      "hitCondition": "I escape side control to guard, a wrestle-up, or a neutral top/bottom reset without giving mount or back exposure.",
+      "stage": "resistance",
+      "active": true,
+      "createdDaysAgo": 42,
+      "lastTouchedDaysAgo": 3
+    },
+    {
+      "id": "skill-mount-escape",
+      "packSlug": "escape-basics",
+      "packSkillKey": "chaining-mount-escapes",
+      "name": "Mount Escape",
+      "description": "Win inside position, displace the top player's base, then bridge, kip, or recover guard without reaching into isolation.",
+      "hitCondition": "I escape mount to guard, half guard, or a neutral scramble while keeping elbows and knees inside.",
+      "stage": "resistance",
+      "active": true,
+      "createdDaysAgo": 39,
+      "lastTouchedDaysAgo": 5
+    },
+    {
+      "id": "skill-back-escape",
+      "packSlug": "escape-basics",
+      "packSkillKey": "back-escape",
+      "name": "Back Escape",
+      "description": "Protect the neck, break the seatbelt, manage hooks or body triangle, and turn to face without donating mount.",
+      "hitCondition": "I clear back control to face the opponent or reach top/guard while the choking arm is controlled.",
+      "stage": "proven",
+      "active": true,
+      "createdDaysAgo": 42,
+      "lastTouchedDaysAgo": 1
+    },
+    {
+      "id": "skill-snapdown",
+      "packSlug": "back-attack-basics",
+      "packSkillKey": "snapdown",
+      "name": "Snapdown",
+      "description": "Create forward posture reactions with hand fighting, head position, and level threats, then snap to front head control.",
+      "hitCondition": "I break posture into front head control or force hands to the mat with a usable angle.",
+      "stage": "mechanics",
+      "active": false,
+      "createdDaysAgo": 31,
+      "lastTouchedDaysAgo": 10
+    },
+    {
+      "id": "skill-go-behind",
+      "packSlug": "back-attack-basics",
+      "packSkillKey": "go-behind",
+      "name": "Go-behind",
+      "description": "Convert front headlock or snapped posture into a clean angle, arm block, and chest-heavy score behind the hips.",
+      "hitCondition": "I circle behind from front head control and secure hip control, seatbelt, or turtle top before they square up.",
+      "stage": "resistance",
+      "active": true,
+      "createdDaysAgo": 29,
+      "lastTouchedDaysAgo": 2
+    },
+    {
+      "id": "skill-back-take-from-turtle-top",
+      "packSlug": "back-attack-basics",
+      "packSkillKey": "back-take-from-turtle-top",
+      "name": "Back Take vs Turtle",
+      "description": "Use two-on-one leg control from turtle top to pin the knee, insert the first hook, and follow shoulder drops into back exposure.",
+      "hitCondition": "I turn turtle-top control into at least one hook plus seatbelt, or complete the roll-through to back control.",
+      "stage": "mechanics",
+      "active": true,
+      "createdDaysAgo": 24,
+      "lastTouchedDaysAgo": 4
+    }
+  ],
+  "partners": [
+    { "id": "partner-alex", "name": "Alex", "belt": "blue", "createdDaysAgo": 44 },
+    { "id": "partner-jordan", "name": "Jordan", "belt": "purple", "createdDaysAgo": 44 },
+    { "id": "partner-sam", "name": "Sam", "belt": "white", "createdDaysAgo": 41 },
+    { "id": "partner-priya", "name": "Priya", "belt": "brown", "createdDaysAgo": 35 },
+    { "id": "partner-casey", "name": "Casey", "belt": "blue", "createdDaysAgo": 30 },
+    { "id": "partner-morgan", "name": "Morgan", "belt": "white", "createdDaysAgo": 20 }
+  ],
+  "levelSummary": [
+    { "skillId": "skill-back-escape", "rawHits": 15, "xp": 38, "level": 3, "xpIntoLevel": 8 },
+    { "skillId": "skill-side-control-escape", "rawHits": 15, "xp": 31, "level": 3, "xpIntoLevel": 1 },
+    { "skillId": "skill-mount-escape", "rawHits": 13, "xp": 29, "level": 2, "xpIntoLevel": 9 },
+    { "skillId": "skill-go-behind", "rawHits": 11, "xp": 21, "level": 2, "xpIntoLevel": 1 },
+    { "skillId": "skill-snapdown", "rawHits": 9, "xp": 18, "level": 1, "xpIntoLevel": 8 },
+    { "skillId": "skill-back-take-from-turtle-top", "rawHits": 7, "xp": 13, "level": 1, "xpIntoLevel": 3 }
+  ],
+  "trainingLogs": [
+    {
+      "id": "log-back-escape-open-mat",
+      "skillId": "skill-back-escape",
+      "type": "rolling",
+      "occurredDaysAgo": 1,
+      "durationMinutes": 36,
+      "note": "Best back escapes came after slowing down: hand fight first, shoulder line to the mat second, hooks last."
+    },
+    {
+      "id": "log-go-behind-front-head",
+      "skillId": "skill-go-behind",
+      "type": "constraint_game",
+      "occurredDaysAgo": 2,
+      "durationMinutes": 18,
+      "note": "Chest stayed heavier when I circled to the corner before reaching for hip control."
+    },
+    {
+      "id": "log-side-control-positional",
+      "skillId": "skill-side-control-escape",
+      "type": "constraint_game",
+      "occurredDaysAgo": 3,
+      "durationMinutes": 20,
+      "note": "Underhook path opened up after I stopped bench-pressing and turned onto my side first."
+    },
+    {
+      "id": "log-turtle-top-two-on-one",
+      "skillId": "skill-back-take-from-turtle-top",
+      "type": "dialogue_drilling",
+      "occurredDaysAgo": 4,
+      "durationMinutes": 16,
+      "note": "Two-on-one leg grip has to pin the knee before I try to throw the hook."
+    },
+    {
+      "id": "log-mount-inside-position",
+      "skillId": "skill-mount-escape",
+      "type": "constraint_game",
+      "occurredDaysAgo": 5,
+      "durationMinutes": 18,
+      "note": "Kip worked only after inside elbows and feet were recovered; otherwise it just lifted weight and reset mount."
+    },
+    {
+      "id": "log-side-control-open-mat",
+      "skillId": "skill-side-control-escape",
+      "type": "rolling",
+      "occurredDaysAgo": 7,
+      "durationMinutes": 30,
+      "note": "Priya punished lazy frames. Need earlier knee shield before the crossface gets settled."
+    },
+    {
+      "id": "log-back-escape-body-triangle",
+      "skillId": "skill-back-escape",
+      "type": "constraint_game",
+      "occurredDaysAgo": 8,
+      "durationMinutes": 20,
+      "note": "Hip shift inside the body triangle made the side switch possible; overwrap the leg during the switch."
+    },
+    {
+      "id": "log-snapdown-handfight",
+      "skillId": "skill-snapdown",
+      "type": "dialogue_drilling",
+      "occurredDaysAgo": 10,
+      "durationMinutes": 18,
+      "note": "Better results when the snap followed a push-pull or leg-threat reaction instead of starting cold."
+    },
+    {
+      "id": "log-go-behind-open-mat",
+      "skillId": "skill-go-behind",
+      "type": "rolling",
+      "occurredDaysAgo": 12,
+      "durationMinutes": 28,
+      "note": "Lost two chances by letting my chest come off the back before clearing the near arm."
+    },
+    {
+      "id": "log-mount-open-mat",
+      "skillId": "skill-mount-escape",
+      "type": "rolling",
+      "occurredDaysAgo": 14,
+      "durationMinutes": 32,
+      "note": "Elbows stayed safer when I framed hips low and walked the feet in before bridging."
+    },
+    {
+      "id": "log-side-control-drilling",
+      "skillId": "skill-side-control-escape",
+      "type": "dialogue_drilling",
+      "occurredDaysAgo": 17,
+      "durationMinutes": 22,
+      "note": "Three exits feel connected now: knee recovery if space, underhook if they follow, sit-up if they switch base."
+    },
+    {
+      "id": "log-back-escape-study",
+      "skillId": "skill-back-escape",
+      "type": "study",
+      "occurredDaysAgo": 21,
+      "durationMinutes": 24,
+      "note": "Reviewed choking-side escape and body-triangle variations. Main cue: break seatbelt before obsessing over hooks."
+    },
+    {
+      "id": "log-turtle-top-positional",
+      "skillId": "skill-back-take-from-turtle-top",
+      "type": "constraint_game",
+      "occurredDaysAgo": 23,
+      "durationMinutes": 16,
+      "note": "If their shoulder drops, accelerate the knee through the gap instead of pausing on one hook."
+    },
+    {
+      "id": "log-snapdown-positional",
+      "skillId": "skill-snapdown",
+      "type": "constraint_game",
+      "occurredDaysAgo": 26,
+      "durationMinutes": 15,
+      "note": "Step the lead leg back with the snap so the hands guide and the legs create the drop."
+    },
+    {
+      "id": "log-mount-study-rounds",
+      "skillId": "skill-mount-escape",
+      "type": "constraint_game",
+      "occurredDaysAgo": 32,
+      "durationMinutes": 20,
+      "note": "Order matters: inside position, base displacement, then escape. Stop treating the bridge as step one."
+    },
+    {
+      "id": "log-side-control-study",
+      "skillId": "skill-side-control-escape",
+      "type": "study",
+      "occurredDaysAgo": 38,
+      "durationMinutes": 18,
+      "note": "Added Lachlan side-control branches as the first escape framework for the seed set."
+    }
+  ],
+  "hits": [
+    { "id": "hit-back-escape-open-mat-jordan", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-open-mat", "partnerId": "partner-jordan", "count": 3 },
+    { "id": "hit-back-escape-open-mat-casey", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-open-mat", "partnerId": "partner-casey", "count": 2 },
+    { "id": "hit-back-escape-open-mat-sam", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-open-mat", "partnerId": "partner-sam", "count": 1 },
+    { "id": "hit-go-behind-front-head-alex", "skillId": "skill-go-behind", "trainingLogId": "log-go-behind-front-head", "partnerId": "partner-alex", "count": 3 },
+    { "id": "hit-go-behind-front-head-jordan", "skillId": "skill-go-behind", "trainingLogId": "log-go-behind-front-head", "partnerId": "partner-jordan", "count": 1 },
+    { "id": "hit-side-control-positional-casey", "skillId": "skill-side-control-escape", "trainingLogId": "log-side-control-positional", "partnerId": "partner-casey", "count": 3 },
+    { "id": "hit-side-control-positional-jordan", "skillId": "skill-side-control-escape", "trainingLogId": "log-side-control-positional", "partnerId": "partner-jordan", "count": 1 },
+    { "id": "hit-turtle-top-two-on-one-morgan", "skillId": "skill-back-take-from-turtle-top", "trainingLogId": "log-turtle-top-two-on-one", "partnerId": "partner-morgan", "count": 3 },
+    { "id": "hit-turtle-top-two-on-one-casey", "skillId": "skill-back-take-from-turtle-top", "trainingLogId": "log-turtle-top-two-on-one", "partnerId": "partner-casey", "count": 1 },
+    { "id": "hit-mount-inside-position-alex", "skillId": "skill-mount-escape", "trainingLogId": "log-mount-inside-position", "partnerId": "partner-alex", "count": 4 },
+    { "id": "hit-mount-inside-position-jordan", "skillId": "skill-mount-escape", "trainingLogId": "log-mount-inside-position", "partnerId": "partner-jordan", "count": 1 },
+    { "id": "hit-side-control-open-mat-priya", "skillId": "skill-side-control-escape", "trainingLogId": "log-side-control-open-mat", "partnerId": "partner-priya", "count": 2 },
+    { "id": "hit-side-control-open-mat-sam", "skillId": "skill-side-control-escape", "trainingLogId": "log-side-control-open-mat", "partnerId": "partner-sam", "count": 2 },
+    { "id": "hit-back-escape-body-triangle-priya", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-body-triangle", "partnerId": "partner-priya", "count": 3 },
+    { "id": "hit-back-escape-body-triangle-alex", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-body-triangle", "partnerId": "partner-alex", "count": 2 },
+    { "id": "hit-snapdown-handfight-alex", "skillId": "skill-snapdown", "trainingLogId": "log-snapdown-handfight", "partnerId": "partner-alex", "count": 3 },
+    { "id": "hit-snapdown-handfight-sam", "skillId": "skill-snapdown", "trainingLogId": "log-snapdown-handfight", "partnerId": "partner-sam", "count": 1 },
+    { "id": "hit-go-behind-open-mat-casey", "skillId": "skill-go-behind", "trainingLogId": "log-go-behind-open-mat", "partnerId": "partner-casey", "count": 3 },
+    { "id": "hit-go-behind-open-mat-sam", "skillId": "skill-go-behind", "trainingLogId": "log-go-behind-open-mat", "partnerId": "partner-sam", "count": 3 },
+    { "id": "hit-mount-open-mat-priya", "skillId": "skill-mount-escape", "trainingLogId": "log-mount-open-mat", "partnerId": "partner-priya", "count": 2 },
+    { "id": "hit-mount-open-mat-sam", "skillId": "skill-mount-escape", "trainingLogId": "log-mount-open-mat", "partnerId": "partner-sam", "count": 2 },
+    { "id": "hit-side-control-drilling-alex", "skillId": "skill-side-control-escape", "trainingLogId": "log-side-control-drilling", "partnerId": "partner-alex", "count": 5 },
+    { "id": "hit-side-control-drilling-morgan", "skillId": "skill-side-control-escape", "trainingLogId": "log-side-control-drilling", "partnerId": "partner-morgan", "count": 2 },
+    { "id": "hit-turtle-top-positional-jordan", "skillId": "skill-back-take-from-turtle-top", "trainingLogId": "log-turtle-top-positional", "partnerId": "partner-jordan", "count": 2 },
+    { "id": "hit-turtle-top-positional-casey", "skillId": "skill-back-take-from-turtle-top", "trainingLogId": "log-turtle-top-positional", "partnerId": "partner-casey", "count": 1 },
+    { "id": "hit-snapdown-positional-jordan", "skillId": "skill-snapdown", "trainingLogId": "log-snapdown-positional", "partnerId": "partner-jordan", "count": 2 },
+    { "id": "hit-snapdown-positional-alex", "skillId": "skill-snapdown", "trainingLogId": "log-snapdown-positional", "partnerId": "partner-alex", "count": 2 },
+    { "id": "hit-snapdown-positional-morgan", "skillId": "skill-snapdown", "trainingLogId": "log-snapdown-positional", "partnerId": "partner-morgan", "count": 1 },
+    { "id": "hit-mount-study-rounds-casey", "skillId": "skill-mount-escape", "trainingLogId": "log-mount-study-rounds", "partnerId": "partner-casey", "count": 4 },
+    { "id": "hit-back-escape-body-triangle-jordan", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-body-triangle", "partnerId": "partner-jordan", "count": 2 },
+    { "id": "hit-back-escape-body-triangle-sam", "skillId": "skill-back-escape", "trainingLogId": "log-back-escape-body-triangle", "partnerId": "partner-sam", "count": 2 },
+    { "id": "hit-go-behind-open-mat-jordan", "skillId": "skill-go-behind", "trainingLogId": "log-go-behind-open-mat", "partnerId": "partner-jordan", "count": 1 }
+  ],
+  "mediaSources": [
+    { "skillId": "skill-side-control-escape", "fromPackSlug": "escape-basics", "fromPackSkillKey": "chaining-side-control-escapes" },
+    { "skillId": "skill-mount-escape", "fromPackSlug": "escape-basics", "fromPackSkillKey": "chaining-mount-escapes" },
+    { "skillId": "skill-back-escape", "fromPackSlug": "escape-basics", "fromPackSkillKey": "back-escape" },
+    { "skillId": "skill-snapdown", "fromPackSlug": "back-attack-basics", "fromPackSkillKey": "snapdown" },
+    { "skillId": "skill-go-behind", "fromPackSlug": "back-attack-basics", "fromPackSkillKey": "go-behind" },
+    { "skillId": "skill-back-take-from-turtle-top", "fromPackSlug": "back-attack-basics", "fromPackSkillKey": "back-take-from-turtle-top" }
+  ],
+  "implementationNotes": [
+    "When importing to lib/seed.ts, convert *DaysAgo fields to daysAgo(...) calls for dynamic dates.",
+    "Training log note strings should become Note records linked by trainingLogId.",
+    "Media can be copied from the existing skill-pack JSON via mediaSources instead of duplicated here.",
+    "The levelSummary numbers should be rechecked with skillXpFifths after translation."
+  ]
+}

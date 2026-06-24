@@ -39,11 +39,10 @@ export default function NewSkillScreen() {
         />
 
         <FormLabel>Hit Condition</FormLabel>
-        <FormHelp>What counts as a hit?</FormHelp>
         <FormInput
           multiline
           onChangeText={setHitCondition}
-          placeholder="I establish the position or finish the move against live resistance."
+          placeholder="What counts as a hit?"
           style={styles.textArea}
           value={hitCondition}
         />
