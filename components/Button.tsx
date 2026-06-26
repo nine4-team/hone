@@ -3,6 +3,7 @@ import { radius, spacing, useTheme } from '../lib/theme';
 import { textStyles } from '../lib/typography';
 
 type ButtonProps = {
+  disabled?: boolean;
   label: string;
   onPress: () => void;
   size?: 'default' | 'compact';
@@ -10,12 +11,21 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary' | 'ghost';
 };
 
-export function Button({ label, onPress, size = 'default', style, variant = 'primary' }: ButtonProps) {
+export function Button({
+  disabled = false,
+  label,
+  onPress,
+  size = 'default',
+  style,
+  variant = 'primary',
+}: ButtonProps) {
   const colors = useTheme();
 
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
@@ -27,14 +37,16 @@ export function Button({ label, onPress, size = 'default', style, variant = 'pri
           borderWidth: 1,
         },
         variant === 'ghost' && styles.ghost,
-        pressed && styles.pressed,
+        disabled && variant === 'primary' && { backgroundColor: colors.surfaceMuted },
+        disabled && styles.disabled,
+        pressed && !disabled && styles.pressed,
         style,
       ]}
     >
       <Text style={[
         styles.label,
         size === 'compact' && styles.compactLabel,
-        { color: variant === 'primary' ? colors.surface : colors.sage },
+        { color: disabled ? colors.quiet : variant === 'primary' ? colors.surface : colors.sage },
       ]}>
         {label}
       </Text>
@@ -57,6 +69,9 @@ const styles = StyleSheet.create({
   },
   compactLabel: {
     ...textStyles.buttonLabelCompact,
+  },
+  disabled: {
+    opacity: 0.72,
   },
   ghost: {
     backgroundColor: 'transparent',

@@ -210,12 +210,25 @@ export function SkillPackPicker({
       </ScrollView>
       <View style={[styles.actions, { backgroundColor: colors.bg, borderTopColor: colors.line }]}>
         <Button
-          label={submitting ? 'Adding Packs...' : `Add ${selectedImports.length} Pack${selectedImports.length === 1 ? '' : 's'}`}
+          disabled={selectedImports.length === 0 || submitting}
+          label={
+            submitting
+              ? 'Adding Packs...'
+              : selectedImports.length === 0
+                ? 'Add Packs'
+              : `Add ${selectedImports.length} Pack${selectedImports.length === 1 ? '' : 's'}`
+          }
           onPress={submitImport}
           style={styles.actionButton}
         />
         {showSkip && onSkip ? (
-          <Button label="Start Empty" onPress={skip} style={styles.actionButton} variant="secondary" />
+          <Button
+            disabled={submitting}
+            label="Start Empty"
+            onPress={skip}
+            style={styles.actionButton}
+            variant="secondary"
+          />
         ) : null}
       </View>
     </View>
